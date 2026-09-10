@@ -1,0 +1,559 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== ENUMS ====================
+
+enum Plan {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+  CANCELLED
+}
+
+enum Priority {
+  URGENT
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum View {
+  LIST
+  KANBAN
+  TIMELINE
+  CALENDAR
+  TABLE
+}
+
+enum TimeFormat {
+  H24
+  H12
+}
+
+enum BlockType {
+  PARAGRAPH
+  HEADING
+  BULLET_LIST
+  NUMBERED_LIST
+  CHECK_LIST
+  CODE_BLOCK
+  QUOTE
+  IMAGE
+  DIVIDER
+}
+
+enum DependencyType {
+  FINISH_TO_START
+  START_TO_START
+  FINISH_TO_FINISH
+  START_TO_FINISH
+}
+
+// ==================== UTILISATEURS ====================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String?
+  firstName     String
+  lastName      String
+  avatar        String?
+  timezone      String    @default("Europe/Paris")
+  language      String    @default("fr")
+
+  provider      String    @default("local")
+  providerId    String?
+  emailVerified Boolean   @default(false)
+  mfaEnabled    Boolean   @default(false)
+  mfaSecret     String?
+
+  workspaces    WorkspaceMember[]
+  ownedWorkspaces Workspace[]
+  tasks         Task[]
+  taskAssignees TaskAssignee[]
+  notes         Note[]
+  comments      Comment[]
+  activities    Activity[]
+  automations   Automation[]
+  notifications Notification[]
+  sessions      Session[]
+  attachments   Attachment[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([email])
+  @@map("users")
+}
+
+model Session {
+  id            String    @id @default(cuid())
+  userId        String
+  token         String    @unique
+  userAgent     String?
+  ipAddress     String?
+  expiresAt     DateTime
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime  @default(now())
+
+  @@index([token])
+  @@index([userId])
+  @@map("sessions")
+}
+
+// ==================== ESPACES DE TRAVAIL ====================
+
+model Workspace {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique
+  description   String?
+  avatar        String?
+  plan          Plan      @default(FREE)
+
+  ownerId       String
+  owner         User      @relation(fields: [ownerId], references: [id])
+  members       WorkspaceMember[]
+  projects      Project[]
+  settings      WorkspaceSettings?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([slug])
+  @@map("workspaces")
+}
+
+model WorkspaceMember {
+  id            String    @id @default(cuid())
+  role          MemberRole @default(MEMBER)
+
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  workspaceId   String
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  joinedAt      DateTime  @default(now())
+
+  @@unique([userId, workspaceId])
+  @@map("workspace_members")
+}
+
+model WorkspaceSettings {
+  id            String    @id @default(cuid())
+  workspaceId   String    @unique
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  defaultView   View      @default(LIST)
+  weekStart     Int       @default(1)
+  timeFormat    TimeFormat @default(H24)
+  dateFormat    String    @default("DD/MM/YYYY")
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("workspace_settings")
+}
+
+// ==================== PROJETS ====================
+
+model Project {
+  id            String    @id @default(cuid())
+  name          String
+  description   String?
+  color         String    @default("#3B82F6")
+  icon          String?
+  archived      Boolean   @default(false)
+
+  workspaceId   String
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  tasks         Task[]
+  notes         Note[]
+  automations   Automation[]
+  views         ProjectView[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([workspaceId])
+  @@map("projects")
+}
+
+model ProjectView {
+  id            String    @id @default(cuid())
+  name          String
+  type          View
+  config        Json      @default("{}")
+
+  projectId     String
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("project_views")
+}
+
+// ==================== TACHES ====================
+
+model Task {
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  status        TaskStatus @default(TODO)
+  priority      Priority  @default(MEDIUM)
+
+  startDate     DateTime?
+  dueDate       DateTime?
+  completedAt   DateTime?
+
+  estimatedHours Float?
+  actualHours    Float?
+  points        Int?
+
+  projectId     String
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  parentId      String?
+  parent        Task?     @relation("TaskHierarchy", fields: [parentId], references: [id])
+  children      Task[]    @relation("TaskHierarchy")
+
+  order         Int       @default(0)
+
+  assignees     TaskAssignee[]
+  labels        TaskLabel[]
+  dependencies  TaskDependency[] @relation("DependsOn")
+  dependents    TaskDependency[] @relation("Blocks")
+  comments      Comment[]
+  attachments   Attachment[]
+  subtasks      Subtask[]
+  timeEntries   TimeEntry[]
+  calendarEvents CalendarEvent[]
+
+  createdBy     String
+  creator       User      @relation(fields: [createdBy], references: [id])
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([projectId])
+  @@index([status])
+  @@index([dueDate])
+  @@index([createdBy])
+  @@map("tasks")
+}
+
+model TaskAssignee {
+  id            String    @id @default(cuid())
+  taskId        String
+  task          Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  assignedAt    DateTime  @default(now())
+
+  @@unique([taskId, userId])
+  @@map("task_assignees")
+}
+
+model TaskLabel {
+  id            String    @id @default(cuid())
+  taskId        String
+  task          Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  labelId       String
+  label         Label     @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, labelId])
+  @@map("task_labels")
+}
+
+model TaskDependency {
+  id            String    @id @default(cuid())
+  taskId        String
+  task          Task      @relation("DependsOn", fields: [taskId], references: [id], onDelete: Cascade)
+  dependsOnId   String
+  dependsOn     Task      @relation("Blocks", fields: [dependsOnId], references: [id], onDelete: Cascade)
+
+  type          DependencyType @default(FINISH_TO_START)
+
+  @@unique([taskId, dependsOnId])
+  @@map("task_dependencies")
+}
+
+model Subtask {
+  id            String    @id @default(cuid())
+  title         String
+  completed     Boolean   @default(false)
+
+  taskId        String
+  task          Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  order         Int       @default(0)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([taskId])
+  @@map("subtasks")
+}
+
+model Label {
+  id            String    @id @default(cuid())
+  name          String
+  color         String    @default("#6B7280")
+
+  workspaceId   String
+  tasks         TaskLabel[]
+
+  createdAt     DateTime  @default(now())
+
+  @@unique([name, workspaceId])
+  @@map("labels")
+}
+
+// ==================== NOTES ====================
+
+model Note {
+  id            String    @id @default(cuid())
+  title         String
+  content       Json      @default("{}")
+  contentMd     String?
+  icon          String?
+  cover         String?
+
+  projectId     String?
+  project       Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  parentId      String?
+  parent        Note?     @relation("NoteHierarchy", fields: [parentId], references: [id])
+  children      Note[]    @relation("NoteHierarchy")
+
+  published     Boolean   @default(false)
+  archived      Boolean   @default(false)
+
+  comments      Comment[]
+  attachments   Attachment[]
+  blocks        NoteBlock[]
+
+  createdBy     String
+  creator       User      @relation(fields: [createdBy], references: [id])
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([projectId])
+  @@index([createdBy])
+  @@map("notes")
+}
+
+model NoteBlock {
+  id            String    @id @default(cuid())
+  type          BlockType
+  content       Json
+  order         Int
+
+  noteId        String
+  note          Note      @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([noteId])
+  @@map("note_blocks")
+}
+
+// ==================== CALENDRIER ====================
+
+model CalendarEvent {
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  location      String?
+
+  start         DateTime
+  end           DateTime
+  allDay        Boolean   @default(false)
+
+  recurrence    Json?
+
+  color         String    @default("#3B82F6")
+
+  taskId        String?
+  task          Task?     @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  externalId    String?
+  provider      String?
+
+  workspaceId   String
+  userId        String
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId, start])
+  @@index([workspaceId])
+  @@map("calendar_events")
+}
+
+// ==================== AUTOMATISATIONS ====================
+
+model Automation {
+  id            String    @id @default(cuid())
+  name          String
+  description   String?
+  enabled       Boolean   @default(true)
+
+  trigger       Json
+  actions       Json
+
+  runCount      Int       @default(0)
+  lastRunAt     DateTime?
+  lastError     String?
+
+  projectId     String?
+  project       Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  createdBy     String
+  creator       User      @relation(fields: [createdBy], references: [id])
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([projectId])
+  @@map("automations")
+}
+
+// ==================== COMMENTAIRES ====================
+
+model Comment {
+  id            String    @id @default(cuid())
+  content       String
+
+  taskId        String?
+  task          Task?     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  noteId        String?
+  note          Note?     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  parentId      String?
+  parent        Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies       Comment[] @relation("CommentReplies")
+
+  createdBy     String
+  creator       User      @relation(fields: [createdBy], references: [id])
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([taskId])
+  @@index([noteId])
+  @@map("comments")
+}
+
+// ==================== PIECES JOINTES ====================
+
+model Attachment {
+  id            String    @id @default(cuid())
+  filename      String
+  originalName  String
+  mimeType      String
+  size          Int
+  url           String
+
+  taskId        String?
+  task          Task?     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  noteId        String?
+  note          Note?     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  createdBy     String
+  creator       User      @relation(fields: [createdBy], references: [id])
+
+  createdAt     DateTime  @default(now())
+
+  @@index([taskId])
+  @@index([noteId])
+  @@map("attachments")
+}
+
+// ==================== SUIVI DU TEMPS ====================
+
+model TimeEntry {
+  id            String    @id @default(cuid())
+  description   String?
+  startTime     DateTime
+  endTime       DateTime?
+  duration      Int       // en secondes
+
+  taskId        String
+  task          Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  userId        String
+
+  createdAt     DateTime  @default(now())
+
+  @@index([taskId])
+  @@index([userId])
+  @@map("time_entries")
+}
+
+// ==================== ACTIVITES ====================
+
+model Activity {
+  id            String    @id @default(cuid())
+  action        String    // created, updated, deleted, etc.
+  entityType    String    // task, note, project, etc.
+  entityId      String
+  changes       Json?
+
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+
+  createdAt     DateTime  @default(now())
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@map("activities")
+}
+
+// ==================== NOTIFICATIONS ====================
+
+model Notification {
+  id            String    @id @default(cuid())
+  title         String
+  message       String
+  type          String    // info, warning, error, success
+  read          Boolean   @default(false)
+  link          String?
+
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime  @default(now())
+
+  @@index([userId, read])
+  @@map("notifications")
+}

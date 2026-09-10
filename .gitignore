@@ -141,3 +141,26 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# =============================================================================
+# nexaBoard specific
+# =============================================================================
+
+# Turbo
+.turbo/
+
+# Prisma
+apps/api/prisma/migrations/
+
+# Docker
+docker-compose.override.yml
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,41 @@
+{
+  "name": "nexaboard",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Application de productivité moderne pour les petites équipes",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:api": "turbo dev --filter=@nexaboard/api",
+    "dev:web": "turbo dev --filter=@nexaboard/web",
+    "build": "turbo build",
+    "build:api": "turbo build --filter=@nexaboard/api",
+    "build:web": "turbo build --filter=@nexaboard/web",
+    "lint": "turbo lint",
+    "format": "prettier --write \"apps/**/*.{ts,tsx,js,jsx,json,css}\"",
+    "format:check": "prettier --check \"apps/**/*.{ts,tsx,js,jsx,json,css}\"",
+    "db:migrate": "pnpm --filter @nexaboard/api db:migrate",
+    "db:generate": "pnpm --filter @nexaboard/api db:generate",
+    "db:seed": "pnpm --filter @nexaboard/api db:seed",
+    "db:studio": "pnpm --filter @nexaboard/api db:studio",
+    "clean": "turbo clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "turbo": "^2.1.0",
+    "prettier": "^3.3.0",
+    "eslint": "^8.57.0"
+  },
+  "packageManager": "pnpm@9.12.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "bcryptjs"
+    ]
+  }
+}

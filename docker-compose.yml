@@ -1,0 +1,101 @@
+services:
+  # =============================================================================
+  # PostgreSQL 16
+  # =============================================================================
+  db:
+    image: postgres:16-alpine
+    container_name: nexaboard-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: nexaboard
+      POSTGRES_USER: nexaboard
+      POSTGRES_PASSWORD: nexaboard_secret
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nexaboard -d nexaboard"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # =============================================================================
+  # Redis 7
+  # =============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: nexaboard-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # =============================================================================
+  # Backend API (NestJS) - Dev mode
+  # =============================================================================
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: development
+    container_name: nexaboard-api
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./apps/api/src:/app/apps/api/src
+      - ./apps/api/prisma:/app/apps/api/prisma
+      - ./apps/api/nest-cli.json:/app/apps/api/nest-cli.json
+      - ./apps/api/tsconfig.json:/app/apps/api/tsconfig.json
+      - ./apps/api/tsconfig.build.json:/app/apps/api/tsconfig.build.json
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://nexaboard:nexaboard_secret@db:5432/nexaboard?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: dev-jwt-secret-change-in-production
+      PORT: 4000
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:4000
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # =============================================================================
+  # Frontend (Next.js 14) - Dev mode
+  # =============================================================================
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: development
+    container_name: nexaboard-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./apps/web/src:/app/apps/web/src
+      - ./apps/web/public:/app/apps/web/public
+      - ./apps/web/next.config.mjs:/app/apps/web/next.config.mjs
+      - ./apps/web/tsconfig.json:/app/apps/web/tsconfig.json
+      - ./apps/web/tailwind.config.js:/app/apps/web/tailwind.config.js
+      - ./apps/web/postcss.config.js:/app/apps/web/postcss.config.js
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+      NEXTAUTH_URL: http://localhost:3000
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  redis_data:
