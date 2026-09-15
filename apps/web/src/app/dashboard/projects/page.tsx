@@ -29,6 +29,7 @@ export default function ProjectsPage() {
     if (!currentWorkspaceId) return;
     try {
       setLoading(true);
+      setError(null);
       const data = await api.get<Project[]>(
         `/api/v1/workspaces/${currentWorkspaceId}/projects`,
       );

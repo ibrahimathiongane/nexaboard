@@ -61,6 +61,7 @@ export default function TasksPage() {
 
     try {
       setLoading(true);
+      setError(null);
       const data = await api.get<Task[]>(
         `/api/v1/tasks?workspaceId=${encodeURIComponent(currentWorkspaceId)}`,
       );

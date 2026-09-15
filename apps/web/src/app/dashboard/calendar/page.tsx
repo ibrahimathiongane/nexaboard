@@ -28,8 +28,16 @@ export default function CalendarPage() {
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | undefined>(undefined);
 
   const fetchEvents = useCallback(async () => {
+    if (!currentWorkspaceId) {
+      setEvents([]);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
+      setError(null);
       const start = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
       const end = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999);
       const data = await api.get<CalendarEvent[]>(

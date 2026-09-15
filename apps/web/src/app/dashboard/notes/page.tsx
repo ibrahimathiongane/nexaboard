@@ -35,6 +35,7 @@ export default function NotesPage() {
 
     try {
       setLoading(true);
+      setError(null);
       const data = await api.get<Note[]>(
         `/api/v1/notes?workspaceId=${encodeURIComponent(currentWorkspaceId)}`,
       );

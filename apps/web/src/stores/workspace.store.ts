@@ -53,12 +53,18 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           const workspaces = await api.get<Workspace[]>('/api/v1/workspaces');
           set((state) => {
             const needsAutoSelect =
-              !state.currentWorkspaceId && workspaces.length > 0;
+              (!state.currentWorkspaceId ||
+                !workspaces.some(
+                  (workspace) => workspace.id === state.currentWorkspaceId,
+                )) &&
+              workspaces.length > 0;
             return {
               workspaces,
               currentWorkspaceId: needsAutoSelect
                 ? workspaces[0].id
-                : state.currentWorkspaceId,
+                : workspaces.length === 0
+                  ? null
+                  : state.currentWorkspaceId,
               isLoading: false,
             };
           });
@@ -73,7 +79,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         const workspace = await api.post<Workspace>('/api/v1/workspaces', data);
         set((state) => ({
           workspaces: [...state.workspaces, workspace],
-          currentWorkspaceId: state.currentWorkspaceId ?? workspace.id,
+          currentWorkspaceId: workspace.id,
         }));
         return workspace;
       },

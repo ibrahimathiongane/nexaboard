@@ -17,7 +17,7 @@ Créer les trois comptes avant de commencer. L'ajout d'un membre nécessite que 
 1. Démarrer l'API, le frontend, PostgreSQL et Redis.
 2. Ouvrir le frontend dans trois profils de navigateur séparés, ou utiliser une fenêtre privée par compte.
 3. Se connecter avec Sarah dans le premier profil.
-4. Créer le workspace **Lancement produit**.
+4. Depuis la barre latérale du dashboard, cliquer sur **+ Nouveau workspace** et créer **Lancement produit**.
 5. Depuis **Équipe**, ajouter Karim avec le rôle **Administrateur**, puis Lina avec le rôle **Membre**.
 6. Vérifier que les trois membres apparaissent avec le bon rôle.
 
