@@ -31,9 +31,10 @@ RUN corepack enable pnpm
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
 COPY apps/web ./apps/web
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN cd apps/web && pnpm run build
+RUN cd apps/web && ./node_modules/.bin/next build
 
 # -- Production --
 FROM node:20-alpine AS runner
@@ -53,7 +54,6 @@ COPY --from=build --chown=nextjs:nodejs /app/apps/web/.next/static ./.next/stati
 USER nextjs
 
 EXPOSE 3000
-ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 CMD ["node", "server.js"]
