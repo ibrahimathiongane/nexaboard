@@ -100,8 +100,10 @@ export class AuthController {
   }
 
   private serializeRefreshCookie(token: string, maxAge: number) {
-    const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
-    return `${REFRESH_COOKIE}=${encodeURIComponent(token)}; Max-Age=${maxAge}; Path=/api/v1/auth; HttpOnly; SameSite=Lax${secure}`;
+    const isProduction = process.env.NODE_ENV === 'production';
+    const sameSite = isProduction ? 'None' : 'Lax';
+    const secure = isProduction ? '; Secure' : '';
+    return `${REFRESH_COOKIE}=${encodeURIComponent(token)}; Max-Age=${maxAge}; Path=/api/v1/auth; HttpOnly; SameSite=${sameSite}${secure}`;
   }
 
   @Get('profile')
