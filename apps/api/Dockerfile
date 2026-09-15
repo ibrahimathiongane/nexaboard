@@ -63,4 +63,4 @@ USER nestjs
 EXPOSE 4000
 HEALTHCHECK --interval=10s --timeout=5s --start-period=20s --retries=5 \
   CMD wget --spider --quiet http://localhost:4000/api/v1/health/ready || exit 1
-CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "node /app/node_modules/.pnpm/prisma@5.22.0/node_modules/prisma/build/index.js migrate deploy && node dist/main.js"]
