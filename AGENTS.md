@@ -51,8 +51,8 @@ apps/
     src/
       app/          App Router pages (/, /auth/*, /dashboard)
       lib/api.ts    ApiClient with auto-refresh on 401
-      stores/       Zustand stores
-      components/   (empty — not yet built)
+      stores/       Zustand stores (auth, workspace)
+      components/   UI components (button, card, badge, input, textarea, modal) + forms (task, note, project, calendar-event)
 libs/
   shared/       Shared types (User, Workspace, Task, etc.)
 ```
@@ -69,17 +69,33 @@ libs/
 - **ESLint**: Root `.eslintrc.json` is minimal (just ignorePatterns). Web app has its own `.eslintrc.json` extending `next/core-web-vitals`. API has no eslint config yet.
 - **Path aliases**: `@/*` maps to `src/*` in both api and web tsconfigs.
 
-## What's implemented vs stub
+## What's implemented
 
-| Module | Status |
-|--------|--------|
-| Auth (register, login, refresh, logout, profile) | Implemented |
-| Users (findByEmail, create, verifyPassword) | Implemented |
-| Health endpoint | Implemented |
-| Tasks, Notes, Calendar, Projects, Workspaces | Stub modules only |
-| Frontend auth pages (/auth/login, /auth/register) | Implemented |
-| Frontend dashboard | Hardcoded stats |
-| Frontend components/ui | Empty |
+| Module | Status | Details |
+|--------|--------|---------|
+| Auth (register, login, refresh, logout, profile, email verification, password reset) | ✅ Implemented | Full JWT flow with sessions |
+| Users (findByEmail, create, verifyPassword) | ✅ Implemented | |
+| Health endpoint | ✅ Implemented | |
+| Workspaces (CRUD, members, roles) | ✅ Implemented | OWNER/ADMIN/MEMBER roles |
+| Projects (CRUD, workspace-scoped) | ✅ Implemented | |
+| Tasks (CRUD, assign, labels, filters, list+kanban) | ✅ Implemented | Status, priority, assignees |
+| Notes (CRUD, project-linked) | ✅ Implemented | Rich content (JSON blocks) |
+| Calendar (CRUD, workspace events) | ✅ Implemented | Date range filtering |
+| Frontend auth pages | ✅ Implemented | Login, register, verify, forgot/reset password |
+| Frontend dashboard | ✅ Implemented | Dynamic stats from API |
+| Frontend tasks page | ✅ Implemented | List + Kanban views |
+| Frontend notes page | ✅ Implemented | Grid + form |
+| Frontend calendar page | ✅ Implemented | Month navigation + form |
+| Frontend projects page | ✅ Implemented | Grid + form |
+| Frontend team page | ✅ Implemented | Member list + invite |
+| Frontend components/ui | ✅ Implemented | Button, Card, Badge, Input, Textarea, Modal |
+| Frontend forms | ✅ Implemented | Task, Note, Project, CalendarEvent forms |
+| Tests (unit) | ✅ Implemented | All services + controllers |
+| Tests (E2E) | ✅ Implemented | Playwright (auth, dashboard, tasks, notes, calendar, projects) |
+| CI/CD | ✅ Implemented | GitHub Actions (lint, test, build) |
+| Monitoring | ✅ Implemented | Sentry (backend + frontend) |
+| Documentation | ✅ Implemented | Getting started, features, API docs, FAQ |
+| Docker | ✅ Implemented | Compose with db, redis, api, web |
 
 ## Scope rules
 
