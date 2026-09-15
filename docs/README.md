@@ -9,6 +9,7 @@ nexaBoard is a productivity application designed for small teams (5-20 members).
 - [Installation Guide](getting-started/installation.md)
 - [First Steps](getting-started/first-steps.md)
 - [Workspace Setup](getting-started/workspace-setup.md)
+- [Scénario de test petite équipe](testing/small-team-usage-scenario.md)
 - [API Documentation](api/authentication.md)
 
 ## Features
