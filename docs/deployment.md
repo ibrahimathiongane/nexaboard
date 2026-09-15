@@ -9,6 +9,20 @@ En production, fournir ces variables via le gestionnaire de secrets de la platef
 - `ALLOWED_ORIGINS`
 - `NEXT_PUBLIC_API_URL`
 
+Pour Railway, `ALLOWED_ORIGINS` doit contenir uniquement l'origine publique du
+frontend, sans chemin et sans slash final :
+
+```text
+ALLOWED_ORIGINS=https://resplendent-hope-production-7e28.up.railway.app
+FRONTEND_URL=https://resplendent-hope-production-7e28.up.railway.app
+```
+
+La variable `NEXT_PUBLIC_API_URL` du service frontend doit pointer vers :
+
+```text
+NEXT_PUBLIC_API_URL=https://nexaboard-production.up.railway.app
+```
+
 `JWT_SECRET` doit être aléatoire, long et différent entre chaque environnement. Ne jamais utiliser les valeurs de `docker-compose.yml` en production.
 
 ## Migrations
