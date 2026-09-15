@@ -28,6 +28,7 @@ http://localhost:4000/api/v1
 | GET | /workspaces/:id | Get workspace |
 | PATCH | /workspaces/:id | Update workspace |
 | DELETE | /workspaces/:id | Delete workspace |
+| GET | /workspaces/:id/members | List workspace members |
 | POST | /workspaces/:id/members | Add member |
 | DELETE | /workspaces/:id/members/:memberId | Remove member |
 
