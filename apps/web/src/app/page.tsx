@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
@@ -9,18 +11,18 @@ export default function Home() {
           Application de productivité moderne et intuitive pour les petites équipes.
         </p>
         <div className="flex gap-4 justify-center">
-          <a
+          <Link
             href="/auth/login"
             className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
             Connexion
-          </a>
-          <a
+          </Link>
+          <Link
             href="/auth/register"
             className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-8 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
           >
             Inscription
-          </a>
+          </Link>
         </div>
       </div>
     </div>

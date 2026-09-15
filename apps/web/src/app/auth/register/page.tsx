@@ -13,7 +13,6 @@ interface RegisterResponse {
     lastName: string;
   };
   accessToken: string;
-  refreshToken: string;
 }
 
 export default function RegisterPage() {
@@ -53,7 +52,6 @@ export default function RegisterPage() {
 
       setUser(data.user);
       setToken(data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
 
       router.push('/dashboard');
     } catch (err) {

@@ -149,9 +149,6 @@ vite.config.ts.timestamp-*
 # Turbo
 .turbo/
 
-# Prisma
-apps/api/prisma/migrations/
-
 # Docker
 docker-compose.override.yml
 

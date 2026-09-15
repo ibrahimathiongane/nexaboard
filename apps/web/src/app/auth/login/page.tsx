@@ -13,7 +13,6 @@ interface LoginResponse {
     lastName: string;
   };
   accessToken: string;
-  refreshToken: string;
 }
 
 export default function LoginPage() {
@@ -37,7 +36,6 @@ export default function LoginPage() {
 
       setUser(data.user);
       setToken(data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
 
       router.push('/dashboard');
     } catch (err) {
@@ -79,9 +77,14 @@ export default function LoginPage() {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium">
-            Mot de passe
-          </label>
+          <div className="flex items-center justify-between">
+            <label htmlFor="password" className="block text-sm font-medium">
+              Mot de passe
+            </label>
+            <a href="/auth/forgot-password" className="text-xs text-primary hover:underline">
+              Mot de passe oublié ?
+            </a>
+          </div>
           <input
             id="password"
             type="password"

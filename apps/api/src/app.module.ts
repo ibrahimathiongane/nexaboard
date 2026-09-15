@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { PrismaModule } from './common/prisma/prisma.module';
+import { EmailModule } from './common/email/email.module';
 import { HealthModule } from './modules/health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
@@ -35,6 +37,7 @@ import { CalendarModule } from './modules/calendar/calendar.module';
       },
     ]),
     PrismaModule,
+    EmailModule,
     HealthModule,
     AuthModule,
     UsersModule,
@@ -43,6 +46,12 @@ import { CalendarModule } from './modules/calendar/calendar.module';
     TasksModule,
     NotesModule,
     CalendarModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}

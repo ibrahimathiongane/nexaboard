@@ -1,4 +1,14 @@
 {
   "root": true,
-  "ignorePatterns": ["node_modules/", "dist/", ".next/"]
+  "ignorePatterns": ["node_modules/", "dist/", ".next/"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+      }
+    }
+  ]
 }

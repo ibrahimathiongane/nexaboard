@@ -5,13 +5,15 @@ import { UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { UsersService } from '../users/users.service';
+import { EmailService } from '../../common/email/email.service';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let prisma: { session: { findUnique: jest.Mock; create: jest.Mock; update: jest.Mock; deleteMany: jest.Mock } };
+  let prisma: { session: { findUnique: jest.Mock; create: jest.Mock; update: jest.Mock; deleteMany: jest.Mock }; user: { update: jest.Mock } };
   let usersService: { findByEmail: jest.Mock; create: jest.Mock; verifyPassword: jest.Mock; findById: jest.Mock; findByIdOrThrow: jest.Mock };
-  let jwtService: { signAsync: jest.Mock; verify: jest.Mock };
+  let jwtService: { signAsync: jest.Mock; sign: jest.Mock; verify: jest.Mock };
   let configService: { get: jest.Mock };
+  let emailService: { send: jest.Mock; getVerificationUrl: jest.Mock; getResetPasswordUrl: jest.Mock };
 
   const mockUser = {
     id: 'user-1',
@@ -39,6 +41,9 @@ describe('AuthService', () => {
         update: jest.fn(),
         deleteMany: jest.fn(),
       },
+      user: {
+        update: jest.fn(),
+      },
     };
 
     usersService = {
@@ -51,6 +56,7 @@ describe('AuthService', () => {
 
     jwtService = {
       signAsync: jest.fn().mockResolvedValue('mock-token'),
+      sign: jest.fn().mockReturnValue('mock-token'),
       verify: jest.fn(),
     };
 
@@ -65,6 +71,12 @@ describe('AuthService', () => {
       }),
     };
 
+    emailService = {
+      send: jest.fn().mockResolvedValue(undefined),
+      getVerificationUrl: jest.fn().mockReturnValue('http://localhost:3000/auth/verify?token=mock-token'),
+      getResetPasswordUrl: jest.fn().mockReturnValue('http://localhost:3000/auth/reset-password?token=mock-token'),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
@@ -72,6 +84,7 @@ describe('AuthService', () => {
         { provide: UsersService, useValue: usersService },
         { provide: JwtService, useValue: jwtService },
         { provide: ConfigService, useValue: configService },
+        { provide: EmailService, useValue: emailService },
       ],
     }).compile();
 
@@ -258,6 +271,113 @@ describe('AuthService', () => {
       );
 
       await expect(service.getProfile('nonexistent')).rejects.toThrow();
+    });
+  });
+
+  describe('sendVerificationEmail', () => {
+    it('should send verification email', async () => {
+      usersService.findByIdOrThrow.mockResolvedValue(mockUser);
+      jwtService.sign.mockReturnValue('verification-token');
+
+      await service.sendVerificationEmail('user-1');
+
+      expect(usersService.findByIdOrThrow).toHaveBeenCalledWith('user-1');
+      expect(jwtService.sign).toHaveBeenCalledWith(
+        { sub: 'user-1', type: 'email-verification' },
+        { expiresIn: '24h' },
+      );
+      expect(emailService.getVerificationUrl).toHaveBeenCalledWith('verification-token');
+      expect(emailService.send).toHaveBeenCalledWith({
+        to: 'john@example.com',
+        subject: 'Vérifiez votre email - nexaBoard',
+        html: expect.stringContaining('Bonjour John'),
+      });
+    });
+  });
+
+  describe('verifyEmail', () => {
+    it('should verify email with valid token', async () => {
+      jwtService.verify.mockReturnValue({ sub: 'user-1', type: 'email-verification' });
+      usersService.findById.mockResolvedValue(mockUser);
+      prisma.user.update.mockResolvedValue({ ...mockUser, emailVerified: true });
+
+      const result = await service.verifyEmail('valid-token');
+
+      expect(result).toEqual({ message: 'Email vérifié avec succès' });
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: 'user-1' },
+        data: { emailVerified: true },
+      });
+    });
+
+    it('should throw UnauthorizedException with invalid token', async () => {
+      jwtService.verify.mockImplementation(() => {
+        throw new Error('jwt invalid');
+      });
+
+      await expect(service.verifyEmail('invalid-token')).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should throw UnauthorizedException with wrong token type', async () => {
+      jwtService.verify.mockReturnValue({ sub: 'user-1', type: 'password-reset' });
+
+      await expect(service.verifyEmail('wrong-type-token')).rejects.toThrow(UnauthorizedException);
+    });
+  });
+
+  describe('forgotPassword', () => {
+    it('should send reset email when user exists', async () => {
+      usersService.findByEmail.mockResolvedValue(mockUser);
+      jwtService.sign.mockReturnValue('reset-token');
+
+      const result = await service.forgotPassword('john@example.com');
+
+      expect(result).toEqual({ message: 'Si cet email existe, un lien de réinitialisation a été envoyé' });
+      expect(jwtService.sign).toHaveBeenCalledWith(
+        { sub: 'user-1', type: 'password-reset' },
+        { expiresIn: '1h' },
+      );
+      expect(emailService.send).toHaveBeenCalled();
+    });
+
+    it('should return same message when user does not exist', async () => {
+      usersService.findByEmail.mockResolvedValue(null);
+
+      const result = await service.forgotPassword('unknown@example.com');
+
+      expect(result).toEqual({ message: 'Si cet email existe, un lien de réinitialisation a été envoyé' });
+      expect(emailService.send).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('resetPassword', () => {
+    it('should reset password with valid token', async () => {
+      jwtService.verify.mockReturnValue({ sub: 'user-1', type: 'password-reset' });
+      usersService.findById.mockResolvedValue(mockUser);
+      prisma.user.update.mockResolvedValue({});
+      prisma.session.deleteMany.mockResolvedValue({ count: 2 });
+
+      const result = await service.resetPassword('valid-token', 'NewPassword123!');
+
+      expect(result).toEqual({ message: 'Mot de passe réinitialisé avec succès' });
+      expect(prisma.user.update).toHaveBeenCalled();
+      expect(prisma.session.deleteMany).toHaveBeenCalledWith({
+        where: { userId: 'user-1' },
+      });
+    });
+
+    it('should throw UnauthorizedException with invalid token', async () => {
+      jwtService.verify.mockImplementation(() => {
+        throw new Error('jwt invalid');
+      });
+
+      await expect(service.resetPassword('invalid-token', 'password')).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should throw UnauthorizedException with wrong token type', async () => {
+      jwtService.verify.mockReturnValue({ sub: 'user-1', type: 'email-verification' });
+
+      await expect(service.resetPassword('wrong-type-token', 'password')).rejects.toThrow(UnauthorizedException);
     });
   });
 });

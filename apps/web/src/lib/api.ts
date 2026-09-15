@@ -37,12 +37,12 @@ class ApiClient {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       ...fetchOptions,
       headers,
+      credentials: 'include',
     });
 
     if (response.status === 401) {
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (refreshToken && !endpoint.includes('/auth/refresh')) {
-        const refreshed = await this.tryRefreshToken(refreshToken);
+      if (!endpoint.includes('/auth/refresh')) {
+        const refreshed = await this.tryRefreshToken();
         if (refreshed) {
           return this.request<T>(endpoint, options);
         }
@@ -59,12 +59,12 @@ class ApiClient {
     return response.json();
   }
 
-  private async tryRefreshToken(refreshToken: string): Promise<boolean> {
+  private async tryRefreshToken(): Promise<boolean> {
     try {
       const response = await fetch(`${this.baseUrl}/api/v1/auth/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refreshToken }),
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -73,7 +73,6 @@ class ApiClient {
 
       const data = await response.json();
       useAuthStore.getState().setToken(data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
       return true;
     } catch {
       return false;

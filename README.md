@@ -16,10 +16,10 @@ Application de productivité moderne et intuitive pour les petites equipes (5-20
 | Auth (register, login, refresh, logout, profile) | Implemente |
 | Users (findByEmail, create, verifyPassword) | Implemente |
 | Health endpoint | Implemente |
-| Tasks, Notes, Calendar, Projects, Workspaces | Stub modules |
+| Tasks, Notes, Calendar, Projects, Workspaces | Implémentés avec tests unitaires |
 | Frontend auth pages (/auth/login, /auth/register) | Implemente |
-| Frontend dashboard | Stats hardcodees |
-| Frontend components/ui | Pas encore construit |
+| Frontend dashboard | Implémenté avec statistiques agrégées par l'API |
+| Frontend components/ui | Composants réutilisables présents |
 
 ## Installation
 
@@ -101,6 +101,7 @@ nexaboard/
 
 - Toutes les routes backend sont sous `/api/v1/`
 - Swagger disponible sur `/api/docs`
+- Health checks : `/api/v1/health` et `/api/v1/health/ready`
 - Rate limiting configure (short: 3/s, medium: 20/10s, long: 100/60s)
 - Auth endpoints plus stricts (register: 1/s, login: 3/s)
 
@@ -114,6 +115,7 @@ nexaboard/
 | POST | `/api/v1/auth/logout` | Se deconnecter |
 | GET | `/api/v1/auth/profile` | Obtenir le profil |
 | GET | `/api/v1/health` | Health check |
+| GET | `/api/v1/workspaces/:id/dashboard` | Statistiques et projets récents d'un workspace |
 
 ## Tests
 
@@ -121,6 +123,10 @@ nexaboard/
 pnpm test                       # Lancer tous les tests
 pnpm --filter @nexaboard/api test  # Tests API uniquement
 ```
+
+## Déploiement
+
+Voir [`docs/deployment.md`](docs/deployment.md) pour les variables obligatoires, les migrations, les health checks et la procédure CI/CD.
 
 ## Convention de code
 

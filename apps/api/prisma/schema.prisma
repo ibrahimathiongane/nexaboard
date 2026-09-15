@@ -96,6 +96,8 @@ model User {
   activities    Activity[]
   automations   Automation[]
   notifications Notification[]
+  calendarEvents CalendarEvent[]
+  timeEntries   TimeEntry[]
   sessions      Session[]
   attachments   Attachment[]
 
@@ -137,6 +139,8 @@ model Workspace {
   owner         User      @relation(fields: [ownerId], references: [id])
   members       WorkspaceMember[]
   projects      Project[]
+  labels        Label[]
+  calendarEvents CalendarEvent[]
   settings      WorkspaceSettings?
 
   createdAt     DateTime  @default(now())
@@ -328,6 +332,7 @@ model Label {
   color         String    @default("#6B7280")
 
   workspaceId   String
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   tasks         TaskLabel[]
 
   createdAt     DateTime  @default(now())
@@ -410,7 +415,9 @@ model CalendarEvent {
   provider      String?
 
   workspaceId   String
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -512,6 +519,7 @@ model TimeEntry {
   task          Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
   userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt     DateTime  @default(now())
 
