@@ -3,6 +3,7 @@ import { PrismaService } from '../../common/prisma/prisma.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { MemberRole } from '@prisma/client';
+import { CreateWorkspaceLabelDto } from './dto/create-workspace-label.dto';
 
 @Injectable()
 export class WorkspacesService {
@@ -235,6 +236,35 @@ export class WorkspacesService {
     });
 
     return { message: 'Membre retiré avec succès' };
+  }
+
+  async findAllLabels(workspaceId: string, userId: string) {
+    await this.verifyMembership(workspaceId, userId);
+    return this.prisma.label.findMany({
+      where: { workspaceId },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async createLabel(workspaceId: string, userId: string, dto: CreateWorkspaceLabelDto) {
+    await this.requireAdminRole(workspaceId, userId);
+    return this.prisma.label.create({
+      data: {
+        workspaceId,
+        name: dto.name.trim(),
+        color: dto.color ?? '#6B7280',
+      },
+    });
+  }
+
+  async removeLabel(workspaceId: string, userId: string, labelId: string) {
+    await this.requireAdminRole(workspaceId, userId);
+    const label = await this.prisma.label.findUnique({ where: { id: labelId } });
+    if (!label || label.workspaceId !== workspaceId) {
+      throw new NotFoundException('Label non trouvé');
+    }
+    await this.prisma.label.delete({ where: { id: labelId } });
+    return { message: 'Label supprimé' };
   }
 
   private async verifyMembership(workspaceId: string, userId: string) {

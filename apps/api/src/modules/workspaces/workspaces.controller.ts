@@ -16,6 +16,7 @@ import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
+import { CreateWorkspaceLabelDto } from './dto/create-workspace-label.dto';
 
 @ApiTags('Workspaces')
 @ApiBearerAuth()
@@ -68,6 +69,32 @@ export class WorkspacesController {
     @CurrentUser() user: CurrentUserType,
   ) {
     return this.workspacesService.removeMember(id, user.id, memberId);
+  }
+
+  @Get(':id/labels')
+  @ApiOperation({ summary: 'Lister les labels de l’espace de travail' })
+  async findLabels(@Param('id') id: string, @CurrentUser() user: CurrentUserType) {
+    return this.workspacesService.findAllLabels(id, user.id);
+  }
+
+  @Post(':id/labels')
+  @ApiOperation({ summary: 'Créer un label dans l’espace de travail' })
+  async createLabel(
+    @Param('id') id: string,
+    @CurrentUser() user: CurrentUserType,
+    @Body() dto: CreateWorkspaceLabelDto,
+  ) {
+    return this.workspacesService.createLabel(id, user.id, dto);
+  }
+
+  @Delete(':id/labels/:labelId')
+  @ApiOperation({ summary: 'Supprimer un label de l’espace de travail' })
+  async removeLabel(
+    @Param('id') id: string,
+    @Param('labelId') labelId: string,
+    @CurrentUser() user: CurrentUserType,
+  ) {
+    return this.workspacesService.removeLabel(id, user.id, labelId);
   }
 
   // ── Routes génériques APRÈS les routes spécifiques ──────────────

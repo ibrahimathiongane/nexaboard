@@ -15,7 +15,8 @@ interface Task {
   priority: string;
   dueDate: string | null;
   project: { id: string; name: string; color: string };
-  assignees: { user: { id: string; firstName: string; lastName: string } }[];
+  assignees: { userId: string; user: { id: string; firstName: string; lastName: string } }[];
+  labels: { labelId: string; label: { id: string; name: string; color: string } }[];
   _count: { subtasks: number };
 }
 
@@ -158,6 +159,16 @@ export default function TasksPage() {
                 <Badge variant="outline">
                   {PRIORITY_LABELS[task.priority]}
                 </Badge>
+                {task.assignees.map(({ user }) => (
+                  <span key={user.id} className="text-xs text-muted-foreground">
+                    {user.firstName} {user.lastName}
+                  </span>
+                ))}
+                {task.labels.map(({ label }) => (
+                  <Badge key={label.id} variant="secondary" style={{ borderColor: label.color }}>
+                    {label.name}
+                  </Badge>
+                ))}
                 {task.dueDate && (
                   <span className="text-sm text-muted-foreground">
                     {new Date(task.dueDate).toLocaleDateString('fr-FR')}

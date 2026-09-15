@@ -15,11 +15,24 @@ interface Task {
   priority: string;
   dueDate?: string | null;
   projectId?: string;
+  assignees?: { userId: string }[];
+  labels?: { labelId: string }[];
 }
 
 interface Project {
   id: string;
   name: string;
+}
+
+interface Member {
+  userId: string;
+  user: { firstName: string; lastName: string; email: string };
+}
+
+interface Label {
+  id: string;
+  name: string;
+  color: string;
 }
 
 type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE' | 'CANCELLED';
@@ -70,6 +83,10 @@ export function TaskForm({
   const [dueDate, setDueDate] = useState('');
   const [projectId, setProjectId] = useState(defaultProjectId || '');
   const [projects, setProjects] = useState<Project[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [labels, setLabels] = useState<Label[]>([]);
+  const [assigneeIds, setAssigneeIds] = useState<string[]>([]);
+  const [labelIds, setLabelIds] = useState<string[]>([]);
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState('');
@@ -87,6 +104,8 @@ export function TaskForm({
             : '',
         );
         setProjectId(task.projectId || '');
+        setAssigneeIds(task.assignees?.map((assignee) => assignee.userId) ?? []);
+        setLabelIds(task.labels?.map((item) => item.labelId) ?? []);
       } else {
         setTitle('');
         setDescription('');
@@ -94,6 +113,8 @@ export function TaskForm({
         setPriority('MEDIUM');
         setDueDate('');
         setProjectId(defaultProjectId || '');
+        setAssigneeIds([]);
+        setLabelIds([]);
       }
       setErrors({});
       setApiError('');
@@ -106,6 +127,14 @@ export function TaskForm({
         .get<Project[]>(`/api/v1/workspaces/${workspaceId}/projects`)
         .then(setProjects)
         .catch(() => setProjects([]));
+      api
+        .get<Member[]>(`/api/v1/workspaces/${workspaceId}/members`)
+        .then(setMembers)
+        .catch(() => setMembers([]));
+      api
+        .get<Label[]>(`/api/v1/workspaces/${workspaceId}/labels`)
+        .then(setLabels)
+        .catch(() => setLabels([]));
     }
   }, [open, workspaceId]);
 
@@ -135,10 +164,28 @@ export function TaskForm({
         status,
         priority,
         dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
+        assigneeIds,
+        labelIds,
       };
 
       if (isEditing) {
         await api.patch(`/api/v1/tasks/${task.id}`, payload);
+        const currentAssigneeIds = new Set(task.assignees?.map((item) => item.userId) ?? []);
+        const currentLabelIds = new Set(task.labels?.map((item) => item.labelId) ?? []);
+        await Promise.all([
+          ...assigneeIds
+            .filter((id) => !currentAssigneeIds.has(id))
+            .map((id) => api.post(`/api/v1/tasks/${task.id}/assign`, { userId: id })),
+          ...Array.from(currentAssigneeIds)
+            .filter((id) => !assigneeIds.includes(id))
+            .map((id) => api.delete(`/api/v1/tasks/${task.id}/assign/${id}`)),
+          ...labelIds
+            .filter((id) => !currentLabelIds.has(id))
+            .map((id) => api.post(`/api/v1/tasks/${task.id}/labels`, { labelId: id })),
+          ...Array.from(currentLabelIds)
+            .filter((id) => !labelIds.includes(id))
+            .map((id) => api.delete(`/api/v1/tasks/${task.id}/labels/${id}`)),
+        ]);
       } else {
         await api.post(`/api/v1/projects/${projectId}/tasks`, payload);
       }
@@ -236,6 +283,46 @@ export function TaskForm({
                 </option>
               ))}
             </select>
+          </div>
+
+          <div>
+            <label htmlFor="task-assignees" className="block text-sm font-medium">
+              Assignés
+            </label>
+            <select
+              id="task-assignees"
+              multiple
+              value={assigneeIds}
+              onChange={(e) => setAssigneeIds(Array.from(e.target.selectedOptions, (option) => option.value))}
+              className="mt-1 min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+            >
+              {members.map((member) => (
+                <option key={member.userId} value={member.userId}>
+                  {member.user.firstName} {member.user.lastName} ({member.user.email})
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-muted-foreground">Maintenez Ctrl/Cmd pour sélectionner plusieurs membres.</p>
+          </div>
+
+          <div>
+            <label htmlFor="task-labels" className="block text-sm font-medium">
+              Labels
+            </label>
+            <select
+              id="task-labels"
+              multiple
+              value={labelIds}
+              onChange={(e) => setLabelIds(Array.from(e.target.selectedOptions, (option) => option.value))}
+              className="mt-1 min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+            >
+              {labels.map((label) => (
+                <option key={label.id} value={label.id}>
+                  {label.name}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-muted-foreground">Les labels sont gérés par les administrateurs du workspace.</p>
           </div>
 
           <div>

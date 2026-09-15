@@ -23,6 +23,12 @@ interface Member {
   };
 }
 
+interface Label {
+  id: string;
+  name: string;
+  color: string;
+}
+
 const ROLE_LABELS: Record<string, string> = {
   OWNER: 'Propriétaire',
   ADMIN: 'Administrateur',
@@ -49,6 +55,15 @@ export default function TeamPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [workspaceModalOpen, setWorkspaceModalOpen] = useState(false);
+  const [workspaceName, setWorkspaceName] = useState('');
+  const [workspaceDescription, setWorkspaceDescription] = useState('');
+  const [workspaceSubmitting, setWorkspaceSubmitting] = useState(false);
+  const [workspaceError, setWorkspaceError] = useState<string | null>(null);
+  const [labels, setLabels] = useState<Label[]>([]);
+  const [labelName, setLabelName] = useState('');
+  const [labelColor, setLabelColor] = useState('#6B7280');
+  const [labelError, setLabelError] = useState<string | null>(null);
 
   const fetchMembers = useCallback(async () => {
     if (!currentWorkspaceId) return;
@@ -68,6 +83,19 @@ export default function TeamPage() {
   useEffect(() => {
     fetchMembers();
   }, [fetchMembers]);
+
+  const fetchLabels = useCallback(async () => {
+    if (!currentWorkspaceId) return;
+    try {
+      setLabels(await api.get<Label[]>(`/api/v1/workspaces/${currentWorkspaceId}/labels`));
+    } catch (err) {
+      setLabelError(err instanceof Error ? err.message : 'Erreur lors du chargement des labels');
+    }
+  }, [currentWorkspaceId]);
+
+  useEffect(() => {
+    fetchLabels();
+  }, [fetchLabels]);
 
   async function handleInvite(e: React.FormEvent) {
     e.preventDefault();
@@ -128,6 +156,64 @@ export default function TeamPage() {
   }
 
   const displayMembers = workspace?.members ?? members;
+  const currentMembership = members.find((member) => member.userId === currentUser?.id);
+  const canEditWorkspace =
+    workspace?.ownerId === currentUser?.id ||
+    currentMembership?.role === 'ADMIN';
+
+  function openWorkspaceEditor() {
+    if (!workspace) return;
+    setWorkspaceName(workspace.name);
+    setWorkspaceDescription(workspace.description ?? '');
+    setWorkspaceError(null);
+    setWorkspaceModalOpen(true);
+  }
+
+  async function handleWorkspaceUpdate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!workspace || !workspaceName.trim()) return;
+    setWorkspaceSubmitting(true);
+    setWorkspaceError(null);
+    try {
+      await api.patch(`/api/v1/workspaces/${workspace.id}`, {
+        name: workspaceName.trim(),
+        description: workspaceDescription.trim() || undefined,
+      });
+      setWorkspaceModalOpen(false);
+      await fetchWorkspaces();
+    } catch (err) {
+      setWorkspaceError(err instanceof Error ? err.message : 'Erreur lors de la modification');
+    } finally {
+      setWorkspaceSubmitting(false);
+    }
+  }
+
+  async function handleCreateLabel(e: React.FormEvent) {
+    e.preventDefault();
+    if (!currentWorkspaceId || !labelName.trim()) return;
+    setLabelError(null);
+    try {
+      await api.post(`/api/v1/workspaces/${currentWorkspaceId}/labels`, {
+        name: labelName.trim(),
+        color: labelColor,
+      });
+      setLabelName('');
+      await fetchLabels();
+    } catch (err) {
+      setLabelError(err instanceof Error ? err.message : 'Erreur lors de la création du label');
+    }
+  }
+
+  async function handleDeleteLabel(labelId: string) {
+    if (!currentWorkspaceId) return;
+    setLabelError(null);
+    try {
+      await api.delete(`/api/v1/workspaces/${currentWorkspaceId}/labels/${labelId}`);
+      await fetchLabels();
+    } catch (err) {
+      setLabelError(err instanceof Error ? err.message : 'Erreur lors de la suppression du label');
+    }
+  }
 
   return (
     <div>
@@ -138,9 +224,16 @@ export default function TeamPage() {
             {displayMembers.length} membre{displayMembers.length > 1 ? 's' : ''}
           </p>
         </div>
-        <Button size="sm" onClick={() => setModalOpen(true)}>
-          Inviter un membre
-        </Button>
+        <div className="flex gap-2">
+          {canEditWorkspace && (
+            <Button variant="outline" size="sm" onClick={openWorkspaceEditor}>
+              Modifier le workspace
+            </Button>
+          )}
+          <Button size="sm" onClick={() => setModalOpen(true)}>
+            Inviter un membre
+          </Button>
+        </div>
       </div>
 
       {displayMembers.length === 0 ? (
@@ -195,6 +288,47 @@ export default function TeamPage() {
         </div>
       )}
 
+      <Card className="mt-8">
+        <CardContent className="p-4">
+          <h2 className="mb-3 text-lg font-semibold">Labels des tâches</h2>
+          {labelError && <p className="mb-3 text-sm text-destructive">{labelError}</p>}
+          <div className="mb-4 flex flex-wrap gap-2">
+            {labels.map((label) => (
+              <Badge key={label.id} variant="secondary" style={{ borderColor: label.color }}>
+                {label.name}
+                <button
+                  type="button"
+                  className="ml-2 text-muted-foreground hover:text-destructive"
+                  onClick={() => handleDeleteLabel(label.id)}
+                  aria-label={`Supprimer ${label.name}`}
+                >
+                  ×
+                </button>
+              </Badge>
+            ))}
+            {labels.length === 0 && <span className="text-sm text-muted-foreground">Aucun label</span>}
+          </div>
+          <form onSubmit={handleCreateLabel} className="flex flex-wrap gap-2">
+            <Input
+              value={labelName}
+              onChange={(e) => setLabelName(e.target.value)}
+              placeholder="Nouveau label"
+              maxLength={50}
+              required
+              className="max-w-xs"
+            />
+            <input
+              type="color"
+              value={labelColor}
+              onChange={(e) => setLabelColor(e.target.value)}
+              aria-label="Couleur du label"
+              className="h-9 w-12 rounded border"
+            />
+            <Button type="submit" variant="outline" size="sm">Ajouter</Button>
+          </form>
+        </CardContent>
+      </Card>
+
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="Inviter un membre">
         <form onSubmit={handleInvite} className="space-y-4">
           <div className="space-y-2">
@@ -233,6 +367,45 @@ export default function TeamPage() {
             </Button>
             <Button type="submit" disabled={submitting}>
               {submitting ? 'Envoi...' : 'Envoyer l\'invitation'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
+        open={workspaceModalOpen}
+        onClose={() => setWorkspaceModalOpen(false)}
+        title="Modifier le workspace"
+      >
+        <form onSubmit={handleWorkspaceUpdate} className="space-y-4">
+          {workspaceError && <p className="text-sm text-destructive">{workspaceError}</p>}
+          <div className="space-y-2">
+            <label htmlFor="workspace-name" className="text-sm font-medium">Nom</label>
+            <Input
+              id="workspace-name"
+              value={workspaceName}
+              onChange={(e) => setWorkspaceName(e.target.value)}
+              required
+              maxLength={100}
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="workspace-description" className="text-sm font-medium">Description</label>
+            <textarea
+              id="workspace-description"
+              value={workspaceDescription}
+              onChange={(e) => setWorkspaceDescription(e.target.value)}
+              maxLength={500}
+              rows={4}
+              className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline" onClick={() => setWorkspaceModalOpen(false)}>
+              Annuler
+            </Button>
+            <Button type="submit" disabled={workspaceSubmitting}>
+              {workspaceSubmitting ? 'Enregistrement...' : 'Enregistrer'}
             </Button>
           </div>
         </form>
