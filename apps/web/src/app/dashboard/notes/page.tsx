@@ -27,16 +27,24 @@ export default function NotesPage() {
   const [editingNote, setEditingNote] = useState<Note | undefined>(undefined);
 
   const fetchNotes = useCallback(async () => {
+    if (!currentWorkspaceId) {
+      setNotes([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
-      const data = await api.get<Note[]>('/api/v1/notes');
+      const data = await api.get<Note[]>(
+        `/api/v1/notes?workspaceId=${encodeURIComponent(currentWorkspaceId)}`,
+      );
       setNotes(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentWorkspaceId]);
 
   useEffect(() => {
     fetchNotes();

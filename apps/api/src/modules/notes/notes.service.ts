@@ -31,9 +31,12 @@ export class NotesService {
     });
   }
 
-  async findAllByUser(userId: string) {
+  async findAllByUser(userId: string, workspaceId?: string) {
     return this.prisma.note.findMany({
-      where: { createdBy: userId },
+      where: {
+        createdBy: userId,
+        ...(workspaceId && { project: { workspaceId } }),
+      },
       include: {
         project: { select: { id: true, name: true, color: true } },
         _count: { select: { comments: true, children: true } },

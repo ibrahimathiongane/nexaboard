@@ -109,13 +109,12 @@ export function CalendarEventForm({
         start: new Date(start).toISOString(),
         end: new Date(end).toISOString(),
         allDay,
-        workspaceId,
       };
 
       if (isEditing) {
         await api.patch(`/api/v1/calendar/${event.id}`, payload);
       } else {
-        await api.post('/api/v1/calendar', payload);
+        await api.post('/api/v1/calendar', { ...payload, workspaceId });
       }
 
       onSuccess();

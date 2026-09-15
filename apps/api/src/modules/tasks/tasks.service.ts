@@ -58,6 +58,12 @@ export class TasksService {
       ...(filters?.assigneeId && {
         assignees: { some: { userId: filters.assigneeId } },
       }),
+      ...(filters?.workspaceId && {
+        project: {
+          workspaceId: filters.workspaceId,
+          workspace: { members: { some: { userId } } },
+        },
+      }),
     };
 
     return this.prisma.task.findMany({

@@ -36,11 +36,14 @@ export class NotesController {
   async findAll(
     @CurrentUser() user: CurrentUserType,
     @Query('projectId') projectId?: string,
+    @Query('workspaceId') workspaceId?: string,
   ) {
     if (projectId) {
       return this.notesService.findAllByProject(projectId, user.id);
     }
-    return this.notesService.findAllByUser(user.id);
+    return workspaceId
+      ? this.notesService.findAllByUser(user.id, workspaceId)
+      : this.notesService.findAllByUser(user.id);
   }
 
   @Get(':id')

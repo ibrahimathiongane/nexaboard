@@ -31,9 +31,9 @@ export default function CalendarPage() {
     try {
       setLoading(true);
       const start = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-      const end = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+      const end = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999);
       const data = await api.get<CalendarEvent[]>(
-        `/api/v1/calendar?start=${start.toISOString()}&end=${end.toISOString()}`,
+        `/api/v1/calendar/workspace/${currentWorkspaceId}?start=${encodeURIComponent(start.toISOString())}&end=${encodeURIComponent(end.toISOString())}`,
       );
       setEvents(data);
     } catch (err) {
@@ -41,7 +41,7 @@ export default function CalendarPage() {
     } finally {
       setLoading(false);
     }
-  }, [currentDate]);
+  }, [currentDate, currentWorkspaceId]);
 
   useEffect(() => {
     fetchEvents();

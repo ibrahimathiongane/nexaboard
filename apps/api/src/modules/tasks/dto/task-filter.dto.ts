@@ -16,4 +16,9 @@ export class TaskFilterDto {
   @IsOptional()
   @IsString()
   assigneeId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  workspaceId?: string;
 }

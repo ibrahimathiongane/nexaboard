@@ -52,16 +52,24 @@ export default function TasksPage() {
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
 
   const fetchTasks = useCallback(async () => {
+    if (!currentWorkspaceId) {
+      setTasks([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
-      const data = await api.get<Task[]>('/api/v1/tasks');
+      const data = await api.get<Task[]>(
+        `/api/v1/tasks?workspaceId=${encodeURIComponent(currentWorkspaceId)}`,
+      );
       setTasks(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentWorkspaceId]);
 
   useEffect(() => {
     fetchTasks();
