@@ -4,6 +4,8 @@ import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/common/prisma/prisma.service';
 import { EmailService } from '../src/common/email/email.service';
+import { APP_GUARD } from '@nestjs/core';
+import type { Request, Response, NextFunction } from 'express';
 
 describe('API Integration Tests (e2e)', () => {
   let app: INestApplication;
@@ -26,6 +28,7 @@ describe('API Integration Tests (e2e)', () => {
     getVerificationUrl: jest.Mock;
     getResetPasswordUrl: jest.Mock;
   };
+  let requestSequence = 0;
 
   const mockUser = {
     id: 'user-1',
@@ -77,9 +80,15 @@ describe('API Integration Tests (e2e)', () => {
       .useValue(prismaMock)
       .overrideProvider(EmailService)
       .useValue(emailServiceMock)
+      .overrideProvider(APP_GUARD)
+      .useValue({ canActivate: () => true })
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.use((req: Request, _res: Response, next: NextFunction) => {
+      Object.defineProperty(req, 'ip', { value: `e2e-client-${requestSequence++}` });
+      next();
+    });
     app.setGlobalPrefix('api/v1');
     app.useGlobalPipes(
       new ValidationPipe({

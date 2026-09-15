@@ -4,6 +4,7 @@ import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/common/prisma/prisma.service';
 import { EmailService } from '../src/common/email/email.service';
+import { APP_GUARD } from '@nestjs/core';
 
 describe('Modules Integration Tests (e2e)', () => {
   let app: INestApplication;
@@ -138,6 +139,8 @@ describe('Modules Integration Tests (e2e)', () => {
       .useValue(prismaMock)
       .overrideProvider(EmailService)
       .useValue(emailServiceMock)
+      .overrideProvider(APP_GUARD)
+      .useValue({ canActivate: () => true })
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -171,6 +174,7 @@ describe('Modules Integration Tests (e2e)', () => {
 
     authToken = registerRes.body.accessToken;
     userId = registerRes.body.user.id;
+    prismaMock.user.findUnique.mockResolvedValue(mockUser);
   });
 
   afterAll(async () => {
@@ -179,6 +183,11 @@ describe('Modules Integration Tests (e2e)', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    prismaMock.workspaceMember.findUnique.mockResolvedValue({
+      userId,
+      workspaceId,
+      role: 'OWNER',
+    });
   });
 
   // ─── Workspaces ──────────────────────────────────────
@@ -250,12 +259,16 @@ describe('Modules Integration Tests (e2e)', () => {
         ...mockWorkspace,
         members: [{ userId, role: 'OWNER' }],
       });
-      prismaMock.user.findUnique.mockResolvedValue({
+      prismaMock.user.findUnique.mockResolvedValueOnce({
         ...mockUser,
         id: 'user-2',
         email: 'member@example.com',
       });
-      prismaMock.workspaceMember.findUnique.mockResolvedValue(null);
+      prismaMock.workspaceMember.findUnique
+        .mockResolvedValue({ userId, workspaceId, role: 'OWNER' })
+        .mockResolvedValueOnce({ userId, workspaceId, role: 'OWNER' })
+        .mockResolvedValueOnce({ userId, workspaceId, role: 'OWNER' })
+        .mockResolvedValueOnce(null);
       prismaMock.workspaceMember.create.mockResolvedValue({});
 
       const res = await request(app.getHttpServer())
@@ -414,7 +427,10 @@ describe('Modules Integration Tests (e2e)', () => {
     it('GET /api/v1/tasks/:id — should get task by id', async () => {
       prismaMock.task.findUnique.mockResolvedValue({
         ...mockTask,
-        project: mockProject,
+        project: {
+          ...mockProject,
+          workspace: { members: [{ userId }] },
+        },
         assignees: [],
         labels: [],
         subtasks: [],
@@ -433,7 +449,10 @@ describe('Modules Integration Tests (e2e)', () => {
     it('PATCH /api/v1/tasks/:id — should update task', async () => {
       prismaMock.task.findUnique.mockResolvedValue({
         ...mockTask,
-        project: mockProject,
+        project: {
+          ...mockProject,
+          workspace: { members: [{ userId }] },
+        },
         assignees: [],
         labels: [],
         subtasks: [],
@@ -460,7 +479,10 @@ describe('Modules Integration Tests (e2e)', () => {
     it('DELETE /api/v1/tasks/:id — should delete task', async () => {
       prismaMock.task.findUnique.mockResolvedValue({
         ...mockTask,
-        project: mockProject,
+        project: {
+          ...mockProject,
+          workspace: { members: [{ userId }] },
+        },
         assignees: [],
         labels: [],
         subtasks: [],
@@ -480,7 +502,10 @@ describe('Modules Integration Tests (e2e)', () => {
     it('POST /api/v1/tasks/:id/assign — should assign user to task', async () => {
       prismaMock.task.findUnique.mockResolvedValue({
         ...mockTask,
-        project: mockProject,
+        project: {
+          ...mockProject,
+          workspace: { members: [{ userId }] },
+        },
         assignees: [],
         labels: [],
         subtasks: [],
@@ -505,7 +530,10 @@ describe('Modules Integration Tests (e2e)', () => {
     it('DELETE /api/v1/tasks/:id/assign/:assigneeId — should unassign user', async () => {
       prismaMock.task.findUnique.mockResolvedValue({
         ...mockTask,
-        project: mockProject,
+        project: {
+          ...mockProject,
+          workspace: { members: [{ userId }] },
+        },
         assignees: [],
         labels: [],
         subtasks: [],
@@ -526,7 +554,7 @@ describe('Modules Integration Tests (e2e)', () => {
   // ─── Notes ───────────────────────────────────────────
   describe('Notes', () => {
     it('POST /api/v1/notes — should create a note', async () => {
-      prismaMock.note.create.mockResolvedValue(mockNote);
+      prismaMock.note.create.mockResolvedValue({ ...mockNote, createdBy: userId });
 
       const res = await request(app.getHttpServer())
         .post('/api/v1/notes')
@@ -553,6 +581,7 @@ describe('Modules Integration Tests (e2e)', () => {
     it('GET /api/v1/notes/:id — should get note by id', async () => {
       prismaMock.note.findUnique.mockResolvedValue({
         ...mockNote,
+        createdBy: userId,
         project: {
           ...mockProject,
           workspace: {
@@ -572,6 +601,7 @@ describe('Modules Integration Tests (e2e)', () => {
     it('PATCH /api/v1/notes/:id — should update note', async () => {
       prismaMock.note.findUnique.mockResolvedValue({
         ...mockNote,
+        createdBy: userId,
         project: {
           ...mockProject,
           workspace: {
@@ -581,6 +611,7 @@ describe('Modules Integration Tests (e2e)', () => {
       });
       prismaMock.note.update.mockResolvedValue({
         ...mockNote,
+        createdBy: userId,
         title: 'Updated Note',
       });
 
@@ -596,6 +627,7 @@ describe('Modules Integration Tests (e2e)', () => {
     it('DELETE /api/v1/notes/:id — should delete note', async () => {
       prismaMock.note.findUnique.mockResolvedValue({
         ...mockNote,
+        createdBy: userId,
         project: {
           ...mockProject,
           workspace: {

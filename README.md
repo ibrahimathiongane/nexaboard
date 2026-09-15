@@ -75,11 +75,11 @@ nexaboard/
         modules/        Un module NestJS par domaine
           auth/         Authentification JWT (register, login, refresh, logout, profile)
           users/        Gestion des utilisateurs
-          tasks/        Taches (stub)
-          notes/        Notes (stub)
-          calendar/     Calendrier (stub)
-          projects/     Projets (stub)
-          workspaces/   Espaces de travail (stub)
+          tasks/         Taches et assignations
+          notes/         Notes et contenu
+          calendar/      Calendrier et evenements
+          projects/      Projets
+          workspaces/    Espaces de travail et membres
           health/       Health check
         common/prisma   PrismaModule + PrismaService
         main.ts         Bootstrap (helmet, CORS, ValidationPipe, Swagger)
@@ -122,7 +122,12 @@ nexaboard/
 ```bash
 pnpm test                       # Lancer tous les tests
 pnpm --filter @nexaboard/api test  # Tests API uniquement
+pnpm --filter @nexaboard/api exec jest --config ./test/jest-e2e.json --runInBand  # Tests E2E API
 ```
+
+Les tests E2E utilisent des mocks Prisma et couvrent l'authentification, les autorisations
+workspace, les projets, les taches, les notes et le calendrier. Ils sont executes dans la CI
+avec les tests unitaires et la validation des migrations.
 
 ## Déploiement
 

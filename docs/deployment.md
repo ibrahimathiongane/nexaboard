@@ -41,7 +41,7 @@ En production, PostgreSQL et Redis doivent rester sur un réseau privé. Seuls l
 Le workflow `.github/workflows/ci.yml` exécute :
 
 1. lint ;
-2. génération Prisma, migrations et tests API ;
+2. génération Prisma, migrations, tests unitaires et tests E2E API ;
 3. build de tous les packages.
 
 Le déploiement doit être déclenché uniquement après le succès de ces contrôles.

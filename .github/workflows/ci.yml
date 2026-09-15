@@ -58,6 +58,7 @@ jobs:
       - run: pnpm --filter @nexaboard/api db:generate
       - run: pnpm --filter @nexaboard/api exec prisma migrate deploy
       - run: pnpm --filter @nexaboard/api test:cov
+      - run: pnpm --filter @nexaboard/api exec jest --config ./test/jest-e2e.json --runInBand
 
   build:
     runs-on: ubuntu-latest
