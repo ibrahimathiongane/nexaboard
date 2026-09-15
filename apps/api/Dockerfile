@@ -36,9 +36,10 @@ RUN apk add --no-cache openssl
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
 COPY apps/api ./apps/api
-RUN cd apps/api && pnpm exec prisma generate
-RUN cd apps/api && pnpm run build
+RUN cd apps/api && ./node_modules/.bin/prisma generate
+RUN cd apps/api && ./node_modules/.bin/nest build
 
 # -- Production --
 FROM node:20-alpine AS runner
@@ -62,4 +63,4 @@ USER nestjs
 EXPOSE 4000
 HEALTHCHECK --interval=10s --timeout=5s --start-period=20s --retries=5 \
   CMD wget --spider --quiet http://localhost:4000/api/v1/health/ready || exit 1
-CMD ["node", "dist/main.js"]
+CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy && node dist/main.js"]
