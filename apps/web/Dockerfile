@@ -50,6 +50,9 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=build /app/apps/web/public ./public
 COPY --from=build --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
 COPY --from=build --chown=nextjs:nodejs /app/apps/web/.next/static ./.next/static
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/apps/web/node_modules ./apps/web/node_modules
+ENV NODE_PATH=/app/apps/web/node_modules:/app/node_modules
 
 USER nextjs
 
