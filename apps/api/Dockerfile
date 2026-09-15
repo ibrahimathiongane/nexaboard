@@ -55,8 +55,10 @@ RUN adduser --system --uid 1001 nestjs
 
 COPY --from=build /app/apps/api/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=build /app/apps/api/prisma ./prisma
 COPY --from=build /app/apps/api/package.json ./package.json
+ENV NODE_PATH=/app/apps/api/node_modules:/app/node_modules
 
 USER nestjs
 
