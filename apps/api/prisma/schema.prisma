@@ -108,6 +108,27 @@ model User {
   @@map("users")
 }
 
+model BetaSubscriber {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  teamSize      String    @map("team_size")
+  currentTool   String    @map("current_tool")
+  interest      String?
+  status        String    @default("pending")
+  position      Int       @default(0)
+  referralSource String?   @map("referral_source")
+  utmCampaign    String?   @map("utm_campaign")
+  userAgent     String?   @map("user_agent")
+  ipAddress     String?   @map("ip_address")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  invitedAt     DateTime? @map("invited_at")
+  activatedAt   DateTime? @map("activated_at")
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("beta_subscribers")
+}
+
 model Session {
   id            String    @id @default(cuid())
   userId        String

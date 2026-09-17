@@ -20,8 +20,25 @@ export class EmailService {
   }
 
   async send(options: SendEmailOptions): Promise<void> {
-    // En développement, on log l'email dans la console
-    // En production, intégrer un vrai provider (Resend, SendGrid, etc.)
+    const apiKey = this.configService.get<string>('RESEND_API_KEY');
+    if (apiKey) {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: this.configService.get<string>('RESEND_FROM', 'nexaBoard <onboarding@resend.dev>'),
+          ...options,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(`Resend email failed with status ${response.status}`);
+      }
+      return;
+    }
+
     this.logger.log(`📧 Email sent to: ${options.to}`);
     this.logger.log(`   Subject: ${options.subject}`);
     this.logger.log(`   Body: ${options.html}`);

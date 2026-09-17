@@ -8,6 +8,8 @@ En production, fournir ces variables via le gestionnaire de secrets de la platef
 - `JWT_SECRET`
 - `ALLOWED_ORIGINS`
 - `NEXT_PUBLIC_API_URL`
+- `RESEND_API_KEY` (optionnel en développement)
+- `RESEND_FROM` (optionnel, avec `RESEND_API_KEY`)
 
 Pour Railway, `ALLOWED_ORIGINS` doit contenir uniquement l'origine publique du
 frontend, sans chemin et sans slash final :

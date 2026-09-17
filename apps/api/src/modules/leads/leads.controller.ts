@@ -1,12 +1,19 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Req } from '@nestjs/common';
+import type { Request } from 'express';
+import { SubscribeBetaDto } from './dto/subscribe-beta.dto';
+import { LeadsService } from './leads.service';
 
-@Controller('leads')
+@Controller('beta')
 export class LeadsController {
-  @Post()
+  constructor(private readonly leadsService: LeadsService) {}
+
+  @Post('subscribe')
   @HttpCode(HttpStatus.CREATED)
-  createLead(@Body() body: { email: string; workspace?: string }) {
-    // For MVP we log leads server-side. Later: persist to DB or forward to CRM.
-    console.log('[leads] New lead:', body);
-    return { message: 'Lead reçu' };
+  async subscribe(@Body() dto: SubscribeBetaDto, @Req() request: Request) {
+    return this.leadsService.subscribe(
+      dto,
+      request.headers['user-agent'],
+      request.ip,
+    );
   }
 }

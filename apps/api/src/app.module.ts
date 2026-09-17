@@ -12,6 +12,7 @@ import { ProjectsModule } from './modules/projects/projects.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { NotesModule } from './modules/notes/notes.module';
 import { CalendarModule } from './modules/calendar/calendar.module';
+import { LeadsModule } from './modules/leads/leads.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { CalendarModule } from './modules/calendar/calendar.module';
     TasksModule,
     NotesModule,
     CalendarModule,
+    LeadsModule,
   ],
   providers: [
     {
