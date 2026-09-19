@@ -147,6 +147,20 @@ describe('AuthService', () => {
       expect(userKeys).not.toContain('passwordHash');
       expect(userKeys).not.toContain('mfaSecret');
     });
+
+    it('should trigger verification email upon registration', async () => {
+      usersService.create.mockResolvedValue(mockUser);
+      const sendSpy = jest.spyOn(service, 'sendVerificationEmail').mockResolvedValue(undefined);
+
+      await service.register({
+        email: 'john@example.com',
+        password: 'password123',
+        firstName: 'John',
+        lastName: 'Doe',
+      });
+
+      expect(sendSpy).toHaveBeenCalledWith(mockUser.id);
+    });
   });
 
   describe('login', () => {

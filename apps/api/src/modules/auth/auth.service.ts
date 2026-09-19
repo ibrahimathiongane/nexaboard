@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../common/prisma/prisma.service';
@@ -10,6 +10,8 @@ import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private prisma: PrismaService,
     private usersService: UsersService,
@@ -23,6 +25,11 @@ export class AuthService {
     const tokens = await this.generateTokens(user.id, user.email);
 
     await this.createSession(user.id, tokens.refreshToken, userAgent, ipAddress);
+
+    // Envoi non-bloquant : l'inscription réussit même si l'email échoue
+    this.sendVerificationEmail(user.id).catch((err: Error) =>
+      this.logger.warn(`Verification email not sent to ${user.email}: ${err.message}`),
+    );
 
     return {
       user: this.sanitizeUser(user),

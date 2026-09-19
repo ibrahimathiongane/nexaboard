@@ -234,9 +234,19 @@ export default function LandingPage() {
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {isMobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 )}
               </svg>
             </button>
@@ -246,22 +256,46 @@ export default function LandingPage() {
         {/* Mobile menu dropdown */}
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-slate-100 bg-white px-4 py-4 space-y-3">
-            <a href="#features" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1">
+            <a
+              href="#features"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1"
+            >
               Fonctionnalités
             </a>
-            <a href="#avant-apres" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1">
+            <a
+              href="#avant-apres"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1"
+            >
               Pourquoi nexaBoard
             </a>
-            <a href="#calculateur" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1">
+            <a
+              href="#calculateur"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1"
+            >
               Calculateur ROI
             </a>
-            <a href="#comparatif" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1">
+            <a
+              href="#comparatif"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1"
+            >
               Comparatif
             </a>
-            <a href="#tarifs" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1">
+            <a
+              href="#tarifs"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1"
+            >
               Tarifs
             </a>
-            <a href="#faq" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1">
+            <a
+              href="#faq"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1"
+            >
               FAQ
             </a>
             <div className="pt-2 border-t border-slate-100">
@@ -618,7 +652,9 @@ export default function LandingPage() {
                               key={idx}
                               className="rounded-lg border border-slate-100 bg-slate-50/60 p-2 sm:p-3 min-h-[100px] sm:min-h-[140px] text-left"
                             >
-                              <span className="font-bold text-slate-600 block mb-2 text-[11px] sm:text-xs">{day}</span>
+                              <span className="font-bold text-slate-600 block mb-2 text-[11px] sm:text-xs">
+                                {day}
+                              </span>
                               {idx === 1 && (
                                 <div className="rounded bg-primary-100 border border-primary-200 p-1 sm:p-1.5 text-[10px] sm:text-[11px] font-semibold text-primary-800">
                                   🚀 Déploiement Bêta
@@ -1047,9 +1083,7 @@ export default function LandingPage() {
                   <td className="p-3 sm:p-5 text-amber-600 text-center">⚠️ Limité</td>
                 </tr>
                 <tr>
-                  <td className="p-3 sm:p-5 font-semibold text-slate-800">
-                    Vitesse (&lt; 100ms)
-                  </td>
+                  <td className="p-3 sm:p-5 font-semibold text-slate-800">Vitesse (&lt; 100ms)</td>
                   <td className="p-3 sm:p-5 font-bold text-emerald-600 bg-primary-50/30 text-center">
                     ⚡ Oui
                   </td>
@@ -1067,22 +1101,16 @@ export default function LandingPage() {
                   <td className="p-3 sm:p-5 text-slate-500 text-center">🇺🇸 USA</td>
                 </tr>
                 <tr className="bg-slate-50/40">
-                  <td className="p-3 sm:p-5 font-bold text-slate-900">
-                    Coût (10 pers.)
-                  </td>
+                  <td className="p-3 sm:p-5 font-bold text-slate-900">Coût (10 pers.)</td>
                   <td className="p-3 sm:p-5 font-extrabold text-primary-700 bg-primary-50/80 text-center">
                     0 € <br />
-                    <span className="text-[10px] sm:text-xs font-normal text-slate-600">Bêta puis 12 €/équipe</span>
+                    <span className="text-[10px] sm:text-xs font-normal text-slate-600">
+                      Bêta puis 12 €/équipe
+                    </span>
                   </td>
-                  <td className="p-3 sm:p-5 text-slate-700 text-center font-medium">
-                    ~100 €/mois
-                  </td>
-                  <td className="p-3 sm:p-5 text-slate-700 text-center font-medium">
-                    ~60 €/mois
-                  </td>
-                  <td className="p-3 sm:p-5 text-slate-700 text-center font-medium">
-                    ~110 €/mois
-                  </td>
+                  <td className="p-3 sm:p-5 text-slate-700 text-center font-medium">~100 €/mois</td>
+                  <td className="p-3 sm:p-5 text-slate-700 text-center font-medium">~60 €/mois</td>
+                  <td className="p-3 sm:p-5 text-slate-700 text-center font-medium">~110 €/mois</td>
                 </tr>
               </tbody>
             </table>
