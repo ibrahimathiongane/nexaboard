@@ -31,7 +31,9 @@ export class EmailService {
         }),
       });
       if (!response.ok) {
-        throw new Error(`Resend email failed with status ${response.status}`);
+        const errorDetails = await response.text().catch(() => '');
+        this.logger.error(`Resend email failed [${response.status}]: ${errorDetails}`);
+        throw new Error(`Resend email failed with status ${response.status}: ${errorDetails}`);
       }
       return;
     }

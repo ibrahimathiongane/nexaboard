@@ -1,10 +1,12 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { EmailService } from '../../common/email/email.service';
 import { SubscribeBetaDto } from './dto/subscribe-beta.dto';
 
 @Injectable()
 export class LeadsService {
+  private readonly logger = new Logger(LeadsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly emailService: EmailService,
@@ -41,10 +43,11 @@ export class LeadsService {
     const referralCode = `BETA-${subscriber.position}X${subscriber.id.slice(-4).toUpperCase()}`;
     const referralLink = `https://nexaboardapp.up.railway.app?ref=${referralCode}`;
 
-    await this.emailService.send({
-      to: subscriber.email,
-      subject: `🎉 Confirmation de votre place Bêta nexaBoard (#${subscriber.position})`,
-      html: `
+    this.emailService
+      .send({
+        to: subscriber.email,
+        subject: `🎉 Confirmation de votre place Bêta nexaBoard (#${subscriber.position})`,
+        html: `
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -95,8 +98,11 @@ export class LeadsService {
   </table>
 </body>
 </html>
-      `,
-    });
+        `,
+      })
+      .catch((err: Error) => {
+        this.logger.warn(`Beta confirmation email not sent to ${subscriber.email}: ${err.message}`);
+      });
 
     return {
       success: true,
