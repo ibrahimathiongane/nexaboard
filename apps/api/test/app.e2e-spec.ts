@@ -13,15 +13,45 @@ describe('API Integration Tests (e2e)', () => {
     $queryRaw: jest.Mock;
     user: { findUnique: jest.Mock; create: jest.Mock; update: jest.Mock };
     session: { findUnique: jest.Mock; create: jest.Mock; update: jest.Mock; deleteMany: jest.Mock };
-    workspace: { findUnique: jest.Mock; create: jest.Mock; findMany: jest.Mock; update: jest.Mock; delete: jest.Mock };
+    workspace: {
+      findUnique: jest.Mock;
+      create: jest.Mock;
+      findMany: jest.Mock;
+      update: jest.Mock;
+      delete: jest.Mock;
+    };
     workspaceMember: { findUnique: jest.Mock; create: jest.Mock; delete: jest.Mock };
     workspaceSettings: { create: jest.Mock };
-    project: { findUnique: jest.Mock; create: jest.Mock; findMany: jest.Mock; update: jest.Mock; delete: jest.Mock };
-    task: { findUnique: jest.Mock; create: jest.Mock; findMany: jest.Mock; update: jest.Mock; delete: jest.Mock };
+    project: {
+      findUnique: jest.Mock;
+      create: jest.Mock;
+      findMany: jest.Mock;
+      update: jest.Mock;
+      delete: jest.Mock;
+    };
+    task: {
+      findUnique: jest.Mock;
+      create: jest.Mock;
+      findMany: jest.Mock;
+      update: jest.Mock;
+      delete: jest.Mock;
+    };
     taskAssignee: { create: jest.Mock; deleteMany: jest.Mock };
     taskLabel: { create: jest.Mock; deleteMany: jest.Mock };
-    note: { findUnique: jest.Mock; create: jest.Mock; findMany: jest.Mock; update: jest.Mock; delete: jest.Mock };
-    calendarEvent: { findUnique: jest.Mock; create: jest.Mock; findMany: jest.Mock; update: jest.Mock; delete: jest.Mock };
+    note: {
+      findUnique: jest.Mock;
+      create: jest.Mock;
+      findMany: jest.Mock;
+      update: jest.Mock;
+      delete: jest.Mock;
+    };
+    calendarEvent: {
+      findUnique: jest.Mock;
+      create: jest.Mock;
+      findMany: jest.Mock;
+      update: jest.Mock;
+      delete: jest.Mock;
+    };
   };
   let emailServiceMock: {
     send: jest.Mock;
@@ -52,16 +82,51 @@ describe('API Integration Tests (e2e)', () => {
     return {
       $queryRaw: jest.fn().mockResolvedValue([{ '?column?': 1 }]),
       user: { findUnique: jest.fn(), create: jest.fn(), update: jest.fn() },
-      session: { findUnique: jest.fn(), create: jest.fn(), update: jest.fn(), deleteMany: jest.fn() },
-      workspace: { findUnique: jest.fn(), create: jest.fn(), findMany: jest.fn(), update: jest.fn(), delete: jest.fn() },
+      session: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+        deleteMany: jest.fn(),
+      },
+      workspace: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        findMany: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+      },
       workspaceMember: { findUnique: jest.fn(), create: jest.fn(), delete: jest.fn() },
       workspaceSettings: { create: jest.fn() },
-      project: { findUnique: jest.fn(), create: jest.fn(), findMany: jest.fn(), update: jest.fn(), delete: jest.fn() },
-      task: { findUnique: jest.fn(), create: jest.fn(), findMany: jest.fn(), update: jest.fn(), delete: jest.fn() },
+      project: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        findMany: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+      },
+      task: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        findMany: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+      },
       taskAssignee: { create: jest.fn(), deleteMany: jest.fn() },
       taskLabel: { create: jest.fn(), deleteMany: jest.fn() },
-      note: { findUnique: jest.fn(), create: jest.fn(), findMany: jest.fn(), update: jest.fn(), delete: jest.fn() },
-      calendarEvent: { findUnique: jest.fn(), create: jest.fn(), findMany: jest.fn(), update: jest.fn(), delete: jest.fn() },
+      note: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        findMany: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+      },
+      calendarEvent: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        findMany: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+      },
     };
   }
 
@@ -70,7 +135,9 @@ describe('API Integration Tests (e2e)', () => {
     emailServiceMock = {
       send: jest.fn().mockResolvedValue(undefined),
       getVerificationUrl: jest.fn().mockReturnValue('http://localhost:3000/auth/verify?token=mock'),
-      getResetPasswordUrl: jest.fn().mockReturnValue('http://localhost:3000/auth/reset-password?token=mock'),
+      getResetPasswordUrl: jest
+        .fn()
+        .mockReturnValue('http://localhost:3000/auth/reset-password?token=mock'),
     };
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -120,15 +187,15 @@ describe('API Integration Tests (e2e)', () => {
           expect(res.body.timestamp).toBeDefined();
         });
 
-        it('GET /api/v1/health/ready — should report database readiness', () => {
-          return request(app.getHttpServer())
-            .get('/api/v1/health/ready')
-            .expect(200)
-            .expect((res) => {
-              expect(res.body.status).toBe('ready');
-              expect(prismaMock.$queryRaw).toHaveBeenCalled();
-            });
-        });
+      it('GET /api/v1/health/ready — should report database readiness', () => {
+        return request(app.getHttpServer())
+          .get('/api/v1/health/ready')
+          .expect(200)
+          .expect((res) => {
+            expect(res.body.status).toBe('ready');
+            expect(prismaMock.$queryRaw).toHaveBeenCalled();
+          });
+      });
     });
   });
 
@@ -241,9 +308,12 @@ describe('API Integration Tests (e2e)', () => {
       prismaMock.user.create.mockResolvedValue({ ...mockUser, passwordHash: hash });
       prismaMock.session.create.mockResolvedValue({});
 
-      const registerRes = await request(app.getHttpServer())
-        .post('/api/v1/auth/register')
-        .send({ email: 'test@example.com', password: 'password123', firstName: 'Test', lastName: 'User' });
+      const registerRes = await request(app.getHttpServer()).post('/api/v1/auth/register').send({
+        email: 'test@example.com',
+        password: 'password123',
+        firstName: 'Test',
+        lastName: 'User',
+      });
 
       const token = registerRes.body.accessToken;
 
@@ -260,9 +330,7 @@ describe('API Integration Tests (e2e)', () => {
     });
 
     it('should reject profile without JWT', () => {
-      return request(app.getHttpServer())
-        .get('/api/v1/auth/profile')
-        .expect(401);
+      return request(app.getHttpServer()).get('/api/v1/auth/profile').expect(401);
     });
   });
 

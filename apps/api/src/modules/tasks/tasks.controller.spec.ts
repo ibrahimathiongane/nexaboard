@@ -47,9 +47,7 @@ describe('TasksController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TasksController],
-      providers: [
-        { provide: TasksService, useValue: mockTasksService },
-      ],
+      providers: [{ provide: TasksService, useValue: mockTasksService }],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({ canActivate: () => true })

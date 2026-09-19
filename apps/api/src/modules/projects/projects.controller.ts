@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Patch,
-  Delete,
-  Body,
-  Param,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/guards/current-user.decorator';
@@ -34,11 +25,8 @@ export class ProjectsController {
   }
 
   @Get('workspaces/:workspaceId/projects')
-  @ApiOperation({ summary: 'Lister les projets d\'un espace de travail' })
-  async findAll(
-    @Param('workspaceId') workspaceId: string,
-    @CurrentUser() user: CurrentUserType,
-  ) {
+  @ApiOperation({ summary: "Lister les projets d'un espace de travail" })
+  async findAll(@Param('workspaceId') workspaceId: string, @CurrentUser() user: CurrentUserType) {
     return this.projectsService.findAllByWorkspace(workspaceId, user.id);
   }
 

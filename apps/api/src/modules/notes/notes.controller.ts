@@ -31,7 +31,7 @@ export class NotesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Lister les notes de l\'utilisateur' })
+  @ApiOperation({ summary: "Lister les notes de l'utilisateur" })
   @ApiQuery({ name: 'projectId', required: false })
   async findAll(
     @CurrentUser() user: CurrentUserType,

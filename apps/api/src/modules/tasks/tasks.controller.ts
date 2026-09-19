@@ -36,7 +36,7 @@ export class TasksController {
   }
 
   @Get('projects/:projectId/tasks')
-  @ApiOperation({ summary: 'Lister les tâches d\'un projet' })
+  @ApiOperation({ summary: "Lister les tâches d'un projet" })
   async findAll(
     @Param('projectId') projectId: string,
     @CurrentUser() user: CurrentUserType,
@@ -46,11 +46,8 @@ export class TasksController {
   }
 
   @Get('tasks')
-  @ApiOperation({ summary: 'Lister toutes les tâches de l\'utilisateur' })
-  async findMine(
-    @CurrentUser() user: CurrentUserType,
-    @Query() filters: TaskFilterDto,
-  ) {
+  @ApiOperation({ summary: "Lister toutes les tâches de l'utilisateur" })
+  async findMine(@CurrentUser() user: CurrentUserType, @Query() filters: TaskFilterDto) {
     return this.tasksService.findAllForUser(user.id, filters);
   }
 
@@ -87,7 +84,7 @@ export class TasksController {
   }
 
   @Delete('tasks/:id/assign/:assigneeId')
-  @ApiOperation({ summary: 'Retirer l\'assignation d\'une tâche' })
+  @ApiOperation({ summary: "Retirer l'assignation d'une tâche" })
   async unassign(
     @Param('id') id: string,
     @Param('assigneeId') assigneeId: string,
@@ -107,7 +104,7 @@ export class TasksController {
   }
 
   @Delete('tasks/:id/labels/:labelId')
-  @ApiOperation({ summary: 'Retirer un label d\'une tâche' })
+  @ApiOperation({ summary: "Retirer un label d'une tâche" })
   async removeLabel(
     @Param('id') id: string,
     @Param('labelId') labelId: string,

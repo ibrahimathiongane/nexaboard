@@ -74,7 +74,10 @@ export class AuthService {
 
       await this.prisma.session.update({
         where: { id: session.id },
-        data: { token: tokens.refreshToken, expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) },
+        data: {
+          token: tokens.refreshToken,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        },
       });
 
       return tokens;
@@ -229,7 +232,12 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  private async createSession(userId: string, token: string, userAgent?: string, ipAddress?: string) {
+  private async createSession(
+    userId: string,
+    token: string,
+    userAgent?: string,
+    ipAddress?: string,
+  ) {
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
     return this.prisma.session.create({

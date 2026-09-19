@@ -9,7 +9,13 @@ import { TaskFilterDto } from './dto/task-filter.dto';
 describe('TasksService', () => {
   let service: TasksService;
   let prisma: {
-    task: { findUnique: jest.Mock; create: jest.Mock; findMany: jest.Mock; update: jest.Mock; delete: jest.Mock };
+    task: {
+      findUnique: jest.Mock;
+      create: jest.Mock;
+      findMany: jest.Mock;
+      update: jest.Mock;
+      delete: jest.Mock;
+    };
     taskAssignee: { create: jest.Mock; deleteMany: jest.Mock };
     taskLabel: { create: jest.Mock; deleteMany: jest.Mock };
     project: { findUnique: jest.Mock };
@@ -74,10 +80,7 @@ describe('TasksService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        TasksService,
-        { provide: PrismaService, useValue: prisma },
-      ],
+      providers: [TasksService, { provide: PrismaService, useValue: prisma }],
     }).compile();
 
     service = module.get<TasksService>(TasksService);
@@ -117,7 +120,16 @@ describe('TasksService', () => {
         ...mockTask,
         title: 'Task with extras',
         assignees: [
-          { userId: 'user-2', user: { id: 'user-2', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', avatar: null } },
+          {
+            userId: 'user-2',
+            user: {
+              id: 'user-2',
+              email: 'jane@example.com',
+              firstName: 'Jane',
+              lastName: 'Smith',
+              avatar: null,
+            },
+          },
         ],
         labels: [{ label: { id: 'label-1', name: 'Bug' } }],
         subtasks: [],
@@ -153,7 +165,15 @@ describe('TasksService', () => {
   describe('findAllByProject', () => {
     it('should return tasks when user has access', async () => {
       prisma.project.findUnique.mockResolvedValue(mockProject);
-      prisma.task.findMany.mockResolvedValue([{ ...mockTask, assignees: [], labels: [], subtasks: [], _count: { comments: 0, subtasks: 0 } }]);
+      prisma.task.findMany.mockResolvedValue([
+        {
+          ...mockTask,
+          assignees: [],
+          labels: [],
+          subtasks: [],
+          _count: { comments: 0, subtasks: 0 },
+        },
+      ]);
 
       const result = await service.findAllByProject('project-1', 'user-1');
 
@@ -178,7 +198,9 @@ describe('TasksService', () => {
         workspace: { members: [] },
       });
 
-      await expect(service.findAllByProject('project-1', 'user-1')).rejects.toThrow(ForbiddenException);
+      await expect(service.findAllByProject('project-1', 'user-1')).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 
@@ -225,16 +247,15 @@ describe('TasksService', () => {
   describe('update', () => {
     it('should update task when user has access', async () => {
       const dto: UpdateTaskDto = { title: 'Updated Task' };
-      prisma.task.findUnique
-        .mockResolvedValueOnce({
-          ...mockTask,
-          project: mockProject,
-          assignees: [],
-          labels: [],
-          subtasks: [],
-          comments: [],
-          _count: { comments: 0, subtasks: 0 },
-        });
+      prisma.task.findUnique.mockResolvedValueOnce({
+        ...mockTask,
+        project: mockProject,
+        assignees: [],
+        labels: [],
+        subtasks: [],
+        comments: [],
+        _count: { comments: 0, subtasks: 0 },
+      });
       prisma.task.update.mockResolvedValue({
         ...mockTask,
         title: 'Updated Task',
@@ -250,16 +271,15 @@ describe('TasksService', () => {
 
     it('should set completedAt when status changes to DONE', async () => {
       const dto: UpdateTaskDto = { status: 'DONE' };
-      prisma.task.findUnique
-        .mockResolvedValueOnce({
-          ...mockTask,
-          project: mockProject,
-          assignees: [],
-          labels: [],
-          subtasks: [],
-          comments: [],
-          _count: { comments: 0, subtasks: 0 },
-        });
+      prisma.task.findUnique.mockResolvedValueOnce({
+        ...mockTask,
+        project: mockProject,
+        assignees: [],
+        labels: [],
+        subtasks: [],
+        comments: [],
+        _count: { comments: 0, subtasks: 0 },
+      });
       prisma.task.update.mockResolvedValue({
         ...mockTask,
         status: 'DONE',
@@ -278,17 +298,16 @@ describe('TasksService', () => {
 
     it('should set completedAt to null when status changes from DONE', async () => {
       const dto: UpdateTaskDto = { status: 'TODO' };
-      prisma.task.findUnique
-        .mockResolvedValueOnce({
-          ...mockTask,
-          status: 'DONE',
-          project: mockProject,
-          assignees: [],
-          labels: [],
-          subtasks: [],
-          comments: [],
-          _count: { comments: 0, subtasks: 0 },
-        });
+      prisma.task.findUnique.mockResolvedValueOnce({
+        ...mockTask,
+        status: 'DONE',
+        project: mockProject,
+        assignees: [],
+        labels: [],
+        subtasks: [],
+        comments: [],
+        _count: { comments: 0, subtasks: 0 },
+      });
       prisma.task.update.mockResolvedValue({
         ...mockTask,
         status: 'TODO',
@@ -308,16 +327,15 @@ describe('TasksService', () => {
 
   describe('remove', () => {
     it('should delete task when user has access', async () => {
-      prisma.task.findUnique
-        .mockResolvedValueOnce({
-          ...mockTask,
-          project: mockProject,
-          assignees: [],
-          labels: [],
-          subtasks: [],
-          comments: [],
-          _count: { comments: 0, subtasks: 0 },
-        });
+      prisma.task.findUnique.mockResolvedValueOnce({
+        ...mockTask,
+        project: mockProject,
+        assignees: [],
+        labels: [],
+        subtasks: [],
+        comments: [],
+        _count: { comments: 0, subtasks: 0 },
+      });
       prisma.task.delete.mockResolvedValue(mockTask);
 
       const result = await service.remove('task-1', 'user-1');
@@ -334,20 +352,25 @@ describe('TasksService', () => {
 
   describe('assign', () => {
     it('should assign user to task', async () => {
-      prisma.task.findUnique
-        .mockResolvedValueOnce({
-          ...mockTask,
-          project: mockProject,
-          assignees: [],
-          labels: [],
-          subtasks: [],
-          comments: [],
-          _count: { comments: 0, subtasks: 0 },
-        });
+      prisma.task.findUnique.mockResolvedValueOnce({
+        ...mockTask,
+        project: mockProject,
+        assignees: [],
+        labels: [],
+        subtasks: [],
+        comments: [],
+        _count: { comments: 0, subtasks: 0 },
+      });
       prisma.taskAssignee.create.mockResolvedValue({
         taskId: 'task-1',
         userId: 'user-2',
-        user: { id: 'user-2', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', avatar: null },
+        user: {
+          id: 'user-2',
+          email: 'jane@example.com',
+          firstName: 'Jane',
+          lastName: 'Smith',
+          avatar: null,
+        },
       });
       prisma.workspaceMember.findMany.mockResolvedValue([{ userId: 'user-2' }]);
 
@@ -360,16 +383,15 @@ describe('TasksService', () => {
 
   describe('unassign', () => {
     it('should unassign user from task', async () => {
-      prisma.task.findUnique
-        .mockResolvedValueOnce({
-          ...mockTask,
-          project: mockProject,
-          assignees: [],
-          labels: [],
-          subtasks: [],
-          comments: [],
-          _count: { comments: 0, subtasks: 0 },
-        });
+      prisma.task.findUnique.mockResolvedValueOnce({
+        ...mockTask,
+        project: mockProject,
+        assignees: [],
+        labels: [],
+        subtasks: [],
+        comments: [],
+        _count: { comments: 0, subtasks: 0 },
+      });
       prisma.taskAssignee.deleteMany.mockResolvedValue({ count: 1 });
 
       const result = await service.unassign('task-1', 'user-1', 'user-2');
@@ -380,16 +402,15 @@ describe('TasksService', () => {
 
   describe('addLabel', () => {
     it('should add label to task', async () => {
-      prisma.task.findUnique
-        .mockResolvedValueOnce({
-          ...mockTask,
-          project: mockProject,
-          assignees: [],
-          labels: [],
-          subtasks: [],
-          comments: [],
-          _count: { comments: 0, subtasks: 0 },
-        });
+      prisma.task.findUnique.mockResolvedValueOnce({
+        ...mockTask,
+        project: mockProject,
+        assignees: [],
+        labels: [],
+        subtasks: [],
+        comments: [],
+        _count: { comments: 0, subtasks: 0 },
+      });
       prisma.taskLabel.create.mockResolvedValue({
         taskId: 'task-1',
         labelId: 'label-1',
@@ -406,16 +427,15 @@ describe('TasksService', () => {
 
   describe('removeLabel', () => {
     it('should remove label from task', async () => {
-      prisma.task.findUnique
-        .mockResolvedValueOnce({
-          ...mockTask,
-          project: mockProject,
-          assignees: [],
-          labels: [],
-          subtasks: [],
-          comments: [],
-          _count: { comments: 0, subtasks: 0 },
-        });
+      prisma.task.findUnique.mockResolvedValueOnce({
+        ...mockTask,
+        project: mockProject,
+        assignees: [],
+        labels: [],
+        subtasks: [],
+        comments: [],
+        _count: { comments: 0, subtasks: 0 },
+      });
       prisma.taskLabel.deleteMany.mockResolvedValue({ count: 1 });
 
       const result = await service.removeLabel('task-1', 'user-1', 'label-1');

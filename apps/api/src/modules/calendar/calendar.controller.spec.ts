@@ -38,9 +38,7 @@ describe('CalendarController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CalendarController],
-      providers: [
-        { provide: CalendarService, useValue: mockCalendarService },
-      ],
+      providers: [{ provide: CalendarService, useValue: mockCalendarService }],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({ canActivate: () => true })
@@ -91,10 +89,20 @@ describe('CalendarController', () => {
 
   describe('findAllByWorkspace', () => {
     it('should return workspace events', async () => {
-      const result = await controller.findAllByWorkspace('ws-1', mockUser as any, undefined, undefined);
+      const result = await controller.findAllByWorkspace(
+        'ws-1',
+        mockUser as any,
+        undefined,
+        undefined,
+      );
 
       expect(result).toEqual([mockEvent]);
-      expect(calendarService.findAllByWorkspace).toHaveBeenCalledWith('ws-1', 'user-1', undefined, undefined);
+      expect(calendarService.findAllByWorkspace).toHaveBeenCalledWith(
+        'ws-1',
+        'user-1',
+        undefined,
+        undefined,
+      );
     });
   });
 

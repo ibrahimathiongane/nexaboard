@@ -10,10 +10,6 @@ export class LeadsController {
   @Post('subscribe')
   @HttpCode(HttpStatus.CREATED)
   async subscribe(@Body() dto: SubscribeBetaDto, @Req() request: Request) {
-    return this.leadsService.subscribe(
-      dto,
-      request.headers['user-agent'],
-      request.ip,
-    );
+    return this.leadsService.subscribe(dto, request.headers['user-agent'], request.ip);
   }
 }

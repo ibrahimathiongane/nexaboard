@@ -35,9 +35,7 @@ describe('NotesController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [NotesController],
-      providers: [
-        { provide: NotesService, useValue: mockNotesService },
-      ],
+      providers: [{ provide: NotesService, useValue: mockNotesService }],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({ canActivate: () => true })

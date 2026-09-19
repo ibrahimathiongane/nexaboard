@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Patch,
-  Delete,
-  Body,
-  Param,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/guards/current-user.decorator';
@@ -32,7 +23,7 @@ export class WorkspacesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Lister les espaces de travail de l\'utilisateur' })
+  @ApiOperation({ summary: "Lister les espaces de travail de l'utilisateur" })
   async findAll(@CurrentUser() user: CurrentUserType) {
     return this.workspacesService.findAllForUser(user.id);
   }
@@ -46,13 +37,13 @@ export class WorkspacesController {
   }
 
   @Get(':id/members')
-  @ApiOperation({ summary: 'Lister les membres de l\'espace de travail' })
+  @ApiOperation({ summary: "Lister les membres de l'espace de travail" })
   async findMembers(@Param('id') id: string, @CurrentUser() user: CurrentUserType) {
     return this.workspacesService.findAllMembers(id, user.id);
   }
 
   @Post(':id/members')
-  @ApiOperation({ summary: 'Ajouter un membre à l\'espace de travail' })
+  @ApiOperation({ summary: "Ajouter un membre à l'espace de travail" })
   async addMember(
     @Param('id') id: string,
     @CurrentUser() user: CurrentUserType,
@@ -62,7 +53,7 @@ export class WorkspacesController {
   }
 
   @Delete(':id/members/:memberId')
-  @ApiOperation({ summary: 'Retirer un membre de l\'espace de travail' })
+  @ApiOperation({ summary: "Retirer un membre de l'espace de travail" })
   async removeMember(
     @Param('id') id: string,
     @Param('memberId') memberId: string,

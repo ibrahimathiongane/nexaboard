@@ -8,7 +8,7 @@ export class HealthController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Vérification de santé de l\'API' })
+  @ApiOperation({ summary: "Vérification de santé de l'API" })
   check() {
     return {
       status: 'ok',
@@ -19,7 +19,7 @@ export class HealthController {
 
   @Get('ready')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Vérification de disponibilité de l\'API et de la base' })
+  @ApiOperation({ summary: "Vérification de disponibilité de l'API et de la base" })
   async ready() {
     try {
       await this.prisma.$queryRaw`SELECT 1`;

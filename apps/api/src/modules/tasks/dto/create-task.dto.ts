@@ -1,5 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, MaxLength, IsEnum, IsDate, IsNumber, IsArray, Min } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  MaxLength,
+  IsEnum,
+  IsDate,
+  IsNumber,
+  IsArray,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateTaskDto {

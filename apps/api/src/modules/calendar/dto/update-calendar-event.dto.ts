@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import type { Prisma } from '@prisma/client';
 
 export class UpdateCalendarEventDto {
-  @ApiPropertyOptional({ example: 'Réunion d\'équipe' })
+  @ApiPropertyOptional({ example: "Réunion d'équipe" })
   @IsOptional()
   @IsString()
   @MaxLength(200)

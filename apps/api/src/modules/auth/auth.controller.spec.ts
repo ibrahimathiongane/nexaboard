@@ -44,9 +44,7 @@ describe('AuthController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [
-        { provide: AuthService, useValue: mockAuthService },
-      ],
+      providers: [{ provide: AuthService, useValue: mockAuthService }],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({ canActivate: () => true })
@@ -73,7 +71,10 @@ describe('AuthController', () => {
       expect(result.user).toBeDefined();
       expect(result.accessToken).toBeDefined();
       expect('refreshToken' in result).toBe(false);
-      expect(response.setHeader).toHaveBeenCalledWith('Set-Cookie', expect.stringContaining('nexaboard_refresh=refresh-token-mock'));
+      expect(response.setHeader).toHaveBeenCalledWith(
+        'Set-Cookie',
+        expect.stringContaining('nexaboard_refresh=refresh-token-mock'),
+      );
       expect(authService.register).toHaveBeenCalledWith(dto, 'test-agent', '127.0.0.1');
     });
   });

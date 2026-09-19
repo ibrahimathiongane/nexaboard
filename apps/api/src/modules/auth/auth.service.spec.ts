@@ -9,11 +9,24 @@ import { EmailService } from '../../common/email/email.service';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let prisma: { session: { findUnique: jest.Mock; create: jest.Mock; update: jest.Mock; deleteMany: jest.Mock }; user: { update: jest.Mock } };
-  let usersService: { findByEmail: jest.Mock; create: jest.Mock; verifyPassword: jest.Mock; findById: jest.Mock; findByIdOrThrow: jest.Mock };
+  let prisma: {
+    session: { findUnique: jest.Mock; create: jest.Mock; update: jest.Mock; deleteMany: jest.Mock };
+    user: { update: jest.Mock };
+  };
+  let usersService: {
+    findByEmail: jest.Mock;
+    create: jest.Mock;
+    verifyPassword: jest.Mock;
+    findById: jest.Mock;
+    findByIdOrThrow: jest.Mock;
+  };
   let jwtService: { signAsync: jest.Mock; sign: jest.Mock; verify: jest.Mock };
   let configService: { get: jest.Mock };
-  let emailService: { send: jest.Mock; getVerificationUrl: jest.Mock; getResetPasswordUrl: jest.Mock };
+  let emailService: {
+    send: jest.Mock;
+    getVerificationUrl: jest.Mock;
+    getResetPasswordUrl: jest.Mock;
+  };
 
   const mockUser = {
     id: 'user-1',
@@ -73,8 +86,12 @@ describe('AuthService', () => {
 
     emailService = {
       send: jest.fn().mockResolvedValue(undefined),
-      getVerificationUrl: jest.fn().mockReturnValue('http://localhost:3000/auth/verify?token=mock-token'),
-      getResetPasswordUrl: jest.fn().mockReturnValue('http://localhost:3000/auth/reset-password?token=mock-token'),
+      getVerificationUrl: jest
+        .fn()
+        .mockReturnValue('http://localhost:3000/auth/verify?token=mock-token'),
+      getResetPasswordUrl: jest
+        .fn()
+        .mockReturnValue('http://localhost:3000/auth/reset-password?token=mock-token'),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -266,9 +283,7 @@ describe('AuthService', () => {
     });
 
     it('should throw NotFoundException when user not found', async () => {
-      usersService.findByIdOrThrow.mockRejectedValue(
-        new Error('Utilisateur non trouvé'),
-      );
+      usersService.findByIdOrThrow.mockRejectedValue(new Error('Utilisateur non trouvé'));
 
       await expect(service.getProfile('nonexistent')).rejects.toThrow();
     });
@@ -332,7 +347,9 @@ describe('AuthService', () => {
 
       const result = await service.forgotPassword('john@example.com');
 
-      expect(result).toEqual({ message: 'Si cet email existe, un lien de réinitialisation a été envoyé' });
+      expect(result).toEqual({
+        message: 'Si cet email existe, un lien de réinitialisation a été envoyé',
+      });
       expect(jwtService.sign).toHaveBeenCalledWith(
         { sub: 'user-1', type: 'password-reset' },
         { expiresIn: '1h' },
@@ -345,7 +362,9 @@ describe('AuthService', () => {
 
       const result = await service.forgotPassword('unknown@example.com');
 
-      expect(result).toEqual({ message: 'Si cet email existe, un lien de réinitialisation a été envoyé' });
+      expect(result).toEqual({
+        message: 'Si cet email existe, un lien de réinitialisation a été envoyé',
+      });
       expect(emailService.send).not.toHaveBeenCalled();
     });
   });
@@ -371,13 +390,17 @@ describe('AuthService', () => {
         throw new Error('jwt invalid');
       });
 
-      await expect(service.resetPassword('invalid-token', 'password')).rejects.toThrow(UnauthorizedException);
+      await expect(service.resetPassword('invalid-token', 'password')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should throw UnauthorizedException with wrong token type', async () => {
       jwtService.verify.mockReturnValue({ sub: 'user-1', type: 'email-verification' });
 
-      await expect(service.resetPassword('wrong-type-token', 'password')).rejects.toThrow(UnauthorizedException);
+      await expect(service.resetPassword('wrong-type-token', 'password')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 });

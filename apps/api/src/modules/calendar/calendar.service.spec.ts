@@ -8,7 +8,13 @@ import { UpdateCalendarEventDto } from './dto/update-calendar-event.dto';
 describe('CalendarService', () => {
   let service: CalendarService;
   let prisma: {
-    calendarEvent: { findUnique: jest.Mock; create: jest.Mock; findMany: jest.Mock; update: jest.Mock; delete: jest.Mock };
+    calendarEvent: {
+      findUnique: jest.Mock;
+      create: jest.Mock;
+      findMany: jest.Mock;
+      update: jest.Mock;
+      delete: jest.Mock;
+    };
     workspaceMember: { findUnique: jest.Mock };
   };
 
@@ -53,10 +59,7 @@ describe('CalendarService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        CalendarService,
-        { provide: PrismaService, useValue: prisma },
-      ],
+      providers: [CalendarService, { provide: PrismaService, useValue: prisma }],
     }).compile();
 
     service = module.get<CalendarService>(CalendarService);
@@ -73,7 +76,13 @@ describe('CalendarService', () => {
       prisma.workspaceMember.findUnique.mockResolvedValue(mockMembership);
       prisma.calendarEvent.create.mockResolvedValue({
         ...mockEvent,
-        user: { id: 'user-1', email: 'john@example.com', firstName: 'John', lastName: 'Doe', avatar: null },
+        user: {
+          id: 'user-1',
+          email: 'john@example.com',
+          firstName: 'John',
+          lastName: 'Doe',
+          avatar: null,
+        },
         task: null,
       });
 
@@ -131,7 +140,9 @@ describe('CalendarService', () => {
     it('should throw ForbiddenException when user is not workspace member', async () => {
       prisma.workspaceMember.findUnique.mockResolvedValue(null);
 
-      await expect(service.findAllByWorkspace('ws-1', 'user-1')).rejects.toThrow(ForbiddenException);
+      await expect(service.findAllByWorkspace('ws-1', 'user-1')).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 
@@ -139,7 +150,13 @@ describe('CalendarService', () => {
     it('should return event when user is the creator', async () => {
       prisma.calendarEvent.findUnique.mockResolvedValue({
         ...mockEvent,
-        user: { id: 'user-1', email: 'john@example.com', firstName: 'John', lastName: 'Doe', avatar: null },
+        user: {
+          id: 'user-1',
+          email: 'john@example.com',
+          firstName: 'John',
+          lastName: 'Doe',
+          avatar: null,
+        },
         task: null,
       });
 
@@ -184,16 +201,21 @@ describe('CalendarService', () => {
   describe('update', () => {
     it('should update event when user has access', async () => {
       const dto: UpdateCalendarEventDto = { title: 'Updated Event' };
-      prisma.calendarEvent.findUnique
-        .mockResolvedValueOnce({
-          ...mockEvent,
-          user: { id: 'user-1' },
-          task: null,
-        });
+      prisma.calendarEvent.findUnique.mockResolvedValueOnce({
+        ...mockEvent,
+        user: { id: 'user-1' },
+        task: null,
+      });
       prisma.calendarEvent.update.mockResolvedValue({
         ...mockEvent,
         title: 'Updated Event',
-        user: { id: 'user-1', email: 'john@example.com', firstName: 'John', lastName: 'Doe', avatar: null },
+        user: {
+          id: 'user-1',
+          email: 'john@example.com',
+          firstName: 'John',
+          lastName: 'Doe',
+          avatar: null,
+        },
         task: null,
       });
 
@@ -212,12 +234,11 @@ describe('CalendarService', () => {
 
   describe('remove', () => {
     it('should delete event when user has access', async () => {
-      prisma.calendarEvent.findUnique
-        .mockResolvedValueOnce({
-          ...mockEvent,
-          user: { id: 'user-1' },
-          task: null,
-        });
+      prisma.calendarEvent.findUnique.mockResolvedValueOnce({
+        ...mockEvent,
+        user: { id: 'user-1' },
+        task: null,
+      });
       prisma.calendarEvent.delete.mockResolvedValue(mockEvent);
 
       const result = await service.remove('event-1', 'user-1');

@@ -111,16 +111,56 @@ describe('Modules Integration Tests (e2e)', () => {
   function createPrismaMock() {
     return {
       user: { findUnique: jest.fn(), create: jest.fn(), update: jest.fn() },
-      session: { findUnique: jest.fn(), create: jest.fn(), update: jest.fn(), deleteMany: jest.fn() },
-      workspace: { findUnique: jest.fn(), create: jest.fn(), findMany: jest.fn(), update: jest.fn(), delete: jest.fn() },
-      workspaceMember: { findUnique: jest.fn(), create: jest.fn(), delete: jest.fn(), findMany: jest.fn() },
+      session: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+        deleteMany: jest.fn(),
+      },
+      workspace: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        findMany: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+      },
+      workspaceMember: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        delete: jest.fn(),
+        findMany: jest.fn(),
+      },
       workspaceSettings: { create: jest.fn() },
-      project: { findUnique: jest.fn(), create: jest.fn(), findMany: jest.fn(), update: jest.fn(), delete: jest.fn() },
-      task: { findUnique: jest.fn(), create: jest.fn(), findMany: jest.fn(), update: jest.fn(), delete: jest.fn() },
+      project: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        findMany: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+      },
+      task: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        findMany: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+      },
       taskAssignee: { create: jest.fn(), deleteMany: jest.fn(), findMany: jest.fn() },
       taskLabel: { create: jest.fn(), deleteMany: jest.fn() },
-      note: { findUnique: jest.fn(), create: jest.fn(), findMany: jest.fn(), update: jest.fn(), delete: jest.fn() },
-      calendarEvent: { findUnique: jest.fn(), create: jest.fn(), findMany: jest.fn(), update: jest.fn(), delete: jest.fn() },
+      note: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        findMany: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+      },
+      calendarEvent: {
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        findMany: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+      },
     };
   }
 
@@ -129,7 +169,9 @@ describe('Modules Integration Tests (e2e)', () => {
     emailServiceMock = {
       send: jest.fn().mockResolvedValue(undefined),
       getVerificationUrl: jest.fn().mockReturnValue('http://localhost:3000/auth/verify?token=mock'),
-      getResetPasswordUrl: jest.fn().mockReturnValue('http://localhost:3000/auth/reset-password?token=mock'),
+      getResetPasswordUrl: jest
+        .fn()
+        .mockReturnValue('http://localhost:3000/auth/reset-password?token=mock'),
     };
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -163,14 +205,12 @@ describe('Modules Integration Tests (e2e)', () => {
     prismaMock.user.create.mockResolvedValue({ ...mockUser, passwordHash: hash });
     prismaMock.session.create.mockResolvedValue({});
 
-    const registerRes = await request(app.getHttpServer())
-      .post('/api/v1/auth/register')
-      .send({
-        email: 'test@example.com',
-        password: 'password123',
-        firstName: 'Test',
-        lastName: 'User',
-      });
+    const registerRes = await request(app.getHttpServer()).post('/api/v1/auth/register').send({
+      email: 'test@example.com',
+      password: 'password123',
+      firstName: 'Test',
+      lastName: 'User',
+    });
 
     authToken = registerRes.body.accessToken;
     userId = registerRes.body.user.id;
@@ -209,9 +249,7 @@ describe('Modules Integration Tests (e2e)', () => {
     });
 
     it('GET /api/v1/workspaces — should list user workspaces', async () => {
-      prismaMock.workspaceMember.findMany.mockResolvedValue([
-        { workspace: mockWorkspace },
-      ]);
+      prismaMock.workspaceMember.findMany.mockResolvedValue([{ workspace: mockWorkspace }]);
 
       const res = await request(app.getHttpServer())
         .get('/api/v1/workspaces')
@@ -515,7 +553,13 @@ describe('Modules Integration Tests (e2e)', () => {
       prismaMock.taskAssignee.create.mockResolvedValue({
         taskId,
         userId: 'user-2',
-        user: { id: 'user-2', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', avatar: null },
+        user: {
+          id: 'user-2',
+          email: 'jane@example.com',
+          firstName: 'Jane',
+          lastName: 'Smith',
+          avatar: null,
+        },
       });
 
       const res = await request(app.getHttpServer())
@@ -751,9 +795,7 @@ describe('Modules Integration Tests (e2e)', () => {
   // ─── Validation Tests ────────────────────────────────
   describe('Validation', () => {
     it('should reject request without auth token', () => {
-      return request(app.getHttpServer())
-        .get('/api/v1/workspaces')
-        .expect(401);
+      return request(app.getHttpServer()).get('/api/v1/workspaces').expect(401);
     });
 
     it('should reject request with invalid token', () => {

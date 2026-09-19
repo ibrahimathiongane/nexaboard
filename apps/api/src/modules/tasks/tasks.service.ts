@@ -29,14 +29,14 @@ export class TasksService {
         assignees: dto.assigneeIds
           ? { create: dto.assigneeIds.map((id) => ({ userId: id })) }
           : undefined,
-        labels: dto.labelIds
-          ? { create: dto.labelIds.map((id) => ({ labelId: id })) }
-          : undefined,
+        labels: dto.labelIds ? { create: dto.labelIds.map((id) => ({ labelId: id })) } : undefined,
       },
       include: {
         assignees: {
           include: {
-            user: { select: { id: true, email: true, firstName: true, lastName: true, avatar: true } },
+            user: {
+              select: { id: true, email: true, firstName: true, lastName: true, avatar: true },
+            },
           },
         },
         labels: { include: { label: true } },
@@ -72,7 +72,9 @@ export class TasksService {
         project: { select: { id: true, name: true, color: true } },
         assignees: {
           include: {
-            user: { select: { id: true, email: true, firstName: true, lastName: true, avatar: true } },
+            user: {
+              select: { id: true, email: true, firstName: true, lastName: true, avatar: true },
+            },
           },
         },
         labels: { include: { label: true } },
@@ -99,7 +101,9 @@ export class TasksService {
       include: {
         assignees: {
           include: {
-            user: { select: { id: true, email: true, firstName: true, lastName: true, avatar: true } },
+            user: {
+              select: { id: true, email: true, firstName: true, lastName: true, avatar: true },
+            },
           },
         },
         labels: { include: { label: true } },
@@ -123,14 +127,18 @@ export class TasksService {
         },
         assignees: {
           include: {
-            user: { select: { id: true, email: true, firstName: true, lastName: true, avatar: true } },
+            user: {
+              select: { id: true, email: true, firstName: true, lastName: true, avatar: true },
+            },
           },
         },
         labels: { include: { label: true } },
         subtasks: true,
         comments: {
           include: {
-            creator: { select: { id: true, email: true, firstName: true, lastName: true, avatar: true } },
+            creator: {
+              select: { id: true, email: true, firstName: true, lastName: true, avatar: true },
+            },
           },
           orderBy: { createdAt: 'desc' },
         },
@@ -171,7 +179,9 @@ export class TasksService {
       include: {
         assignees: {
           include: {
-            user: { select: { id: true, email: true, firstName: true, lastName: true, avatar: true } },
+            user: {
+              select: { id: true, email: true, firstName: true, lastName: true, avatar: true },
+            },
           },
         },
         labels: { include: { label: true } },
@@ -260,7 +270,9 @@ export class TasksService {
         select: { userId: true },
       });
       if (members.length !== new Set(assigneeIds).size) {
-        throw new ForbiddenException('Tous les assignés doivent appartenir à cet espace de travail');
+        throw new ForbiddenException(
+          'Tous les assignés doivent appartenir à cet espace de travail',
+        );
       }
     }
 

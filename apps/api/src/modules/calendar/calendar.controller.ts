@@ -31,7 +31,7 @@ export class CalendarController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Lister les événements de l\'utilisateur' })
+  @ApiOperation({ summary: "Lister les événements de l'utilisateur" })
   async findAll(
     @CurrentUser() user: CurrentUserType,
     @Query('start') start?: string,
@@ -45,7 +45,7 @@ export class CalendarController {
   }
 
   @Get('workspace/:workspaceId')
-  @ApiOperation({ summary: 'Lister les événements d\'un espace de travail' })
+  @ApiOperation({ summary: "Lister les événements d'un espace de travail" })
   async findAllByWorkspace(
     @Param('workspaceId') workspaceId: string,
     @CurrentUser() user: CurrentUserType,

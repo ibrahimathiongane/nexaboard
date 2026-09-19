@@ -80,7 +80,7 @@ async function main() {
     data: {
       name: 'Équipe Produit',
       slug: 'equipe-produit',
-      description: 'Workspace principal de l\'équipe produit nexaBoard',
+      description: "Workspace principal de l'équipe produit nexaBoard",
       plan: 'FREE',
       ownerId: alice.id,
       members: {
@@ -105,7 +105,9 @@ async function main() {
     prisma.label.create({ data: { name: 'Feature', color: '#3B82F6', workspaceId: workspace.id } }),
     prisma.label.create({ data: { name: 'Design', color: '#8B5CF6', workspaceId: workspace.id } }),
     prisma.label.create({ data: { name: 'Backend', color: '#10B981', workspaceId: workspace.id } }),
-    prisma.label.create({ data: { name: 'Frontend', color: '#F59E0B', workspaceId: workspace.id } }),
+    prisma.label.create({
+      data: { name: 'Frontend', color: '#F59E0B', workspaceId: workspace.id },
+    }),
     prisma.label.create({ data: { name: 'Urgent', color: '#DC2626', workspaceId: workspace.id } }),
   ]);
 
@@ -115,7 +117,7 @@ async function main() {
   const projectUI = await prisma.project.create({
     data: {
       name: 'Refonte UI',
-      description: 'Refonte complète de l\'interface utilisateur pour la v2',
+      description: "Refonte complète de l'interface utilisateur pour la v2",
       color: '#8B5CF6',
       workspaceId: workspace.id,
     },
@@ -220,7 +222,7 @@ async function main() {
   const projectAPI = await prisma.project.create({
     data: {
       name: 'API Backend',
-      description: 'Développement de l\'API NestJS',
+      description: "Développement de l'API NestJS",
       color: '#10B981',
       workspaceId: workspace.id,
     },
@@ -427,7 +429,7 @@ async function main() {
   const today = new Date();
   const events = [
     {
-      title: 'Réunion d\'équipe',
+      title: "Réunion d'équipe",
       description: 'Standup quotidien',
       start: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 9, 30),
       end: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 10, 0),
@@ -457,7 +459,7 @@ async function main() {
     },
     {
       title: 'Atelier découpage Phase 2',
-      description: 'Workshop avec toute l\'équipe pour planifier la phase 2',
+      description: "Workshop avec toute l'équipe pour planifier la phase 2",
       start: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7, 10, 0),
       end: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7, 12, 0),
       color: '#F59E0B',

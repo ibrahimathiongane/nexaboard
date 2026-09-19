@@ -35,10 +35,11 @@ export class CalendarService {
     return this.prisma.calendarEvent.findMany({
       where: {
         userId,
-        ...(start && end && {
-          start: { gte: start },
-          end: { lte: end },
-        }),
+        ...(start &&
+          end && {
+            start: { gte: start },
+            end: { lte: end },
+          }),
       },
       include: {
         task: { select: { id: true, title: true, status: true } },
@@ -53,10 +54,11 @@ export class CalendarService {
     return this.prisma.calendarEvent.findMany({
       where: {
         workspaceId,
-        ...(start && end && {
-          start: { gte: start },
-          end: { lte: end },
-        }),
+        ...(start &&
+          end && {
+            start: { gte: start },
+            end: { lte: end },
+          }),
       },
       include: {
         user: { select: { id: true, email: true, firstName: true, lastName: true, avatar: true } },

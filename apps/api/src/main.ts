@@ -16,24 +16,54 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
-  const allowedOrigins = process.env.ALLOWED_ORIGINS
-    ?.split(',')
-    .map((origin) => origin.trim().replace(/\/+$/, ''))
-    .filter(Boolean);
+  const defaultOrigins = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:3001',
+    'http://127.0.0.1:3001',
+    'http://localhost:4000',
+    'http://127.0.0.1:4000',
+    'https://nexaboardapp.up.railway.app',
+  ];
+
+  const envOrigins =
+    process.env.ALLOWED_ORIGINS?.split(',')
+      .map((origin) => origin.trim().replace(/\/+$/, ''))
+      .filter(Boolean) || [];
+
+  const allowedOriginsList = Array.from(new Set([...defaultOrigins, ...envOrigins]));
 
   app.enableCors({
-    origin: allowedOrigins?.length
-      ? allowedOrigins
-      : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: (origin, callback) => {
+      // Autoriser les requêtes sans Origin (ex. curl, server-to-server)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      const normalizedOrigin = origin.trim().replace(/\/+$/, '');
+
+      if (
+        allowedOriginsList.includes(normalizedOrigin) ||
+        allowedOriginsList.includes('*') ||
+        normalizedOrigin.endsWith('.railway.app') ||
+        normalizedOrigin.endsWith('.vercel.app')
+      ) {
+        return callback(null, true);
+      }
+
+      callback(null, false);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   });
 
-  app.use(helmet({
-    crossOriginResourcePolicy: { policy: 'cross-origin' },
-    crossOriginEmbedderPolicy: false,
-  }));
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+      crossOriginEmbedderPolicy: false,
+    }),
+  );
 
   app.setGlobalPrefix('api/v1');
 
@@ -50,7 +80,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('nexaBoard API')
-    .setDescription('API pour l\'application de productivité nexaBoard')
+    .setDescription("API pour l'application de productivité nexaBoard")
     .setVersion('0.1.0')
     .addBearerAuth()
     .build();

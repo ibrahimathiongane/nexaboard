@@ -8,7 +8,13 @@ import { UpdateNoteDto } from './dto/update-note.dto';
 describe('NotesService', () => {
   let service: NotesService;
   let prisma: {
-    note: { findUnique: jest.Mock; create: jest.Mock; findMany: jest.Mock; update: jest.Mock; delete: jest.Mock };
+    note: {
+      findUnique: jest.Mock;
+      create: jest.Mock;
+      findMany: jest.Mock;
+      update: jest.Mock;
+      delete: jest.Mock;
+    };
     project: { findUnique: jest.Mock };
   };
 
@@ -52,10 +58,7 @@ describe('NotesService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        NotesService,
-        { provide: PrismaService, useValue: prisma },
-      ],
+      providers: [NotesService, { provide: PrismaService, useValue: prisma }],
     }).compile();
 
     service = module.get<NotesService>(NotesService);
@@ -71,7 +74,13 @@ describe('NotesService', () => {
       prisma.project.findUnique.mockResolvedValue(mockProject);
       prisma.note.create.mockResolvedValue({
         ...mockNote,
-        creator: { id: 'user-1', email: 'john@example.com', firstName: 'John', lastName: 'Doe', avatar: null },
+        creator: {
+          id: 'user-1',
+          email: 'john@example.com',
+          firstName: 'John',
+          lastName: 'Doe',
+          avatar: null,
+        },
         project: { id: 'project-1', name: 'Test Project', color: '#3B82F6' },
         _count: { comments: 0, children: 0 },
       });
@@ -90,7 +99,13 @@ describe('NotesService', () => {
       prisma.note.create.mockResolvedValue({
         ...mockNote,
         projectId: null,
-        creator: { id: 'user-1', email: 'john@example.com', firstName: 'John', lastName: 'Doe', avatar: null },
+        creator: {
+          id: 'user-1',
+          email: 'john@example.com',
+          firstName: 'John',
+          lastName: 'Doe',
+          avatar: null,
+        },
         project: null,
         _count: { comments: 0, children: 0 },
       });
@@ -149,7 +164,9 @@ describe('NotesService', () => {
         workspace: { members: [] },
       });
 
-      await expect(service.findAllByProject('project-1', 'user-1')).rejects.toThrow(ForbiddenException);
+      await expect(service.findAllByProject('project-1', 'user-1')).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 
@@ -157,7 +174,13 @@ describe('NotesService', () => {
     it('should return note when user is the creator', async () => {
       prisma.note.findUnique.mockResolvedValue({
         ...mockNote,
-        creator: { id: 'user-1', email: 'john@example.com', firstName: 'John', lastName: 'Doe', avatar: null },
+        creator: {
+          id: 'user-1',
+          email: 'john@example.com',
+          firstName: 'John',
+          lastName: 'Doe',
+          avatar: null,
+        },
         project: { id: 'project-1', name: 'Test Project', color: '#3B82F6' },
         parent: null,
         children: [],
@@ -197,21 +220,26 @@ describe('NotesService', () => {
   describe('update', () => {
     it('should update note when user is the creator', async () => {
       const dto: UpdateNoteDto = { title: 'Updated Note' };
-      prisma.note.findUnique
-        .mockResolvedValueOnce({
-          ...mockNote,
-          creator: { id: 'user-1' },
-          project: null,
-          parent: null,
-          children: [],
-          blocks: [],
-          comments: [],
-          _count: { comments: 0, children: 0, attachments: 0 },
-        });
+      prisma.note.findUnique.mockResolvedValueOnce({
+        ...mockNote,
+        creator: { id: 'user-1' },
+        project: null,
+        parent: null,
+        children: [],
+        blocks: [],
+        comments: [],
+        _count: { comments: 0, children: 0, attachments: 0 },
+      });
       prisma.note.update.mockResolvedValue({
         ...mockNote,
         title: 'Updated Note',
-        creator: { id: 'user-1', email: 'john@example.com', firstName: 'John', lastName: 'Doe', avatar: null },
+        creator: {
+          id: 'user-1',
+          email: 'john@example.com',
+          firstName: 'John',
+          lastName: 'Doe',
+          avatar: null,
+        },
         project: null,
         _count: { comments: 0, children: 0 },
       });
@@ -231,17 +259,16 @@ describe('NotesService', () => {
 
   describe('remove', () => {
     it('should delete note when user is the creator', async () => {
-      prisma.note.findUnique
-        .mockResolvedValueOnce({
-          ...mockNote,
-          creator: { id: 'user-1' },
-          project: null,
-          parent: null,
-          children: [],
-          blocks: [],
-          comments: [],
-          _count: { comments: 0, children: 0, attachments: 0 },
-        });
+      prisma.note.findUnique.mockResolvedValueOnce({
+        ...mockNote,
+        creator: { id: 'user-1' },
+        project: null,
+        parent: null,
+        children: [],
+        blocks: [],
+        comments: [],
+        _count: { comments: 0, children: 0, attachments: 0 },
+      });
       prisma.note.delete.mockResolvedValue(mockNote);
 
       const result = await service.remove('note-1', 'user-1');

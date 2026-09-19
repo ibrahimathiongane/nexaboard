@@ -24,7 +24,9 @@ export class NotesService {
         createdBy: userId,
       },
       include: {
-        creator: { select: { id: true, email: true, firstName: true, lastName: true, avatar: true } },
+        creator: {
+          select: { id: true, email: true, firstName: true, lastName: true, avatar: true },
+        },
         project: { select: { id: true, name: true, color: true } },
         _count: { select: { comments: true, children: true } },
       },
@@ -51,7 +53,9 @@ export class NotesService {
     return this.prisma.note.findMany({
       where: { projectId },
       include: {
-        creator: { select: { id: true, email: true, firstName: true, lastName: true, avatar: true } },
+        creator: {
+          select: { id: true, email: true, firstName: true, lastName: true, avatar: true },
+        },
         _count: { select: { comments: true, children: true } },
       },
       orderBy: { updatedAt: 'desc' },
@@ -62,14 +66,18 @@ export class NotesService {
     const note = await this.prisma.note.findUnique({
       where: { id },
       include: {
-        creator: { select: { id: true, email: true, firstName: true, lastName: true, avatar: true } },
+        creator: {
+          select: { id: true, email: true, firstName: true, lastName: true, avatar: true },
+        },
         project: { select: { id: true, name: true, color: true } },
         parent: { select: { id: true, title: true } },
         children: { select: { id: true, title: true } },
         blocks: { orderBy: { order: 'asc' } },
         comments: {
           include: {
-            creator: { select: { id: true, email: true, firstName: true, lastName: true, avatar: true } },
+            creator: {
+              select: { id: true, email: true, firstName: true, lastName: true, avatar: true },
+            },
           },
           orderBy: { createdAt: 'desc' },
         },
@@ -103,7 +111,9 @@ export class NotesService {
         ...(dto.archived !== undefined && { archived: dto.archived }),
       },
       include: {
-        creator: { select: { id: true, email: true, firstName: true, lastName: true, avatar: true } },
+        creator: {
+          select: { id: true, email: true, firstName: true, lastName: true, avatar: true },
+        },
         project: { select: { id: true, name: true, color: true } },
         _count: { select: { comments: true, children: true } },
       },

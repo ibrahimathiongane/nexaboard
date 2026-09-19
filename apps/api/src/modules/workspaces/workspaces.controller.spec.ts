@@ -32,9 +32,7 @@ describe('WorkspacesController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [WorkspacesController],
-      providers: [
-        { provide: WorkspacesService, useValue: mockWorkspacesService },
-      ],
+      providers: [{ provide: WorkspacesService, useValue: mockWorkspacesService }],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({ canActivate: () => true })
@@ -99,7 +97,12 @@ describe('WorkspacesController', () => {
       const result = await controller.addMember('ws-1', mockUser as any, dto);
 
       expect(result).toEqual({ message: 'Membre ajouté' });
-      expect(workspacesService.addMember).toHaveBeenCalledWith('ws-1', 'user-1', 'member@example.com', 'MEMBER');
+      expect(workspacesService.addMember).toHaveBeenCalledWith(
+        'ws-1',
+        'user-1',
+        'member@example.com',
+        'MEMBER',
+      );
     });
   });
 

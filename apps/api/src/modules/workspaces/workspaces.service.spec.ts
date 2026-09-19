@@ -8,7 +8,13 @@ import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 describe('WorkspacesService', () => {
   let service: WorkspacesService;
   let prisma: {
-    workspace: { findUnique: jest.Mock; create: jest.Mock; findMany: jest.Mock; update: jest.Mock; delete: jest.Mock };
+    workspace: {
+      findUnique: jest.Mock;
+      create: jest.Mock;
+      findMany: jest.Mock;
+      update: jest.Mock;
+      delete: jest.Mock;
+    };
     workspaceMember: { findUnique: jest.Mock; create: jest.Mock; delete: jest.Mock };
     workspaceSettings: { create: jest.Mock };
     user: { findUnique: jest.Mock };
@@ -57,10 +63,7 @@ describe('WorkspacesService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        WorkspacesService,
-        { provide: PrismaService, useValue: prisma },
-      ],
+      providers: [WorkspacesService, { provide: PrismaService, useValue: prisma }],
     }).compile();
 
     service = module.get<WorkspacesService>(WorkspacesService);
@@ -72,7 +75,19 @@ describe('WorkspacesService', () => {
       prisma.workspace.findUnique.mockResolvedValue(null);
       prisma.workspace.create.mockResolvedValue({
         ...mockWorkspace,
-        members: [{ userId: 'user-1', role: 'OWNER', user: { id: 'user-1', email: 'john@example.com', firstName: 'John', lastName: 'Doe', avatar: null } }],
+        members: [
+          {
+            userId: 'user-1',
+            role: 'OWNER',
+            user: {
+              id: 'user-1',
+              email: 'john@example.com',
+              firstName: 'John',
+              lastName: 'Doe',
+              avatar: null,
+            },
+          },
+        ],
         _count: { members: 1, projects: 0 },
       });
       prisma.workspaceSettings.create.mockResolvedValue({});
@@ -130,7 +145,13 @@ describe('WorkspacesService', () => {
     it('should return workspace when user is member', async () => {
       prisma.workspace.findUnique.mockResolvedValue({
         ...mockWorkspace,
-        owner: { id: 'user-1', email: 'john@example.com', firstName: 'John', lastName: 'Doe', avatar: null },
+        owner: {
+          id: 'user-1',
+          email: 'john@example.com',
+          firstName: 'John',
+          lastName: 'Doe',
+          avatar: null,
+        },
         members: [{ userId: 'user-1', role: 'OWNER', user: { id: 'user-1' } }],
         settings: {},
         _count: { members: 1, projects: 0 },
@@ -202,14 +223,13 @@ describe('WorkspacesService', () => {
 
   describe('remove', () => {
     it('should delete workspace when user is owner', async () => {
-      prisma.workspace.findUnique
-        .mockResolvedValueOnce({
-          ...mockWorkspace,
-          owner: { id: 'user-1' },
-          members: [{ userId: 'user-1' }],
-          settings: {},
-          _count: { members: 1, projects: 0 },
-        });
+      prisma.workspace.findUnique.mockResolvedValueOnce({
+        ...mockWorkspace,
+        owner: { id: 'user-1' },
+        members: [{ userId: 'user-1' }],
+        settings: {},
+        _count: { members: 1, projects: 0 },
+      });
       prisma.workspaceMember.findUnique.mockResolvedValue(mockMembership);
       prisma.workspace.delete.mockResolvedValue(mockWorkspace);
 
@@ -220,14 +240,13 @@ describe('WorkspacesService', () => {
     });
 
     it('should throw ForbiddenException when user is not owner', async () => {
-      prisma.workspace.findUnique
-        .mockResolvedValueOnce({
-          ...mockWorkspace,
-          owner: { id: 'user-1' },
-          members: [{ userId: 'user-2' }],
-          settings: {},
-          _count: { members: 1, projects: 0 },
-        });
+      prisma.workspace.findUnique.mockResolvedValueOnce({
+        ...mockWorkspace,
+        owner: { id: 'user-1' },
+        members: [{ userId: 'user-2' }],
+        settings: {},
+        _count: { members: 1, projects: 0 },
+      });
       prisma.workspaceMember.findUnique.mockResolvedValue({
         ...mockMembership,
         userId: 'user-2',
@@ -240,26 +259,31 @@ describe('WorkspacesService', () => {
 
   describe('addMember', () => {
     it('should add a member to workspace', async () => {
-      prisma.workspace.findUnique
-        .mockResolvedValueOnce({
-          ...mockWorkspace,
-          owner: { id: 'user-1' },
-          members: [{ userId: 'user-1' }],
-          settings: {},
-          _count: { members: 1, projects: 0 },
-        });
+      prisma.workspace.findUnique.mockResolvedValueOnce({
+        ...mockWorkspace,
+        owner: { id: 'user-1' },
+        members: [{ userId: 'user-1' }],
+        settings: {},
+        _count: { members: 1, projects: 0 },
+      });
       // findById → verifyMembership (call 1), requireAdminRole (call 2), existing member check (call 3)
       prisma.workspaceMember.findUnique
-        .mockResolvedValueOnce(mockMembership)  // findById → verifyMembership
-        .mockResolvedValueOnce(mockMembership)  // requireAdminRole
-        .mockResolvedValueOnce(null);           // existing member check
+        .mockResolvedValueOnce(mockMembership) // findById → verifyMembership
+        .mockResolvedValueOnce(mockMembership) // requireAdminRole
+        .mockResolvedValueOnce(null); // existing member check
       prisma.user.findUnique.mockResolvedValue({ id: 'user-2', email: 'jane@example.com' });
       prisma.workspaceMember.create.mockResolvedValue({
         id: 'mem-2',
         userId: 'user-2',
         workspaceId: 'ws-1',
         role: 'MEMBER',
-        user: { id: 'user-2', email: 'jane@example.com', firstName: 'Jane', lastName: 'Smith', avatar: null },
+        user: {
+          id: 'user-2',
+          email: 'jane@example.com',
+          firstName: 'Jane',
+          lastName: 'Smith',
+          avatar: null,
+        },
       });
 
       const result = await service.addMember('ws-1', 'user-1', 'jane@example.com');
@@ -269,40 +293,42 @@ describe('WorkspacesService', () => {
     });
 
     it('should throw NotFoundException when user to add not found', async () => {
-      prisma.workspace.findUnique
-        .mockResolvedValueOnce({
-          ...mockWorkspace,
-          owner: { id: 'user-1' },
-          members: [{ userId: 'user-1' }],
-          settings: {},
-          _count: { members: 1, projects: 0 },
-        });
+      prisma.workspace.findUnique.mockResolvedValueOnce({
+        ...mockWorkspace,
+        owner: { id: 'user-1' },
+        members: [{ userId: 'user-1' }],
+        settings: {},
+        _count: { members: 1, projects: 0 },
+      });
       // findById → verifyMembership (call 1), requireAdminRole (call 2)
       prisma.workspaceMember.findUnique
-        .mockResolvedValueOnce(mockMembership)  // findById → verifyMembership
+        .mockResolvedValueOnce(mockMembership) // findById → verifyMembership
         .mockResolvedValueOnce(mockMembership); // requireAdminRole
       prisma.user.findUnique.mockResolvedValue(null);
 
-      await expect(service.addMember('ws-1', 'user-1', 'unknown@example.com')).rejects.toThrow(NotFoundException);
+      await expect(service.addMember('ws-1', 'user-1', 'unknown@example.com')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw ConflictException when user is already member', async () => {
-      prisma.workspace.findUnique
-        .mockResolvedValueOnce({
-          ...mockWorkspace,
-          owner: { id: 'user-1' },
-          members: [{ userId: 'user-1' }],
-          settings: {},
-          _count: { members: 1, projects: 0 },
-        });
+      prisma.workspace.findUnique.mockResolvedValueOnce({
+        ...mockWorkspace,
+        owner: { id: 'user-1' },
+        members: [{ userId: 'user-1' }],
+        settings: {},
+        _count: { members: 1, projects: 0 },
+      });
       // findById → verifyMembership (call 1), requireAdminRole (call 2), existing member check (call 3)
       prisma.workspaceMember.findUnique
-        .mockResolvedValueOnce(mockMembership)  // findById → verifyMembership
-        .mockResolvedValueOnce(mockMembership)  // requireAdminRole
+        .mockResolvedValueOnce(mockMembership) // findById → verifyMembership
+        .mockResolvedValueOnce(mockMembership) // requireAdminRole
         .mockResolvedValueOnce({ id: 'mem-2', userId: 'user-2', workspaceId: 'ws-1' }); // existing member
       prisma.user.findUnique.mockResolvedValue({ id: 'user-2', email: 'jane@example.com' });
 
-      await expect(service.addMember('ws-1', 'user-1', 'jane@example.com')).rejects.toThrow(ConflictException);
+      await expect(service.addMember('ws-1', 'user-1', 'jane@example.com')).rejects.toThrow(
+        ConflictException,
+      );
     });
   });
 
@@ -337,7 +363,9 @@ describe('WorkspacesService', () => {
         .mockResolvedValueOnce(mockWorkspace); // owner check
       prisma.workspaceMember.findUnique.mockResolvedValue(mockMembership);
 
-      await expect(service.removeMember('ws-1', 'user-1', 'user-1')).rejects.toThrow(ForbiddenException);
+      await expect(service.removeMember('ws-1', 'user-1', 'user-1')).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 });

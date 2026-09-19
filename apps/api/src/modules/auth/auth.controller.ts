@@ -35,12 +35,12 @@ export class AuthController {
   @Post('register')
   @Throttle({ short: { ttl: 1000, limit: 1 } })
   @ApiOperation({ summary: 'Créer un nouveau compte' })
-  async register(@Body() dto: RegisterDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    const result = await this.authService.register(
-      dto,
-      req.headers['user-agent'],
-      req.ip,
-    );
+  async register(
+    @Body() dto: RegisterDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.register(dto, req.headers['user-agent'], req.ip);
     this.setRefreshCookie(res, result.refreshToken);
     return this.withoutRefreshToken(result);
   }
@@ -49,12 +49,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Throttle({ short: { ttl: 1000, limit: 3 } })
   @ApiOperation({ summary: 'Se connecter' })
-  async login(@Body() dto: LoginDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    const result = await this.authService.login(
-      dto,
-      req.headers['user-agent'],
-      req.ip,
-    );
+  async login(
+    @Body() dto: LoginDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.login(dto, req.headers['user-agent'], req.ip);
     this.setRefreshCookie(res, result.refreshToken);
     return this.withoutRefreshToken(result);
   }
@@ -117,7 +117,7 @@ export class AuthController {
   @Post('verify-email')
   @HttpCode(HttpStatus.OK)
   @Throttle({ short: { ttl: 1000, limit: 3 } })
-  @ApiOperation({ summary: 'Vérifier l\'email avec le token' })
+  @ApiOperation({ summary: "Vérifier l'email avec le token" })
   async verifyEmail(@Body() dto: VerifyEmailDto) {
     return this.authService.verifyEmail(dto.token);
   }
@@ -127,7 +127,7 @@ export class AuthController {
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @Throttle({ short: { ttl: 60000, limit: 1 } })
-  @ApiOperation({ summary: 'Renvoyer l\'email de vérification' })
+  @ApiOperation({ summary: "Renvoyer l'email de vérification" })
   async sendVerificationEmail(@CurrentUser() user: CurrentUserType) {
     await this.authService.sendVerificationEmail(user.id);
     return { message: 'Email de vérification envoyé' };

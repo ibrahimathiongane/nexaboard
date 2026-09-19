@@ -8,7 +8,13 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 describe('ProjectsService', () => {
   let service: ProjectsService;
   let prisma: {
-    project: { findUnique: jest.Mock; create: jest.Mock; findMany: jest.Mock; update: jest.Mock; delete: jest.Mock };
+    project: {
+      findUnique: jest.Mock;
+      create: jest.Mock;
+      findMany: jest.Mock;
+      update: jest.Mock;
+      delete: jest.Mock;
+    };
     workspaceMember: { findUnique: jest.Mock };
   };
 
@@ -48,10 +54,7 @@ describe('ProjectsService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        ProjectsService,
-        { provide: PrismaService, useValue: prisma },
-      ],
+      providers: [ProjectsService, { provide: PrismaService, useValue: prisma }],
     }).compile();
 
     service = module.get<ProjectsService>(ProjectsService);
@@ -83,7 +86,9 @@ describe('ProjectsService', () => {
   describe('findAllByWorkspace', () => {
     it('should return projects when user is workspace member', async () => {
       prisma.workspaceMember.findUnique.mockResolvedValue(mockMembership);
-      prisma.project.findMany.mockResolvedValue([{ ...mockProject, _count: { tasks: 0, notes: 0 } }]);
+      prisma.project.findMany.mockResolvedValue([
+        { ...mockProject, _count: { tasks: 0, notes: 0 } },
+      ]);
 
       const result = await service.findAllByWorkspace('ws-1', 'user-1');
 
@@ -94,7 +99,9 @@ describe('ProjectsService', () => {
     it('should throw ForbiddenException when user is not workspace member', async () => {
       prisma.workspaceMember.findUnique.mockResolvedValue(null);
 
-      await expect(service.findAllByWorkspace('ws-1', 'user-1')).rejects.toThrow(ForbiddenException);
+      await expect(service.findAllByWorkspace('ws-1', 'user-1')).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 
@@ -135,12 +142,11 @@ describe('ProjectsService', () => {
   describe('update', () => {
     it('should update project when user has access', async () => {
       const dto: UpdateProjectDto = { name: 'Updated Project' };
-      prisma.project.findUnique
-        .mockResolvedValueOnce({
-          ...mockProject,
-          workspace: { members: [{ userId: 'user-1' }] },
-          _count: { tasks: 0, notes: 0 },
-        });
+      prisma.project.findUnique.mockResolvedValueOnce({
+        ...mockProject,
+        workspace: { members: [{ userId: 'user-1' }] },
+        _count: { tasks: 0, notes: 0 },
+      });
       prisma.project.update.mockResolvedValue({
         ...mockProject,
         name: 'Updated Project',
@@ -163,12 +169,11 @@ describe('ProjectsService', () => {
 
   describe('remove', () => {
     it('should delete project when user has access', async () => {
-      prisma.project.findUnique
-        .mockResolvedValueOnce({
-          ...mockProject,
-          workspace: { members: [{ userId: 'user-1' }] },
-          _count: { tasks: 0, notes: 0 },
-        });
+      prisma.project.findUnique.mockResolvedValueOnce({
+        ...mockProject,
+        workspace: { members: [{ userId: 'user-1' }] },
+        _count: { tasks: 0, notes: 0 },
+      });
       prisma.project.delete.mockResolvedValue(mockProject);
 
       const result = await service.remove('project-1', 'user-1');
