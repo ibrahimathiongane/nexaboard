@@ -69,9 +69,7 @@ export default function DashboardPage() {
       setStats(data.stats);
       setRecentProjects(data.recentProjects);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Erreur lors du chargement des données',
-      );
+      setError(err instanceof Error ? err.message : 'Erreur lors du chargement des données');
     } finally {
       setIsLoading(false);
     }
@@ -84,9 +82,7 @@ export default function DashboardPage() {
   if (!currentWorkspaceId) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <p className="text-muted-foreground">
-          Sélectionnez un espace de travail
-        </p>
+        <p className="text-muted-foreground">Sélectionnez un espace de travail</p>
       </div>
     );
   }
@@ -112,32 +108,20 @@ export default function DashboardPage() {
         ) : (
           <>
             <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
-              <h3 className="text-sm font-medium text-muted-foreground">
-                Tâches en cours
-              </h3>
+              <h3 className="text-sm font-medium text-muted-foreground">Tâches en cours</h3>
               <p className="mt-2 text-3xl font-bold">{stats?.activeTasks ?? 0}</p>
             </div>
             <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
-              <h3 className="text-sm font-medium text-muted-foreground">
-                Projets actifs
-              </h3>
-              <p className="mt-2 text-3xl font-bold">
-                {stats?.activeProjects ?? 0}
-              </p>
+              <h3 className="text-sm font-medium text-muted-foreground">Projets actifs</h3>
+              <p className="mt-2 text-3xl font-bold">{stats?.activeProjects ?? 0}</p>
             </div>
             <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
-              <h3 className="text-sm font-medium text-muted-foreground">
-                Notes récentes
-              </h3>
+              <h3 className="text-sm font-medium text-muted-foreground">Notes récentes</h3>
               <p className="mt-2 text-3xl font-bold">{stats?.totalNotes ?? 0}</p>
             </div>
             <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
-              <h3 className="text-sm font-medium text-muted-foreground">
-                Événements à venir
-              </h3>
-              <p className="mt-2 text-3xl font-bold">
-                {stats?.upcomingEvents ?? 0}
-              </p>
+              <h3 className="text-sm font-medium text-muted-foreground">Événements à venir</h3>
+              <p className="mt-2 text-3xl font-bold">{stats?.upcomingEvents ?? 0}</p>
             </div>
           </>
         )}

@@ -98,11 +98,7 @@ export function TaskForm({
         setDescription(task.description || '');
         setStatus(task.status as TaskStatus);
         setPriority(task.priority as Priority);
-        setDueDate(
-          task.dueDate
-            ? new Date(task.dueDate).toISOString().slice(0, 16)
-            : '',
-        );
+        setDueDate(task.dueDate ? new Date(task.dueDate).toISOString().slice(0, 16) : '');
         setProjectId(task.projectId || '');
         setAssigneeIds(task.assignees?.map((assignee) => assignee.userId) ?? []);
         setLabelIds(task.labels?.map((item) => item.labelId) ?? []);
@@ -193,9 +189,7 @@ export function TaskForm({
       onSuccess();
       onClose();
     } catch (err) {
-      setApiError(
-        err instanceof Error ? err.message : 'Une erreur est survenue',
-      );
+      setApiError(err instanceof Error ? err.message : 'Une erreur est survenue');
     } finally {
       setLoading(false);
     }
@@ -225,9 +219,7 @@ export function TaskForm({
             placeholder="Titre de la tâche"
             className="mt-1"
           />
-          {errors.title && (
-            <p className="mt-1 text-xs text-destructive">{errors.title}</p>
-          )}
+          {errors.title && <p className="mt-1 text-xs text-destructive">{errors.title}</p>}
         </div>
 
         <div>
@@ -261,9 +253,7 @@ export function TaskForm({
               </option>
             ))}
           </select>
-          {errors.projectId && (
-            <p className="mt-1 text-xs text-destructive">{errors.projectId}</p>
-          )}
+          {errors.projectId && <p className="mt-1 text-xs text-destructive">{errors.projectId}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -293,7 +283,9 @@ export function TaskForm({
               id="task-assignees"
               multiple
               value={assigneeIds}
-              onChange={(e) => setAssigneeIds(Array.from(e.target.selectedOptions, (option) => option.value))}
+              onChange={(e) =>
+                setAssigneeIds(Array.from(e.target.selectedOptions, (option) => option.value))
+              }
               className="mt-1 min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
             >
               {members.map((member) => (
@@ -302,7 +294,9 @@ export function TaskForm({
                 </option>
               ))}
             </select>
-            <p className="mt-1 text-xs text-muted-foreground">Maintenez Ctrl/Cmd pour sélectionner plusieurs membres.</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Maintenez Ctrl/Cmd pour sélectionner plusieurs membres.
+            </p>
           </div>
 
           <div>
@@ -313,7 +307,9 @@ export function TaskForm({
               id="task-labels"
               multiple
               value={labelIds}
-              onChange={(e) => setLabelIds(Array.from(e.target.selectedOptions, (option) => option.value))}
+              onChange={(e) =>
+                setLabelIds(Array.from(e.target.selectedOptions, (option) => option.value))
+              }
               className="mt-1 min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
             >
               {labels.map((label) => (
@@ -322,14 +318,13 @@ export function TaskForm({
                 </option>
               ))}
             </select>
-            <p className="mt-1 text-xs text-muted-foreground">Les labels sont gérés par les administrateurs du workspace.</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Les labels sont gérés par les administrateurs du workspace.
+            </p>
           </div>
 
           <div>
-            <label
-              htmlFor="task-priority"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="task-priority" className="block text-sm font-medium">
               Priorité
             </label>
             <select
@@ -365,11 +360,7 @@ export function TaskForm({
             Annuler
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading
-              ? 'Envoi...'
-              : isEditing
-                ? 'Enregistrer'
-                : 'Créer'}
+            {loading ? 'Envoi...' : isEditing ? 'Enregistrer' : 'Créer'}
           </Button>
         </div>
       </form>

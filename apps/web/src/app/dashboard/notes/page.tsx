@@ -89,7 +89,9 @@ export default function NotesPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Notes</h1>
-        <Button size="sm" onClick={handleCreate}>Nouvelle note</Button>
+        <Button size="sm" onClick={handleCreate}>
+          Nouvelle note
+        </Button>
       </div>
 
       {notes.length === 0 ? (
@@ -117,17 +119,11 @@ export default function NotesPage() {
               </CardHeader>
               <CardContent>
                 {note.contentMd && (
-                  <p className="line-clamp-3 text-sm text-muted-foreground">
-                    {note.contentMd}
-                  </p>
+                  <p className="line-clamp-3 text-sm text-muted-foreground">{note.contentMd}</p>
                 )}
                 <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-                  <span>
-                    {note.project?.name || 'Sans projet'}
-                  </span>
-                  <span>
-                    {new Date(note.updatedAt).toLocaleDateString('fr-FR')}
-                  </span>
+                  <span>{note.project?.name || 'Sans projet'}</span>
+                  <span>{new Date(note.updatedAt).toLocaleDateString('fr-FR')}</span>
                 </div>
               </CardContent>
             </Card>

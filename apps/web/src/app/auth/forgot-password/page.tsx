@@ -19,7 +19,7 @@ export default function ForgotPasswordPage() {
       await api.post('/api/v1/auth/forgot-password', { email });
       setSubmitted(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de l\'envoi');
+      setError(err instanceof Error ? err.message : "Erreur lors de l'envoi");
     } finally {
       setLoading(false);
     }
@@ -30,13 +30,24 @@ export default function ForgotPasswordPage() {
       <div className="rounded-lg border bg-card p-8 shadow-sm">
         <div className="text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-            <svg className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            <svg
+              className="h-8 w-8 text-blue-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
             </svg>
           </div>
           <h1 className="text-2xl font-bold">Email envoyé</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Si un compte existe avec l&apos;adresse <strong>{email}</strong>, vous recevrez un lien de réinitialisation.
+            Si un compte existe avec l&apos;adresse <strong>{email}</strong>, vous recevrez un lien
+            de réinitialisation.
           </p>
           <p className="mt-4 text-xs text-muted-foreground">
             Vérifiez votre boîte de réception et vos spams.
@@ -63,9 +74,7 @@ export default function ForgotPasswordPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-            {error}
-          </div>
+          <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
         )}
 
         <div>

@@ -120,9 +120,7 @@ export function CalendarEventForm({
       onSuccess();
       onClose();
     } catch (err) {
-      setApiError(
-        err instanceof Error ? err.message : 'Une erreur est survenue',
-      );
+      setApiError(err instanceof Error ? err.message : 'Une erreur est survenue');
     } finally {
       setLoading(false);
     }
@@ -152,9 +150,7 @@ export function CalendarEventForm({
             placeholder="Titre de l'événement"
             className="mt-1"
           />
-          {errors.title && (
-            <p className="mt-1 text-xs text-destructive">{errors.title}</p>
-          )}
+          {errors.title && <p className="mt-1 text-xs text-destructive">{errors.title}</p>}
         </div>
 
         <div>
@@ -196,9 +192,7 @@ export function CalendarEventForm({
               onChange={(e) => setStart(e.target.value)}
               className="mt-1"
             />
-            {errors.start && (
-              <p className="mt-1 text-xs text-destructive">{errors.start}</p>
-            )}
+            {errors.start && <p className="mt-1 text-xs text-destructive">{errors.start}</p>}
           </div>
 
           <div>
@@ -212,9 +206,7 @@ export function CalendarEventForm({
               onChange={(e) => setEnd(e.target.value)}
               className="mt-1"
             />
-            {errors.end && (
-              <p className="mt-1 text-xs text-destructive">{errors.end}</p>
-            )}
+            {errors.end && <p className="mt-1 text-xs text-destructive">{errors.end}</p>}
           </div>
         </div>
 
@@ -223,11 +215,7 @@ export function CalendarEventForm({
             Annuler
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading
-              ? 'Envoi...'
-              : isEditing
-                ? 'Enregistrer'
-                : 'Créer'}
+            {loading ? 'Envoi...' : isEditing ? 'Enregistrer' : 'Créer'}
           </Button>
         </div>
       </form>

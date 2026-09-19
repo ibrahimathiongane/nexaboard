@@ -37,13 +37,7 @@ interface FormErrors {
   name?: string;
 }
 
-export function ProjectForm({
-  workspaceId,
-  project,
-  open,
-  onClose,
-  onSuccess,
-}: ProjectFormProps) {
+export function ProjectForm({ workspaceId, project, open, onClose, onSuccess }: ProjectFormProps) {
   const isEditing = !!project;
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -100,9 +94,7 @@ export function ProjectForm({
       onSuccess();
       onClose();
     } catch (err) {
-      setApiError(
-        err instanceof Error ? err.message : 'Une erreur est survenue',
-      );
+      setApiError(err instanceof Error ? err.message : 'Une erreur est survenue');
     } finally {
       setLoading(false);
     }
@@ -132,9 +124,7 @@ export function ProjectForm({
             placeholder="Mon projet"
             className="mt-1"
           />
-          {errors.name && (
-            <p className="mt-1 text-xs text-destructive">{errors.name}</p>
-          )}
+          {errors.name && <p className="mt-1 text-xs text-destructive">{errors.name}</p>}
         </div>
 
         <div>
@@ -160,9 +150,7 @@ export function ProjectForm({
                 type="button"
                 onClick={() => setColor(c)}
                 className={`h-8 w-8 rounded-full border-2 transition-transform hover:scale-110 ${
-                  color === c
-                    ? 'border-foreground ring-2 ring-foreground/20'
-                    : 'border-transparent'
+                  color === c ? 'border-foreground ring-2 ring-foreground/20' : 'border-transparent'
                 }`}
                 style={{ backgroundColor: c }}
                 aria-label={`Couleur ${c}`}
@@ -176,11 +164,7 @@ export function ProjectForm({
             Annuler
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading
-              ? 'Envoi...'
-              : isEditing
-                ? 'Enregistrer'
-                : 'Créer'}
+            {loading ? 'Envoi...' : isEditing ? 'Enregistrer' : 'Créer'}
           </Button>
         </div>
       </form>

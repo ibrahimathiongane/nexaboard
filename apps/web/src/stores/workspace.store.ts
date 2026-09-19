@@ -54,9 +54,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           set((state) => {
             const needsAutoSelect =
               (!state.currentWorkspaceId ||
-                !workspaces.some(
-                  (workspace) => workspace.id === state.currentWorkspaceId,
-                )) &&
+                !workspaces.some((workspace) => workspace.id === state.currentWorkspaceId)) &&
               workspaces.length > 0;
             return {
               workspaces,

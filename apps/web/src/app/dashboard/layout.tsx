@@ -21,11 +21,7 @@ const NAV_LINKS = [
   { href: '/dashboard/team', label: 'Équipe' },
 ] as const;
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuthStore();
@@ -126,9 +122,7 @@ export default function DashboardLayout({
         <nav className="flex-1 space-y-1 px-3">
           {NAV_LINKS.map(({ href, label }) => {
             const isActive =
-              href === '/dashboard'
-                ? pathname === '/dashboard'
-                : pathname.startsWith(href);
+              href === '/dashboard' ? pathname === '/dashboard' : pathname.startsWith(href);
 
             return (
               <Link
@@ -152,11 +146,7 @@ export default function DashboardLayout({
                 {user.firstName} {user.lastName}
               </p>
             )}
-            {user && (
-              <p className="truncate text-xs text-muted-foreground">
-                {user.email}
-              </p>
-            )}
+            {user && <p className="truncate text-xs text-muted-foreground">{user.email}</p>}
           </div>
           <button
             onClick={handleLogout}

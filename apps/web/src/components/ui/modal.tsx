@@ -34,10 +34,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div
-        className="fixed inset-0 bg-black/50 animate-in fade-in-0"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 bg-black/50 animate-in fade-in-0" onClick={onClose} />
       <div
         className={cn(
           'relative z-50 w-full max-w-lg rounded-lg border bg-card shadow-lg',
@@ -63,9 +60,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
             </svg>
           </Button>
         </div>
-        <div className="max-h-[calc(100vh-12rem)] overflow-y-auto px-6 py-4">
-          {children}
-        </div>
+        <div className="max-h-[calc(100vh-12rem)] overflow-y-auto px-6 py-4">{children}</div>
       </div>
     </div>
   );

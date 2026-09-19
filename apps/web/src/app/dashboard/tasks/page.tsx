@@ -130,7 +130,9 @@ export default function TasksPage() {
           >
             Kanban
           </Button>
-          <Button size="sm" onClick={handleCreate}>Nouvelle tâche</Button>
+          <Button size="sm" onClick={handleCreate}>
+            Nouvelle tâche
+          </Button>
         </div>
       </div>
 
@@ -146,20 +148,18 @@ export default function TasksPage() {
       ) : view === 'list' ? (
         <div className="space-y-2">
           {tasks.map((task) => (
-            <Card key={task.id} className="cursor-pointer hover:border-primary/50" onClick={() => handleEdit(task)}>
+            <Card
+              key={task.id}
+              className="cursor-pointer hover:border-primary/50"
+              onClick={() => handleEdit(task)}
+            >
               <CardContent className="flex items-center gap-4 p-4">
                 <div className="flex-1">
                   <p className="font-medium">{task.title}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {task.project.name}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{task.project.name}</p>
                 </div>
-                <Badge variant={STATUS_COLORS[task.status]}>
-                  {STATUS_LABELS[task.status]}
-                </Badge>
-                <Badge variant="outline">
-                  {PRIORITY_LABELS[task.priority]}
-                </Badge>
+                <Badge variant={STATUS_COLORS[task.status]}>{STATUS_LABELS[task.status]}</Badge>
+                <Badge variant="outline">{PRIORITY_LABELS[task.priority]}</Badge>
                 {task.assignees.map(({ user }) => (
                   <span key={user.id} className="text-xs text-muted-foreground">
                     {user.firstName} {user.lastName}
@@ -190,12 +190,14 @@ export default function TasksPage() {
                 {tasks
                   .filter((t) => t.status === status)
                   .map((task) => (
-                    <Card key={task.id} className="cursor-pointer hover:border-primary/50" onClick={() => handleEdit(task)}>
+                    <Card
+                      key={task.id}
+                      className="cursor-pointer hover:border-primary/50"
+                      onClick={() => handleEdit(task)}
+                    >
                       <CardContent className="p-3">
                         <p className="text-sm font-medium">{task.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {task.project.name}
-                        </p>
+                        <p className="text-xs text-muted-foreground">{task.project.name}</p>
                       </CardContent>
                     </Card>
                   ))}

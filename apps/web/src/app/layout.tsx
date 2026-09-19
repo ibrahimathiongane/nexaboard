@@ -9,17 +9,11 @@ export const metadata: Metadata = {
   description: 'Application de productivité moderne et intuitive pour les petites équipes',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
       <body className={inter.className}>
-        <main className="min-h-screen bg-background">
-          {children}
-        </main>
+        <main className="min-h-screen bg-background">{children}</main>
       </body>
     </html>
   );

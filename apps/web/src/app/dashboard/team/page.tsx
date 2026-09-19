@@ -69,9 +69,7 @@ export default function TeamPage() {
     if (!currentWorkspaceId) return;
     try {
       setLoading(true);
-      const data = await api.get<Member[]>(
-        `/api/v1/workspaces/${currentWorkspaceId}/members`,
-      );
+      const data = await api.get<Member[]>(`/api/v1/workspaces/${currentWorkspaceId}/members`);
       setMembers(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
@@ -158,8 +156,7 @@ export default function TeamPage() {
   const displayMembers = workspace?.members ?? members;
   const currentMembership = members.find((member) => member.userId === currentUser?.id);
   const canEditWorkspace =
-    workspace?.ownerId === currentUser?.id ||
-    currentMembership?.role === 'ADMIN';
+    workspace?.ownerId === currentUser?.id || currentMembership?.role === 'ADMIN';
 
   function openWorkspaceEditor() {
     if (!workspace) return;
@@ -248,7 +245,8 @@ export default function TeamPage() {
       ) : (
         <div className="space-y-2">
           {displayMembers.map((member) => {
-            const initials = `${member.user.firstName.charAt(0)}${member.user.lastName.charAt(0)}`.toUpperCase();
+            const initials =
+              `${member.user.firstName.charAt(0)}${member.user.lastName.charAt(0)}`.toUpperCase();
             const isCurrentUser = member.userId === currentUser?.id;
             const isOwner = member.role === 'OWNER';
             return (
@@ -264,9 +262,7 @@ export default function TeamPage() {
                         <span className="ml-2 text-xs text-muted-foreground">(vous)</span>
                       )}
                     </p>
-                    <p className="text-sm text-muted-foreground truncate">
-                      {member.user.email}
-                    </p>
+                    <p className="text-sm text-muted-foreground truncate">{member.user.email}</p>
                   </div>
                   <Badge variant={ROLE_VARIANTS[member.role] ?? 'outline'}>
                     {ROLE_LABELS[member.role] ?? member.role}
@@ -306,7 +302,9 @@ export default function TeamPage() {
                 </button>
               </Badge>
             ))}
-            {labels.length === 0 && <span className="text-sm text-muted-foreground">Aucun label</span>}
+            {labels.length === 0 && (
+              <span className="text-sm text-muted-foreground">Aucun label</span>
+            )}
           </div>
           <form onSubmit={handleCreateLabel} className="flex flex-wrap gap-2">
             <Input
@@ -324,7 +322,9 @@ export default function TeamPage() {
               aria-label="Couleur du label"
               className="h-9 w-12 rounded border"
             />
-            <Button type="submit" variant="outline" size="sm">Ajouter</Button>
+            <Button type="submit" variant="outline" size="sm">
+              Ajouter
+            </Button>
           </form>
         </CardContent>
       </Card>
@@ -358,15 +358,13 @@ export default function TeamPage() {
               <option value="ADMIN">Administrateur</option>
             </select>
           </div>
-          {submitError && (
-            <p className="text-sm text-destructive">{submitError}</p>
-          )}
+          {submitError && <p className="text-sm text-destructive">{submitError}</p>}
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>
               Annuler
             </Button>
             <Button type="submit" disabled={submitting}>
-              {submitting ? 'Envoi...' : 'Envoyer l\'invitation'}
+              {submitting ? 'Envoi...' : "Envoyer l'invitation"}
             </Button>
           </div>
         </form>
@@ -380,7 +378,9 @@ export default function TeamPage() {
         <form onSubmit={handleWorkspaceUpdate} className="space-y-4">
           {workspaceError && <p className="text-sm text-destructive">{workspaceError}</p>}
           <div className="space-y-2">
-            <label htmlFor="workspace-name" className="text-sm font-medium">Nom</label>
+            <label htmlFor="workspace-name" className="text-sm font-medium">
+              Nom
+            </label>
             <Input
               id="workspace-name"
               value={workspaceName}
@@ -390,7 +390,9 @@ export default function TeamPage() {
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="workspace-description" className="text-sm font-medium">Description</label>
+            <label htmlFor="workspace-description" className="text-sm font-medium">
+              Description
+            </label>
             <textarea
               id="workspace-description"
               value={workspaceDescription}

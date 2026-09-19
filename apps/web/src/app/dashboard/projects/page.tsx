@@ -30,9 +30,7 @@ export default function ProjectsPage() {
     try {
       setLoading(true);
       setError(null);
-      const data = await api.get<Project[]>(
-        `/api/v1/workspaces/${currentWorkspaceId}/projects`,
-      );
+      const data = await api.get<Project[]>(`/api/v1/workspaces/${currentWorkspaceId}/projects`);
       setProjects(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
@@ -83,7 +81,9 @@ export default function ProjectsPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Projets</h1>
-        <Button size="sm" onClick={handleCreate}>Nouveau projet</Button>
+        <Button size="sm" onClick={handleCreate}>
+          Nouveau projet
+        </Button>
       </div>
 
       {projects.length === 0 ? (
@@ -125,9 +125,7 @@ export default function ProjectsPage() {
                   <Badge variant="secondary">
                     {project._count.notes} note{project._count.notes > 1 ? 's' : ''}
                   </Badge>
-                  {project.archived && (
-                    <Badge variant="outline">Archivé</Badge>
-                  )}
+                  {project.archived && <Badge variant="outline">Archivé</Badge>}
                 </div>
               </CardContent>
             </Card>

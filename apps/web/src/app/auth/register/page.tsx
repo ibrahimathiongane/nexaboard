@@ -55,7 +55,7 @@ export default function RegisterPage() {
 
       router.push('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur d\'inscription');
+      setError(err instanceof Error ? err.message : "Erreur d'inscription");
     } finally {
       setLoading(false);
     }
@@ -65,16 +65,12 @@ export default function RegisterPage() {
     <div className="rounded-lg border bg-card p-8 shadow-sm">
       <div className="mb-6 text-center">
         <h1 className="text-2xl font-bold">Inscription</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Créez votre espace nexaBoard
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">Créez votre espace nexaBoard</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-            {error}
-          </div>
+          <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
         )}
 
         <div className="grid grid-cols-2 gap-4">

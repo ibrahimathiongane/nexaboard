@@ -39,7 +39,15 @@ export default function CalendarPage() {
       setLoading(true);
       setError(null);
       const start = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-      const end = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999);
+      const end = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() + 1,
+        0,
+        23,
+        59,
+        59,
+        999,
+      );
       const data = await api.get<CalendarEvent[]>(
         `/api/v1/calendar/workspace/${currentWorkspaceId}?start=${encodeURIComponent(start.toISOString())}&end=${encodeURIComponent(end.toISOString())}`,
       );
@@ -104,7 +112,9 @@ export default function CalendarPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Calendrier</h1>
-        <Button size="sm" onClick={handleCreate}>Nouvel événement</Button>
+        <Button size="sm" onClick={handleCreate}>
+          Nouvel événement
+        </Button>
       </div>
 
       <div className="mb-4 flex items-center justify-between">
@@ -129,12 +139,13 @@ export default function CalendarPage() {
       ) : (
         <div className="space-y-2">
           {events.map((event) => (
-            <Card key={event.id} className="cursor-pointer hover:border-primary/50" onClick={() => handleEdit(event)}>
+            <Card
+              key={event.id}
+              className="cursor-pointer hover:border-primary/50"
+              onClick={() => handleEdit(event)}
+            >
               <CardContent className="flex items-center gap-4 p-4">
-                <div
-                  className="h-3 w-3 rounded-full"
-                  style={{ backgroundColor: event.color }}
-                />
+                <div className="h-3 w-3 rounded-full" style={{ backgroundColor: event.color }} />
                 <div className="flex-1">
                   <p className="font-medium">{event.title}</p>
                   {event.description && (

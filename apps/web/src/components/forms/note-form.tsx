@@ -31,13 +31,7 @@ interface FormErrors {
   title?: string;
 }
 
-export function NoteForm({
-  workspaceId,
-  note,
-  open,
-  onClose,
-  onSuccess,
-}: NoteFormProps) {
+export function NoteForm({ workspaceId, note, open, onClose, onSuccess }: NoteFormProps) {
   const isEditing = !!note;
   const [title, setTitle] = useState('');
   const [contentMd, setContentMd] = useState('');
@@ -104,20 +98,14 @@ export function NoteForm({
       onSuccess();
       onClose();
     } catch (err) {
-      setApiError(
-        err instanceof Error ? err.message : 'Une erreur est survenue',
-      );
+      setApiError(err instanceof Error ? err.message : 'Une erreur est survenue');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      title={isEditing ? 'Modifier la note' : 'Créer une note'}
-    >
+    <Modal open={open} onClose={onClose} title={isEditing ? 'Modifier la note' : 'Créer une note'}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {apiError && (
           <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
@@ -136,9 +124,7 @@ export function NoteForm({
             placeholder="Titre de la note"
             className="mt-1"
           />
-          {errors.title && (
-            <p className="mt-1 text-xs text-destructive">{errors.title}</p>
-          )}
+          {errors.title && <p className="mt-1 text-xs text-destructive">{errors.title}</p>}
         </div>
 
         <div>
@@ -179,11 +165,7 @@ export function NoteForm({
             Annuler
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading
-              ? 'Envoi...'
-              : isEditing
-                ? 'Enregistrer'
-                : 'Créer'}
+            {loading ? 'Envoi...' : isEditing ? 'Enregistrer' : 'Créer'}
           </Button>
         </div>
       </form>
