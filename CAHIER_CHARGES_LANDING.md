@@ -1,906 +1,561 @@
-# Cahier des Charges - Landing Page & Formulaire Bêta nexaBoard
+# Cahier des Charges de Référence — Landing Page & Moteur d'Acquisition Bêta nexaBoard
 
-**Version :** 1.1  
-**Date :** 10 septembre 2026  
-**Auteur :** Ibrahim  
-**Statut :** Prêt pour développement
-
----
-
-## Table des Matières
-
-1. [Résumé Exécutif](#1-résumé-exécutif)
-2. [Architecture](#2-architecture)
-3. [Landing Page](#3-landing-page)
-4. [Formulaire Bêta](#4-formulaire-bêta)
-5. [Backend & API](#5-backend--api)
-6. [Emails Transactionnels](#6-emails-transactionnels)
-7. [Design System](#7-design-system)
-8. [Analytics](#8-analytics)
-9. [Déploiement](#9-déploiement)
-10. [Planning](#10-planning)
+**Produit :** nexaBoard (SaaS de productivité tout-en-un pour petites équipes)  
+**Version :** 2.0 (SaaS Grade & Conversion Architecture)  
+**Date :** 19 septembre 2026  
+**Auteur :** Équipe Produit & Growth nexaBoard  
+**Statut :** Validé pour Implémentation  
 
 ---
 
-## 1. Résumé Exécutif
+## Sommaire Exécutif
 
-### 1.1 Objectif
-
-Créer une landing page et un système d'inscription bêta pour recruter 50-100 premiers utilisateurs testeurs.
-
-### 1.2 KPIs
-
-| KPI | Cible | Mesure |
-|-----|-------|--------|
-| Taux de conversion | > 5% | Inscriptions / Visiteurs |
-| Temps moyen sur page | > 2 min | PostHog |
-| Clics "Essai gratuit" | > 10% | Analytics |
-| Inscriptions bêta | 50-100 | Base de données |
-
-### 1.3 Public Cible
-
-- PME 5-20 personnes
-- Utilisateurs actuels de Trello, Notion, Asana
-- Cherchant une alternative simple et intégrée
+1. [Vision Produit, Positionnement & Psychologie Marketing](#1-vision-produit-positionnement--psychologie-marketing)
+2. [Architecture Cognitive & Parcours de Conversion](#2-architecture-cognitive--parcours-de-conversion)
+3. [Spécifications Détaillées Section par Section](#3-spécifications-détaillées-section-par-section)
+4. [Le Moteur de Conversion : Formulaire & Progressive Profiling](#4-le-moteur-de-conversion--formulaire--progressive-profiling)
+5. [Parcours Post-Conversion & Viralité (Page `/merci`)](#5-parcours-post-conversion--viralité-page-merci)
+6. [Design System, UI/UX & Micro-Interactions](#6-design-system-uiux--micro-interactions)
+7. [Architecture Technique & Performance Web](#7-architecture-technique--performance-web)
+8. [Backend, API & Modélisation des Données](#8-backend-api--modélisation-des-données)
+9. [Stratégie d'Emails Transactionnels & Nurturing](#9-stratégie-demails-transactionnels--nurturing)
+10. [Plan de Mesure, Taxonomie Analytics & Conformité RGPD](#10-plan-de-mesure-taxonomie-analytics--conformité-rgpd)
+11. [Matrice de Recette & Critères d'Acceptation](#11-matrice-de-recette--critères-dacceptation)
 
 ---
 
-## 2. Architecture
+## 1. Vision Produit, Positionnement & Psychologie Marketing
 
-### 2.1 Décision : Monorepo
+### 1.1 Le Diagnostic de Marché (Jobs-to-be-Done)
+Les petites équipes de 5 à 20 collaborateurs (startups, agences créatives, équipes produit, cabinets de conseil) font face à ce que l'industrie appelle le **« SaaS Sprawl »** (la prolifération anarchique des logiciels) :
+* Elles utilisent en moyenne 4 à 6 outils déconnectés : Trello pour le Kanban, Notion pour les wikis, Google Calendar pour les réunions, Todoist pour les tâches personnelles, Slack pour échanger.
+* **Conséquences directes** : Perte de 2,5 heures par semaine et par employé à switcher de contexte, informations silotées, doublons, et coûts d'abonnements cumulés exorbitants (entre 40 € et 90 € par utilisateur/mois).
+* **Les alternatives existantes échouent auprès de cette cible** :
+  * *Notion* : Trop malléable, devient rapidement un labyrinthe sans gouvernance stricte, courbe d'apprentissage rebutante.
+  * *Asana / Monday / ClickUp* : Usines à gaz sur-paramétrées créées pour les grands comptes de 200+ personnes, trop chères et trop rigides.
+  * *Trello* : Trop limité, impose l'achat de multiples *power-ups* pour avoir des fonctionnalités basiques (calendrier, sous-tâches, champs personnalisés).
 
-**Choix :** Intégrer la landing page dans le monorepo existant.
+### 1.2 La Proposition Unique de Valeur (UVP)
+> **« Le premier espace de travail unifié qui rassemble vos tâches, vos notes et votre calendrier dans une interface sans friction, opérationnelle en 3 minutes et sans formation. »**
 
-**Justification :**
-- Stack technique commune (Next.js + Tailwind)
-- Composants UI réutilisables
-- Un seul déploiement
-- Maintenance simplifiée
+### 1.3 Les 6 Leviers Psychologiques et Biais Cognitifs appliqués à la Landing Page
+1. **L'Aversion à la Perte & l'Effet d'Urgence Éthique (Scarcity & Early Adopter Cohort)** :
+   * Au lieu d'une banale "liste d'attente", mise en place d'un programme fermé : **« La Promotion Pionnière (Cohorte des 100 premières équipes) »**.
+   * Incitation majeure : *Accès gratuit et illimité à vie au Plan Pro* ou *1 an de Plan Pro offert* pour les équipes qui participent activement aux retours d'expérience.
+   * Compteur dynamique transparent de places restantes (ex. *"Plus que 34 places disponibles dans la cohorte Bêta"*).
+2. **La Réduction du Coût Cognitif (Cognitive Ease)** :
+   * Zéro jargon technique complexe.
+   * Démonstration visuelle immédiate du produit dès le premier écran (Hero) : l'utilisateur comprend en moins de 5 secondes comment fonctionne l'outil sans avoir à lire un seul paragraphe de documentation.
+3. **Le Principe de Réciprocité & Transparence Radicale** :
+   * Distinction honnête entre ce qui est disponible immédiatement (MVP opérationnel) et ce qui est sur la feuille de route (Timeline, intégrations avancées, mode hors-ligne).
+   * Cette sincérité neutralise le scepticisme habituel des acheteurs B2B envers les faux arguments marketing.
+4. **L'Effet de Contraste et d'Ancrage (Contrast Effect)** :
+   * Mise en scène du tableau comparatif chiffré : comparaison du coût total mensuel (Notion + Trello + Asana = ~45 €/utilisateur/mois) vs nexaBoard (0 € en bêta puis 12 €/mois par équipe).
+5. **L'Engagement Progressif (Micro-commitments & Foot-in-the-Door)** :
+   * Ne jamais forcer un utilisateur à remplir 5 champs contraignants dès le premier coup d'œil.
+   * Capture de l'email en 1 clic dans le Hero, puis qualification ergonomique par micro-choix (chips cliquables) en étape 2.
+6. **L'Inversion Complète du Risque (Risk Reversal)** :
+   * Mentions visibles en permanence : *« 100% Gratuit pendant la bêta • Aucune carte bancaire requise • Export de vos données en 1 clic (JSON/Markdown) • Données hébergées en France / RGPD strict »*.
 
-### 2.2 Structure
+---
+
+## 2. Architecture Cognitive & Parcours de Conversion
+
+La landing page suit un arc narratif éprouvé en marketing SaaS : **Problème → Agitation → Solution → Preuve Visuelle → Comparaison → Offre Irrésistible → Réassurance**.
 
 ```
-nexaboard/
-├── apps/
-│   ├── api/              # Backend NestJS
-│   ├── web/              # Dashboard (existant)
-│   └── landing/          # ← NOUVEAU : Landing page
-├── libs/
-│   └── shared/           # Composants partagés
-├── docker/
-├── docs/
-└── package.json
+[ HEADER ] : Navigation fluide + Indicateur de statut Bêta + CTA Connexion & Inscription
+     │
+[ SECTION 1 : HERO ] : Promesse forte + Formulaire Ultra-light + Showcase Visuel Interactif
+     │
+[ SECTION 2 : TRUST & SOUVERAINETÉ ] : Logos/Tech Stack + Hébergement FR/UE + Chiffres vérifiables
+     │
+[ SECTION 3 : PAIN VS GAIN ] : La fin du chaos des 5 outils ouverts en permanence
+     │
+[ SECTION 4 : BENTO SHOWCASE ] : Les 4 piliers fonctionnels (Tâches, Notes, Calendrier, Équipe)
+     │
+[ SECTION 5 : CALCULATEUR ROI ] : Économies financières et gain d'heures calculés en direct
+     │
+[ SECTION 6 : TABLEAU COMPARATIF ] : nexaBoard face à Notion, Trello et Asana
+     │
+[ SECTION 7 : OFFRE PIONNIÈRE & PRIX ] : Clarté totale, avantage Early Adopter garanti
+     │
+[ SECTION 8 : ROADMAP TRANSPARENTE ] : Ce qui tourne aujourd'hui vs Ce qui arrive demain
+     │
+[ SECTION 9 : FAQ ANTI-OBJECTIONS ] : Sécurité, migration, pérennité, engagement
+     │
+[ SECTION 10 : FINAL CALL-TO-ACTION ] : Dernière opportunité d'embarquer dans la cohorte
+     │
+[ FOOTER ] : Mentions légales, conformité RGPD, liens produit et statut système
 ```
 
-### 2.3 Dépendances
+---
 
+## 3. Spécifications Détaillées Section par Section
+
+### 3.1 Header Sticky (Navigation & Quick Conversion)
+* **Composants :**
+  * **Logo nexaBoard** : Icône vectorielle moderne + Logotype avec badge discret `BETA v0.1`.
+  * **Ancres de navigation** : `Fonctionnalités`, `Comparatif`, `Tarifs`, `Roadmap`, `FAQ`.
+  * **Zone d'actions** :
+    * Bouton secondaire discret : *« Se connecter »* (Lien externe direct vers `https://app.nexaboard.io/auth/login` ou portail web).
+    * Bouton primaire : *« Rejoindre la Bêta »* (Scroll doux animé vers le formulaire ou ouverture de la modale d'inscription).
+* **Comportement UX :**
+  * Fond translucide avec flou d'arrière-plan (`backdrop-blur-md bg-white/80 dark:bg-gray-950/80`).
+  * Réduction légère du padding au scroll pour maximiser l'espace de lecture.
+
+---
+
+### 3.2 Section 1 : Le Hero (Above The Fold)
+L'espace au-dessus de la ligne de flottaison doit capter l'attention en moins de 3 secondes.
+
+* **Tagline de contexte (Eyebrow Badge) :**
+  * Composant pilule animée : `✨ Promotion Bêta Ouverte • Plus que 34 places pour les équipes pionnières`.
+* **Titre Principal (H1) :**
+  * Formule : *« La productivité enfin simple pour les petites équipes. »*
+  * Sous-accroche visuelle en dégradé de texte : *« Moins de bruit, plus d'impact. »*
+* **Sous-titre explicatif (P) :**
+  * *« nexaBoard réunit vos tableaux de tâches, vos notes d'équipe et votre calendrier dans une plateforme ultra-rapide. Fini les allers-retours entre 5 abonnements payants. »*
+* **Formulaire d'action Hero (Étape 1) :**
+  * Champ unique : Input Email avec icône courrier + bouton intégré `Obtenir mon accès Bêta →`.
+  * Micro-copie de réassurance sous le champ :
+    * `✓ 100% Gratuit` • `✓ Zéro carte bancaire` • `✓ Configuration en 3 min` • `✓ Données en France 🇫🇷`.
+* **Le Product Showcase (Aperçu Produit Haute Définition) :**
+  * Écran réaliste (fausse fenêtre d'application avec boutons mac macOS rouge/jaune/vert et barre latérale élégante).
+  * Affichage d'un tableau Kanban actif nexaBoard avec colonnes (`À faire`, `En cours`, `Terminé`), cartes avec étiquettes de couleur, avatars des membres, et volet droit affichant une note Markdown connectée à la tâche en cours.
+  * Effet visuel : Perspective 3D subtile (`transform-gpu perspective-1000 rotate-x-2`), halo lumineux dégradé (gradient glow bleu/violet) en arrière-plan.
+
+---
+
+### 3.3 Section 2 : Barre de Confiance & Souveraineté
+Remplacement des faux témoignages par des gages de crédibilité tangibles :
+* **Piliers de réassurance :**
+  * 🔒 **Hébergement Souverain** : Serveurs basés en France (Paris) / Chiffrement AES-256 au repos & TLS 1.3.
+  * ⚡ **Performance Native** : Architecture Next.js 14 + NestJS, temps de chargement inférieur à 100 ms.
+  * 📦 **Zéro Lock-in** : Export total de vos espaces, tâches et notes en formats standards (CSV, Markdown, JSON).
+  * 👥 **Conçu pour 5-20 personnes** : Pensé spécifiquement pour la collaboration humaine sans hiérarchie lourde.
+
+---
+
+### 3.4 Section 3 : Le Contraste « Avant / Après » (Pain vs Gain)
+Mise en miroir visuelle des frustrations quotidiennes face à la sérénité apportée par nexaBoard.
+
+| Le quotidien éclaté (Avant nexaBoard) | La simplicité fluide (Avec nexaBoard) |
+| :--- | :--- |
+| ❌ 5 onglets ouverts en permanence (Trello, Notion, GCal, Todoist, Slack). | ✅ Un onglet unique et rapide pour piloter toute la semaine de l'équipe. |
+| ❌ Des tâches orphelines sans documentation associée ni contexte clair. | ✅ Chaque tâche est directement liée à sa note de cadrage et son échéance calendrier. |
+| ❌ 45 € à 80 € par utilisateur chaque mois pour des fonctions sous-utilisées. | ✅ Une solution pensée à coût juste, sans frais cachés par utilisateur. |
+| ❌ Nouveaux employés perdus pendant 2 semaines face à des wikis labyrinthiques. | ✅ Prise en main en 3 minutes chrono sans aucun besoin de tutoriel ou formation. |
+
+---
+
+### 3.5 Section 4 : Le Bento Grid des Fonctionnalités (Showcase Interactif)
+Organisation moderne en grille de type "Bento Box" mettant en valeur les piliers du produit :
+
+1. **Bloc 1 (Grand Format) : Gestion des Tâches Agile (Kanban & Listes)**
+   * Colonnes personnalisables, sous-tâches, assignations multiples, niveaux d'urgence, filtres instantanés.
+   * Visualisation interactive : aperçu du drag-and-drop de cartes.
+2. **Bloc 2 (Format Carré) : Notes & Base de Connaissances**
+   * Éditeur structuré avec prise en charge intégrale du Markdown, hiérarchie claire par projet, partage en équipe en lecture/écriture.
+3. **Bloc 3 (Format Carré) : Calendrier d'Équipe Synchronisé**
+   * Visualisation claire des échéances de sprints, des jalons de projets et des livrables sans encombrement.
+4. **Bloc 4 (Format Large) : Espaces de Travail Multi-Projets & Rôles**
+   * Permissions adaptées (`Propriétaire`, `Admin`, `Membre`, `Observateur`), tableaux de bord statistiques avec suivi de l'avancement global en temps réel.
+
+---
+
+### 3.6 Section 5 : Calculateur d'Économies « Anti-SaaS Sprawl »
+Un composant interactif dynamique permettant au visiteur d'évaluer concrètement ses gains :
+* **Curseur interactif (Slider)** : Taille de l'équipe (de 5 à 25 personnes).
+* **Cases à cocher des outils actuels** : Notion (10 €/u), Trello Pro (6 €/u), Asana Starter (11 €/u), Todoist Business (8 €/u).
+* **Calcul en temps réel :**
+  * Montant économisé par an (ex. : *« Votre équipe de 10 personnes économise jusqu'à 3 240 € / an »*).
+  * Heures de distraction évitées (estimées à 120 heures par an et par collaborateur).
+* **CTA dédié** : `Réserver notre place bêta et stopper les frais →`.
+
+---
+
+### 3.7 Section 6 : Tableau Comparatif Sans Concession
+Tableau clair démontrant le positionnement précis de nexaBoard :
+
+| Critères d'évaluation | nexaBoard | Notion | Trello | Asana |
+| :--- | :---: | :---: | :---: | :---: |
+| **Prise en main immédiate (< 5 min)** | **✅ OUI** | ❌ Complexe | ✅ OUI | ❌ Lourd |
+| **Tâches + Notes + Calendrier unifiés** | **✅ OUI** | ⚠️ Bricolé | ❌ Tâches seules | ⚠️ Limité |
+| **Simplicité sans formation requise** | **✅ OUI** | ❌ Formation requise | ✅ OUI | ❌ Formation requise |
+| **Vitesse d'affichage (< 150 ms)** | **✅ Ultra-rapide** | ❌ Lenteurs | ⚠️ Moyen | ⚠️ Moyen |
+| **Hébergement souverain européen** | **✅ France (Paris)** | ❌ US | ❌ US | ❌ US |
+| **Tarif indicatif par mois (équipe de 10)** | **12 € total (ou 0 € en Bêta)** | ~100 € / mois | ~60 € / mois | ~110 € / mois |
+
+---
+
+### 3.8 Section 7 : L'Offre Pionnière & Transparence Tarifaire
+La tarification doit être lisible, honnête et sans ambiguïté.
+
+* **Bannière d'accès Bêta :**
+  * *« Durant toute la phase bêta, l'accès est 100% gratuit avec l'ensemble des fonctionnalités débloquées. »*
+* **L'Avantage Fondateur (Early Adopter Guarantee) :**
+  * *« En tant que membre de la première cohorte bêta, vous bénéficierez de 1 an de Plan Pro offert lors de la bascule commerciale, ainsi que d'un statut "Membre Fondateur" garantissant un tarif préférentiel à vie. »*
+* **Grille des plans futurs :**
+  * **Plan Découverte (0 € / mois)** : Idéal pour démarrer (jusqu'à 3 projets, 5 membres d'équipe, 1 Go de documents, support communautaire).
+  * **Plan Équipe Pro (12 € / mois par équipe — et non par utilisateur)** : Projets illimités, membres illimités (jusqu'à 20), 25 Go de stockage, support prioritaire, accès anticipé aux nouvelles fonctionnalités.
+
+---
+
+### 3.9 Section 8 : Roadmap Publique et Transparente
+Démontrer la dynamique produit tout en restant rigoureusement exact sur les engagements :
+
+* **✅ Déjà opérationnel dans votre espace de travail :**
+  * Authentification sécurisée (JWT, tokens de rafraîchissement, vérification e-mail).
+  * Tableaux Kanban et listes avec filtres et statuts.
+  * Prise de notes structurée en Markdown.
+  * Calendrier d'agenda connecté.
+  * Gestion des rôles d'équipe et espaces de travail isolés.
+* **🚀 Prochaines étapes de la Feuille de Route (Phase 2 & 3) :**
+  * Vue chronologique Timeline / Gantt interactive.
+  * Synchronisation bi-directionnelle avec Google Calendar & Outlook.
+  * Mode hors-ligne avec réconciliation locale automatique.
+  * Application mobile progressive (PWA).
+
+---
+
+### 3.10 Section 9 : FAQ Anti-Objections
+Questions formulées exactement telles que les prospects se les posent :
+
+1. **« Qu'est-ce que cela implique de participer à la bêta privée ? »**
+   * *Réponse :* Vous bénéficiez d'un accès immédiat à un outil fonctionnel pour votre équipe. En échange, nous attendons vos avis honnêtes sur ce qui vous plaît et ce qu'il faut améliorer.
+2. **« Mes données sont-elles en sécurité et puis-je les récupérer si je pars ? »**
+   * *Réponse :* Vos données sont chiffrées (AES-256) et hébergées en France sur une infrastructure souveraine. Vous pouvez exporter l'intégralité de vos notes (Markdown), tâches (CSV/JSON) en 1 clic à tout moment. Zéro enfermement.
+3. **« Est-ce vraiment gratuit ? Y aura-t-il une mauvaise surprise ? »**
+   * *Réponse :* C'est entièrement gratuit pendant toute la période de test. Nous ne demandons aucune carte bancaire à l'inscription. Vous serez prévenus plusieurs semaines avant le lancement officiel et disposerez d'une offre privilégiée.
+4. **« Combien de temps prend la migration depuis Trello ou Notion ? »**
+   * *Réponse :* Notre structure est immédiatement familière. Vous créez vos projets et invitez vos collaborateurs en moins de 3 minutes. Un module d'import automatique est en cours de finalisation.
+
+---
+
+### 3.11 Section 10 : Final Call-to-Action
+* **Visuel épuré centré sur l'action :**
+  * Titre : *« Prêt à désencombrer le quotidien de votre équipe ? »*
+  * Répétition du formulaire instantané avec rappel des places de la cohorte.
+  * Bouton à fort contraste : `Rejoindre la Bêta Privée →`.
+
+---
+
+### 3.12 Footer
+* Liens légaux : Politique de confidentialité (`/privacy`), Conditions Générales d'Utilisation (`/terms`), Mentions légales.
+* Liens communauté & support : Contact fondateur (`contact@nexaboard.io`), GitHub, Twitter/X.
+* Indicateur vert en direct : `● Tous les systèmes opérationnels (API & Dashboard)`.
+* Mention copyright : *« © 2026 nexaBoard. Conçu avec rigueur en France. »*
+
+---
+
+## 4. Le Moteur de Conversion : Formulaire & Progressive Profiling
+
+### 4.1 La Stratégie du Profilage Progressif en 2 Temps
+Pour éliminer la perte de conversion causée par les formulaires trop longs :
+
+```
+[ ÉCRAN HERO ] 
+  Saisie de l'Email uniquement
+  Ex : [ alex@startup.fr ] ──► [ Clic : Obtenir mon accès Bêta ]
+                                            │
+                                            ▼
+[ MODALE DE QUALIFICATION INSTANTANÉE (Temps 2 : 10 secondes) ]
+  « Bravo ! Votre place est pré-réservée. 
+    Deux questions rapides pour personnaliser votre espace : »
+  
+  1. Taille de votre équipe :
+     [ (1-5) ]  [ (6-10) ]  [ (11-20) ]  [ (20+) ]   (Chips cliquables en 1 clic)
+  
+  2. Votre outil principal actuel :
+     [ Trello ]  [ Notion ]  [ Asana ]  [ ClickUp ]  [ Autre / Rien ]
+  
+  3. (Optionnel) Votre priorité absolue :
+     [ Gagner du temps sur les tâches ]  [ Avoir des notes claires ]  [ Économiser sur les SaaS ]
+  
+  ──► [ Finaliser mon inscription et accéder à la Bêta ]
+```
+
+### 4.2 Schéma de Validation Zod & Types
+
+```typescript
+import { z } from 'zod';
+
+export const betaLeadSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .email({ message: 'Veuillez saisir une adresse e-mail professionnelle valide' }),
+  teamSize: z.enum(['1-5', '6-10', '11-20', '20+'], {
+    errorMap: () => ({ message: 'Veuillez indiquer la taille de votre équipe' }),
+  }),
+  currentTool: z.enum(['trello', 'notion', 'asana', 'clickup', 'other', 'none'], {
+    errorMap: () => ({ message: 'Veuillez sélectionner votre outil actuel' }),
+  }),
+  interest: z
+    .enum(['tasks', 'notes', 'calendar', 'cost_savings', 'all_in_one'])
+    .optional(),
+  referralCode: z.string().optional(),
+});
+
+export type BetaLeadInput = z.infer<typeof betaLeadSchema>;
+```
+
+---
+
+## 5. Parcours Post-Conversion & Viralité (Page `/merci`)
+
+Une page de remerciement ne doit jamais être un cul-de-sac. Elle doit transformer le nouvel inscrit en ambassadeur actif de nexaBoard grâce à une boucle virale éthique.
+
+### 5.1 Architecture de la Page `/merci`
+1. **Accusé de réception valorisant :**
+   * Animation de succès (checkmark animée Framer Motion).
+   * Titre : *« Vous êtes dans la liste des pionniers nexaBoard ! »*
+   * Carte d'adhésion virtuelle avec :
+     * Le rang attribué : ex. **Position #42 sur la liste d'attente**.
+     * Badge : **Early Adopter Cohort**.
+2. **La Boucle Virale (Move up in line / Referral Mechanism) :**
+   * *« Envie d'accéder à votre espace sans attendre ? »*
+   * Mécanisme : Invitez 2 collègues ou confrères chefs de projet. Chaque inscription via votre lien personnalisé vous fait gagner **10 places dans la file**.
+   * Champ avec bouton `Copier mon lien de parrainage unique` (ex. `https://nexaboard.io?ref=BETA-42A9F`).
+   * Boutons de partage en 1 clic : Partager sur LinkedIn, Twitter/X, WhatsApp, Email.
+3. **Accès au Cercle Privé (Discord / Slack Communautaire) :**
+   * Lien pour rejoindre le canal privé des testeurs et échanger en direct avec l'équipe fondatrice.
+
+---
+
+## 6. Design System, UI/UX & Micro-Interactions
+
+### 6.1 Tokens de Design & Couleurs
+L'identité visuelle combine professionnalisme SaaS B2B et fraîcheur moderne (proche de Linear ou Raycast).
+
+```css
+:root {
+  /* Nuances Principales */
+  --primary-50: #EEF2FF;
+  --primary-100: #E0E7FF;
+  --primary-500: #6366F1; /* Indigo moderne */
+  --primary-600: #4F46E5; /* Couleur d'action principale */
+  --primary-700: #4338CA;
+  
+  /* Accents de Conversion & Succès */
+  --accent-emerald: #10B981; /* Vert réassurance / disponible */
+  --accent-amber: #F59E0B;   /* Alerte / places limitées */
+  --accent-purple: #8B5CF6;  /* Roadmap & innovation */
+  
+  /* Neutres & Surfaces */
+  --surface-canvas: #FFFFFF;
+  --surface-card: #F8FAFC;
+  --surface-border: #E2E8F0;
+  --text-headline: #0F172A;
+  --text-body: #334155;
+  --text-muted: #64748B;
+}
+```
+
+### 6.2 Micro-Interactions (Framer Motion)
+* **Smooth Entrance (Staggered)** : Les éléments du Hero apparaissent en fondu enchaîné ascendant (`y: [20, 0]`, `opacity: [0, 1]`, transition de 0.4s).
+* **Hover Lift sur les Cartes** : Élévation légère des cartes de fonctionnalités avec renforcement de l'ombre portée (`translateY(-4px)` et `box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08)`).
+* **Bouton d'Action Pulsant** : Lueur d'accent douce et subtile autour du bouton principal pour guider le regard sans être agressif.
+* **Accordéon FAQ fluide** : Dépliage animé avec gestion native de l'accessibilité (`aria-expanded`).
+
+---
+
+## 7. Architecture Technique & Performance Web
+
+### 7.1 Stack Technique Frontend (`apps/landing`)
+* **Framework** : Next.js 14 avec **App Router**.
+* **Styling** : Tailwind CSS avec classes utilitaires optimisées via PurgeCSS.
+* **Composants d'Animation** : `framer-motion` version 11.
+* **Gestion du Formulaire** : `react-hook-form` avec `@hookform/resolvers/zod`.
+* **Icons** : `lucide-react` (icônes vectorielles légères et cohérentes).
+
+### 7.2 Objectifs Core Web Vitals (Performance Maximale)
+* **LCP (Largest Contentful Paint)** : < 1,2 seconde (optimisation des polices via `next/font`, pas d'images lourdes non optimisées).
+* **INP (Interaction to Next Paint)** : < 80 millisecondes (formulaire réactif sans blocage du thread JS).
+* **CLS (Cumulative Layout Shift)** : 0.00 (réservation d'espace fixe pour les éléments dynamiques).
+* **Taille du Bundle JS initial** : < 85 Ko gzip.
+
+### 7.3 Référencement Naturel (SEO) & Partage Social
+* **Balises Meta Principales** :
+  * Title : `nexaBoard — L'espace de travail unifié pour les équipes de 5 à 20 personnes`
+  * Description : `Fini la jonglerie entre Trello, Notion et Google Calendar. Centralisez vos tâches, vos notes et vos plannings en 3 minutes avec nexaBoard.`
+* **Open Graph & Twitter Cards** :
+  * Image dédiée haute résolution (`1200x630px`) hébergée sur `/og-image.png` présentant l'interface épurée et le slogan.
+* **Données Structurées JSON-LD (`schema.org`)** :
+  * Typage `SoftwareApplication`, `OperatingSystem: Web Browser`, `ApplicationCategory: BusinessApplication`, `Offers: { price: 0, priceCurrency: EUR }`.
+
+---
+
+## 8. Backend, API & Modélisation des Données
+
+### 8.1 Spécification de l'Endpoint Backend
+* **Route :** `POST /api/v1/beta/subscribe`
+* **Contrôleur :** `LeadsController` dans `apps/api/src/modules/leads/`
+* **Limitation de Débit (Throttling) :** Protection contre le spam (max 3 requêtes / 60 secondes par IP).
+
+#### Payload de la Requête (JSON)
 ```json
 {
-  "name": "@nexaboard/landing",
-  "version": "0.1.0",
-  "dependencies": {
-    "next": "14.x",
-    "react": "18.x",
-    "react-dom": "18.x",
-    "tailwindcss": "3.x",
-    "framer-motion": "11.x",
-    "react-hook-form": "7.x",
-    "zod": "3.x",
-    "@hookform/resolvers": "3.x"
+  "email": "sarah.martin@startup-agile.fr",
+  "teamSize": "6-10",
+  "currentTool": "notion",
+  "interest": "all_in_one",
+  "referralCode": "BETA-018X"
+}
+```
+
+#### Réponse HTTP 201 (Création réussie)
+```json
+{
+  "success": true,
+  "message": "Inscription réussie à la cohorte Bêta !",
+  "data": {
+    "id": "cly78a01z000008l0g8f1bc42",
+    "email": "sarah.martin@startup-agile.fr",
+    "position": 43,
+    "referralCode": "BETA-43F9A",
+    "referralLink": "https://nexaboard.io?ref=BETA-43F9A"
   }
 }
 ```
 
----
-
-## 3. Landing Page
-
-### 3.1 Pages
-
-| Route | Description | Priorité |
-|-------|-------------|----------|
-| `/` | Landing page principale | P0 |
-| `/merci` | Page de remerciement | P0 |
-| `/privacy` | Politique de confidentialité | P1 |
-| `/terms` | Conditions d'utilisation | P2 |
-
-### 3.2 Structure de la Page d'Accueil
-
-#### Section 1 : Header
-
-```html
-<nav>
-  <Logo />
-  <Links>
-    <a href="#features">Features</a>
-    <a href="#pricing">Prix</a>
-    <a href="#faq">FAQ</a>
-  </Links>
-  <Actions>
-    <a href="https://app.nexaboard.io/auth/login">Connexion</a>
-    <a href="#beta" class="btn-primary">Essai gratuit</a>
-  </Actions>
-</nav>
-```
-
-#### Section 2 : Hero
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                                                             │
-│  La productivité enfin simple pour les petites équipes     │
-│                                                             │
-│  nexaBoard combine tâches, notes et calendrier             │
-│  dans un seul outil intuitif. Pas de multiplication        │
-│  d'outils, pas d'abonnements coûteux.                      │
-│                                                             │
-│  ✅ Disponible maintenant  🚀 Fonctionnalités avancées bientôt │
-│                                                             │
-│  ┌─────────────────────────────┐ ┌───────────────┐         │
-│  │ vore@email.com              │ │ Rejoindre →   │         │
-│  └─────────────────────────────┘ └───────────────┘         │
-│                                                             │
-│  ✓ Gratuit  ✓ Sans carte bancaire  ✓ Setup 30 secondes    │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-#### Section 3 : Social Proof Bar
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  🔢 50+ bêta testeurs  │  ⭐ 4.8/5 satisfaction  │  🚀 3 min setup │
-└─────────────────────────────────────────────────────────────┘
-```
-
-#### Section 4 : Features
-
-| Catégorie | ✅ Disponible Maintenant | 🚀 Bientôt Disponible |
-|-----------|------------------------|----------------------|
-| **📋 Tâches** | Kanban, Liste, Sous-tâches, Priorités, Échéances, Assignation | Timeline (Gantt), Dépendances |
-| **📝 Notes** | Éditeur simple, Hiérarchie, Partage | WYSIWYG avancé, Collaboration temps réel |
-| **📅 Calendrier** | Vue jour/semaine/mois, Événements, Rappels | Sync Google Calendar, Auto-planning IA |
-| **👥 Équipe** | Workspaces, Rôles, Commentaires | Notifications avancées |
-| **🔌 Intégrations** | API REST | Zapier, Slack, GitHub |
-| **📱 Mobile** | Application web responsive | App iOS & Android |
-| **⚡ Performance** | Temps de réponse < 200ms | Mode hors ligne |
-
-**Légende :**
-```
-✅ = Disponible dès aujourd'hui
-🚀 = Dans le roadmap (Phase 2-3, 3-6 mois)
-```
-
-#### Section 5 : How It Works
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Comment ça marche                        │
-├─────────────────┬─────────────────┬─────────────────────────┤
-│       1️⃣        │       2️⃣        │          3️⃣             │
-│  Créez votre    │  Invitez votre  │   Organisez votre       │
-│  compte         │  équipe         │   travail               │
-│                 │                 │                         │
-│  30 secondes    │  Par email      │   Kanban, Liste ou      │
-│  chrono         │  en un clic     │   Calendrier            │
-│                 │                 │                         │
-└─────────────────┴─────────────────┴─────────────────────────┘
-
-💡 Note : Pas de formation complexe requise.
-   Interface intuitive, prise en main immédiate.
-```
-
-#### Section 6 : Comparaison
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│              Pourquoi choisir nexaBoard ?                   │
-├────────────────┬──────────┬──────────┬──────────┬──────────┤
-│                │nexaBoard │ Notion   │ Trello   │ Asana    │
-├────────────────┼──────────┼──────────┼──────────┼──────────┤
-│ Prix           │    ✓     │    ✓     │    ✓     │    ✓     │
-│ Simplicité     │    ✓     │    ✗     │    ✓     │    ✗     │
-│ Tout-en-1      │    ✓     │    ✓     │    ✗     │    ✗     │
-│ Temps réel     │    ✓     │    ✓     │    ✓     │    ✓     │
-│ 🚀 Offline     │   bientôt│    ✗     │    ✗     │    ✗     │
-│ Open API       │    ✓     │    ✓     │    ✓     │    ✓     │
-├────────────────┼──────────┼──────────┼──────────┼──────────┤
-│ Prix/mois      │  0-12€   │   10€    │   6€     │   11€    │
-└────────────────┴──────────┴──────────┴──────────┴──────────┘
-
-🚀 = Fonctionnalité en développement (disponible bientôt)
-```
-
-#### Section 7 : Testimonials
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Ce que disent nos bêta testeurs          │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  "nexaBoard a transformé notre façon de travailler.        │
-│   On a enfin un seul outil pour tout !"                    │
-│                                                             │
-│   👤 Sarah, CEO de StartupX                                │
-│   ⭐⭐⭐⭐⭐                                                 │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-#### Section 8 : Pricing
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      Pricing simple                         │
-├─────────────────────────────┬───────────────────────────────┤
-│         GRATUIT             │           PRO                 │
-│                             │        12€/mois               │
-│  ✓ 3 projets               │  ✓ Projets illimités          │
-│  ✓ 5 membres               │  ✓ Membres illimités          │
-│  ✓ 1 Go de stockage        │  ✓ 25 Go de stockage          │
-│  ✓ Support community       │  ✓ Support prioritaire        │
-│  ✓ Toutes les features*    │  ✓ Toutes les features*       │
-│                             │                               │
-│      [Commencer gratuit]    │      [Commencer Pro]          │
-└─────────────────────────────┴───────────────────────────────┘
-
-* Toutes les features actuelles + celles à venir (Timeline,
-  WYSIWYG, Sync Google, Offline) seront incluses gratuitement.
-```
-
-#### Section 9 : FAQ
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Questions fréquentes                     │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ▶ nexaBoard est-il vraiment gratuit ?                      │
-│  ▶ Puis-je importer mes données depuis Trello/Notion ?      │
-│  ▶ Comment fonctionne le support ?                          │
-│  ▶ Mes données sont-elles sécurisées ?                      │
-│  ▶ Quelles fonctionnalités sont prévues ?                   │
-│  ▶ Puis-je annuler mon abonnement à tout moment ?           │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-**Réponses FAQ :**
-
-**Q: nexaBoard est-il vraiment gratuit ?**
-R: Oui ! Le plan gratuit inclut toutes les fonctionnalités actuelles. Pas de limite de temps, pas de carte bancaire requise.
-
-**Q: Puis-je importer mes données depuis Trello/Notion ?**
-R: L'import depuis Trello, Notion et Asana est prévu dans notre roadmap (Phase 2). Vous pourrez迁移 vos données facilement.
-
-**Q: Comment fonctionne le support ?**
-R: Le plan gratuit bénéficie du support community (Slack, email). Le plan Pro inclut un support prioritaire avec réponse sous 24h.
-
-**Q: Mes données sont-elles sécurisées ?**
-R: Oui. Nous utilisons un chiffrement AES-256 pour les données au repos et TLS 1.3 pour les données en transit. Hébergé en France (Paris).
-
-**Q: Quelles fonctionnalités sont prévues dans le roadmap ?**
-R: Nous avons un roadmap ambitieux :
-- **Phase 2 (3-6 mois) :** Vue Timeline, éditeur riche WYSIWYG, synchronisation Google Calendar, application mobile
-- **Phase 3 (6-9 mois) :** Mode hors ligne, automatisations, intégrations avancées (Zapier, Slack, GitHub)
-
-Toutes ces fonctionnalités seront incluses dans le plan gratuit lors de leur lancement.
-
-**Q: Puis-je annuler mon abonnement à tout moment ?**
-R: Oui, sans engagement. Vous pouvez annuler à tout moment depuis les paramètres de votre compte.
-
-#### Section 10 : CTA Final
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                                                             │
-│     Rejoignez 50+ équipes qui testent déjà nexaBoard       │
-│                                                             │
-│     ┌─────────────────────────────┐ ┌───────────────┐      │
-│     │ vore@email.com              │ │ Rejoindre →   │      │
-│     └─────────────────────────────┘ └───────────────┘      │
-│                                                             │
-│     ✓ Gratuit  ✓ Sans engagement  ✓ 30 secondes            │
-│     ✓ Accès anticipé aux nouvelles features                 │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-#### Section 11 : Footer
-
-```html
-<footer>
-  <Logo />
-  <Links>
-    <Column>
-      <h4>Product</h4>
-      <a href="#features">Features</a>
-      <a href="#pricing">Prix</a>
-      <a href="#changelog">Changelog</a>
-    </Column>
-    <Column>
-      <h4>Company</h4>
-      <a href="/about">À propos</a>
-      <a href="/blog">Blog</a>
-      <a href="/careers">Carrières</a>
-    </Column>
-    <Column>
-      <h4>Support</h4>
-      <a href="/docs">Documentation</a>
-      <a href="/contact">Contact</a>
-      <a href="/status">Status</a>
-    </Column>
-    <Column>
-      <h4>Legal</h4>
-      <a href="/privacy">Confidentialité</a>
-      <a href="/terms">CGU</a>
-    </Column>
-  </Links>
-  <Social>
-    <a href="https://twitter.com/nexaboard">Twitter</a>
-    <a href="https://github.com/nexaboard">GitHub</a>
-  </Social>
-  <Copyright>© 2026 nexaBoard. Tous droits réservés.</Copyright>
-</footer>
-```
-
----
-
-## 4. Formulaire Bêta
-
-### 4.1 Emplacement
-
-Le formulaire est intégré dans la Section 2 (Hero) et Section 10 (CTA Final).
-
-### 4.2 Champs
-
-| Champ | Type | Obligatoire | Options |
-|-------|------|-------------|---------|
-| Email | email | ✅ | - |
-| Taille équipe | select | ✅ | "1-5", "6-10", "11-20", "20+" |
-| Outil actuel | select | ✅ | "Trello", "Notion", "Asana", "ClickUp", "Autre", "Aucun" |
-| Intérêt principal | select | ❌ | "Gestion de tâches", "Notes", "Calendrier", "Collaboration" |
-
-**Note :** Le champ "Intérêt principal" est optionnel et aide à prioriser le développement.
-
-### 4.3 Validation
-
-```typescript
-const betaSchema = z.object({
-  email: z.string().email("Email invalide"),
-  teamSize: z.enum(["1-5", "6-10", "11-20", "20+"], {
-    required_error: "Sélectionnez la taille de votre équipe",
-  }),
-  currentTool: z.enum(["trello", "notion", "asana", "clickup", "other", "none"], {
-    required_error: "Sélectionnez votre outil actuel",
-  }),
-  interest: z.enum(["tasks", "notes", "calendar", "collaboration"]).optional(),
-});
-```
-
-### 4.4 Étapes du Flow
-
-```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│   Formulaire │ ──► │  Validation  │ ──► │  API Call    │
-│              │     │  côté client │     │  POST /beta  │
-└──────────────┘     └──────────────┘     └──────────────┘
-                                                 │
-                                                 ▼
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│   Email      │ ◄── │   Resend     │ ◄── │  Page Merci  │
-│ confirmation │     │   API        │     │              │
-└──────────────┘     └──────────────┘     └──────────────┘
-```
-
-### 4.5 États du Formulaire
-
-| État | Description |
-|------|-------------|
-| `idle` | Formulaire prêt |
-| `submitting` | En cours de soumission |
-| `success` | Inscription réussie |
-| `error` | Erreur lors de l'inscription |
-
-### 4.6 UX
-
-- **Placeholder** : "Entrez votre email"
-- **Bouton** : "Rejoindre la bêta →"
-- **Loading** : Spinner sur le bouton
-- **Succès** : Message + redirection vers `/merci`
-- **Erreur** : Message inline sous le formulaire
-
----
-
-## 5. Backend & API
-
-### 5.1 Nouvel Endpoint
-
-```
-POST /api/v1/beta/subscribe
-```
-
-### 5.2 Request
-
-```typescript
+#### Réponse HTTP 409 (Email déjà inscrit)
+```json
 {
-  email: string;           // "user@example.com"
-  teamSize: string;        // "1-5" | "6-10" | "11-20" | "20+"
-  currentTool: string;     // "trello" | "notion" | "asana" | "clickup" | "other" | "none"
-  interest?: string;       // "tasks" | "notes" | "calendar" | "collaboration" (optionnel)
-}
-```
-
-### 5.3 Response
-
-**Succès (201) :**
-```typescript
-{
-  success: true,
-  message: "Inscription réussie !",
-  data: {
-    id: "uuid",
-    email: "user@example.com",
-    position: 42
+  "success": false,
+  "error": {
+    "code": "ALREADY_SUBSCRIBED",
+    "message": "Cette adresse e-mail est déjà inscrite dans la cohorte bêta.",
+    "position": 14
   }
 }
 ```
 
-**Erreur (400) :**
-```typescript
-{
-  success: false,
-  error: {
-    code: "VALIDATION_ERROR",
-    message: "Email invalide"
-  }
-}
-```
-
-**Doublon (409) :**
-```typescript
-{
-  success: false,
-  error: {
-    code: "ALREADY_SUBSCRIBED",
-    message: "Cet email est déjà inscrit"
-  }
-}
-```
-
-### 5.4 Table de Base de Données
-
-```sql
-CREATE TABLE beta_subscribers (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  
-  -- Données utilisateur
-  email VARCHAR(255) UNIQUE NOT NULL,
-  team_size VARCHAR(10) NOT NULL CHECK (team_size IN ('1-5', '6-10', '11-20', '20+')),
-  current_tool VARCHAR(50) NOT NULL CHECK (current_tool IN ('trello', 'notion', 'asana', 'clickup', 'other', 'none')),
-  interest VARCHAR(100),  -- Feature d'intérêt principal
-  
-  -- Statut
-  status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'invited', 'active', 'churned')),
-  position SERIAL,
-  
-  -- Timestamps
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  invited_at TIMESTAMP WITH TIME ZONE,
-  activated_at TIMESTAMP WITH TIME ZONE,
-  
-  -- Métadonnées
-  referral_source VARCHAR(100),
-  utm_campaign VARCHAR(100),
-  user_agent TEXT,
-  ip_address INET
-);
-
--- Index
-CREATE INDEX idx_beta_subscribers_email ON beta_subscribers(email);
-CREATE INDEX idx_beta_subscribers_status ON beta_subscribers(status);
-CREATE INDEX idx_beta_subscribers_created_at ON beta_subscribers(created_at);
-```
-
-### 5.5 Prisma Schema
-
-```prisma
-model BetaSubscriber {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  teamSize      String    @map("team_size")
-  currentTool   String    @map("current_tool")
-  interest      String?
-  
-  status        String    @default("pending")
-  position      Int       @default(0)
-  
-  referralSource String?  @map("referral_source")
-  utmCampaign    String?  @map("utm_campaign")
-  
-  createdAt     DateTime  @default(now()) @map("created_at")
-  invitedAt     DateTime? @map("invited_at")
-  activatedAt   DateTime? @map("activated_at")
-  
-  @@map("beta_subscribers")
-}
-```
+### 8.2 Modèle de Données Prisma (`BetaSubscriber`)
+Le modèle existant dans `apps/api/prisma/schema.prisma` prend en charge :
+* `id` : Identifiant unique cuid.
+* `email` : Email unique et normalisé en minuscules.
+* `teamSize` : Taille de l'équipe (`1-5`, `6-10`, `11-20`, `20+`).
+* `currentTool` : Outil de provenance (`trello`, `notion`, `asana`, `clickup`, `other`, `none`).
+* `interest` : Champ d'intérêt prioritaire.
+* `status` : Cycle de vie (`pending`, `invited`, `activated`, `churned`).
+* `position` : Rang chronologique dans la file d'attente.
+* `referralSource`, `utmCampaign`, `userAgent`, `ipAddress` : Métadonnées d'acquisition.
+* `createdAt`, `invitedAt`, `activatedAt` : Horodatages de traçabilité.
 
 ---
 
-## 6. Emails Transactionnels
+## 9. Stratégie d'Emails Transactionnels & Nurturing
 
-### 6.1 Service
+L'inscription ne s'arrête pas au navigateur. Un onboarding e-mail haut de gamme renforce la crédibilité du SaaS.
 
-**Resend** (gratuit jusqu'à 3 000 emails/mois)
+### 9.1 Séquence d'Onboarding Bêta (Drip)
+* **Email J+0 (Instantané) : Confirmation & Numéro de Dossier Pionnier**
+  * Objet : `🎉 Confirmation de votre place Bêta nexaBoard (#{{position}})`
+  * Contenu : Remerciement personnalisé du fondateur, récapitulatif de la position, lien de parrainage pour remonter la file, invitation au Discord/Slack.
+* **Email J+3 : Coulisses & Présentation Interactive**
+  * Objet : `Comment nous avons conçu nexaBoard pour vous faire gagner 2h par semaine`
+  * Contenu : Visite guidée en 2 minutes en vidéo ou GIF interactif de l'interface Kanban et Notes.
+* **Email J+7 : Activation de l'Espace de Travail**
+  * Objet : `🚀 Vos identifiants pour démarrer sur nexaBoard Bêta`
+  * Contenu : Lien direct d'activation et création de l'espace de travail avec l'équipe.
 
-### 6.2 Emails à Configurer
-
-| Email | Trigger | Template |
-|-------|---------|----------|
-| Bienvenue | Inscription bêta | `beta-welcome` |
-| Invitation | Admin invite | `beta-invitation` |
-| Activation | Compte activé | `beta-activated` |
-
-### 6.3 Template Email : Bienvenue
-
-**Objet :** 🎉 Bienvenue dans la bêta nexaBoard !
+### 9.2 Gabarit HTML de l'Email de Bienvenue (Resend)
+Le template utilise un style sobre, lisible sur mobile et compatible avec tous les clients mail (Gmail, Apple Mail, Outlook) :
 
 ```html
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    .container { max-width: 500px; margin: 0 auto; padding: 40px 20px; }
-    .header { text-align: center; margin-bottom: 30px; }
-    .logo { font-size: 24px; font-weight: bold; color: #3B82F6; }
-    .content { line-height: 1.6; color: #374151; }
-    .button { 
-      display: inline-block; 
-      background: #3B82F6; 
-      color: white; 
-      padding: 12px 24px; 
-      border-radius: 6px; 
-      text-decoration: none; 
-      margin: 20px 0;
-    }
-    .footer { margin-top: 40px; font-size: 12px; color: #9CA3AF; }
-    .feature-list { margin: 20px 0; }
-    .feature-list li { margin: 8px 0; }
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenue dans la Bêta nexaBoard</title>
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-      <div class="logo">nexaBoard</div>
-    </div>
-    
-    <div class="content">
-      <h1>Bienvenue dans la bêta ! 🎉</h1>
-      
-      <p>Bonjour,</p>
-      
-      <p>Merci de votre inscription à la bêta nexaBoard !</p>
-      
-      <p>Vous êtes inscrit avec succès. Voici ce qui va se passer :</p>
-      
-      <ol>
-        <li>Nous préparons votre compte</li>
-        <li>Vous recevrez un email d'invitation sous peu</li>
-        <li>Vous pourrez commencer à utiliser nexaBoard !</li>
-      </ol>
-      
-      <p><strong>Fonctionnalités disponibles dès maintenant :</strong></p>
-      <ul class="feature-list">
-        <li>✅ Gestion de tâches (Kanban + Liste)</li>
-        <li>✅ Notes collaborative</li>
-        <li>✅ Calendrier</li>
-        <li>✅ Espaces de travail</li>
-      </ul>
-      
-      <p><strong>Bientôt disponibles :</strong></p>
-      <ul class="feature-list">
-        <li>🚀 Vue Timeline (Gantt)</li>
-        <li>🚀 Éditeur riche WYSIWYG</li>
-        <li>🚀 Synchronisation Google Calendar</li>
-        <li>🚀 Mode hors ligne</li>
-      </ul>
-      
-      <p>En attendant, suivez-nous pour les dernières nouvelles :</p>
-      
-      <a href="https://twitter.com/nexaboard" class="button">Suivre @nexaboard</a>
-      
-      <p>À bientôt,<br>L'équipe nexaBoard</p>
-    </div>
-    
-    <div class="footer">
-      <p>Vous recevez cet email car vous vous êtes inscrit à la bêta nexaBoard.</p>
-      <p>© 2026 nexaBoard. Tous droits réservés.</p>
-    </div>
-  </div>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 32px 16px; color: #1e293b;">
+  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 540px; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+    <tr>
+      <td style="padding: 32px 32px 24px; text-align: center; border-bottom: 1px solid #f1f5f9;">
+        <span style="font-size: 24px; font-weight: 800; color: #4f46e5; letter-spacing: -0.5px;">nexaBoard</span>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 32px;">
+        <h1 style="font-size: 20px; font-weight: 700; margin: 0 0 16px; color: #0f172a;">Bienvenue dans la cohorte pionnière ! 🎉</h1>
+        <p style="font-size: 15px; line-height: 24px; margin: 0 0 20px; color: #334155;">
+          Bonjour,<br><br>
+          Merci d'avoir rejoint nexaBoard. Votre inscription pour votre équipe a bien été enregistrée.
+        </p>
+        
+        <div style="background-color: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 16px 20px; text-align: center; margin: 24px 0;">
+          <p style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; color: #4338ca; margin: 0 0 4px;">Votre position dans la file d'attente</p>
+          <p style="font-size: 32px; font-weight: 800; color: #312e81; margin: 0;">#{{position}}</p>
+        </div>
+
+        <p style="font-size: 15px; line-height: 24px; margin: 0 0 20px; color: #334155;">
+          <strong>Ce que vous avez débloqué :</strong>
+        </p>
+        <ul style="font-size: 14px; line-height: 22px; margin: 0 0 24px; padding-left: 20px; color: #475569;">
+          <li>Accès prioritaire à la plateforme tout-en-un.</li>
+          <li>1 an de Plan Pro offert lors du lancement officiel.</li>
+          <li>Accès direct à l'équipe de développement pour co-construire les fonctionnalités.</li>
+        </ul>
+
+        <div style="text-align: center; margin: 32px 0 16px;">
+          <a href="{{referralLink}}" style="background-color: #4f46e5; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 14px; display: inline-block;">Remonter dans la file (Partager à un pair) →</a>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 24px 32px; background-color: #f8fafc; border-top: 1px solid #f1f5f9; text-align: center; font-size: 12px; color: #94a3b8;">
+        nexaBoard — Données hébergées en France. Vos données vous appartiennent.<br>
+        Vous recevez cet email suite à votre demande sur nexaboard.io.
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
 ```
 
 ---
 
-## 7. Design System
+## 10. Plan de Mesure, Taxonomie Analytics & Conformité RGPD
 
-### 7.1 Couleurs
+### 10.1 Taxonomie des Événements PostHog (Tracking Précis)
 
-```css
-:root {
-  /* Primary */
-  --color-primary: #3B82F6;
-  --color-primary-hover: #2563EB;
-  --color-primary-light: #DBEAFE;
-  
-  /* Secondary */
-  --color-secondary: #10B981;
-  --color-secondary-hover: #059669;
-  
-  /* Neutral */
-  --color-dark: #1F2937;
-  --color-gray-900: #111827;
-  --color-gray-700: #374151;
-  --color-gray-500: #6B7280;
-  --color-gray-300: #D1D5DB;
-  --color-gray-100: #F3F4F6;
-  --color-white: #FFFFFF;
-  
-  /* Status */
-  --color-success: #10B981;
-  --color-error: #EF4444;
-  --color-warning: #F59E0B;
-}
-```
+| Nom de l'événement | Propriétés envoyées | Moment du déclenchement |
+| :--- | :--- | :--- |
+| `landing_viewed` | `referrer`, `utm_source`, `utm_campaign`, `device` | Arrivée sur la page d'accueil |
+| `hero_email_submitted` | `email_domain` | Clic sur le 1er CTA du Hero |
+| `modal_profiling_opened` | `source_step` | Affichage de la modale de qualification |
+| `beta_lead_completed` | `team_size`, `current_tool`, `interest`, `position` | Succès création en base (201) |
+| `beta_lead_error` | `error_code`, `field` | Erreur de validation ou 409 doublon |
+| `pricing_calculator_used` | `team_size_input`, `calculated_savings` | Interaction avec le slider d'économies |
+| `faq_item_toggled` | `question_title`, `open_state` | Ouverture d'une question de la FAQ |
+| `referral_link_copied` | `user_position`, `referral_code` | Clic sur "Copier mon lien" sur `/merci` |
 
-### 7.2 Typographie
-
-```css
-/* Fonts */
---font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-
-/* Sizes */
---text-xs: 0.75rem;    /* 12px */
---text-sm: 0.875rem;   /* 14px */
---text-base: 1rem;     /* 16px */
---text-lg: 1.125rem;   /* 18px */
---text-xl: 1.25rem;    /* 20px */
---text-2xl: 1.5rem;    /* 24px */
---text-3xl: 1.875rem;  /* 30px */
---text-4xl: 2.25rem;   /* 36px */
---text-5xl: 3rem;      /* 48px */
-```
-
-### 7.3 Composants
-
-#### Bouton Primaire
-
-```html
-<button class="btn-primary">
-  Rejoindre la bêta →
-</button>
-
-<style>
-.btn-primary {
-  background: var(--color-primary);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: background 0.2s;
-}
-
-.btn-primary:hover {
-  background: var(--color-primary-hover);
-}
-</style>
-```
-
-#### Bouton Secondaire
-
-```html
-<button class="btn-secondary">
-  En savoir plus
-</button>
-
-<style>
-.btn-secondary {
-  background: white;
-  color: var(--color-dark);
-  padding: 12px 24px;
-  border-radius: 8px;
-  border: 1px solid var(--color-gray-300);
-  font-weight: 500;
-  transition: background 0.2s;
-}
-
-.btn-secondary:hover {
-  background: var(--color-gray-100);
-}
-</style>
-```
-
-#### Input
-
-```html
-<input 
-  type="email" 
-  class="input" 
-  placeholder="votre@email.com"
-/>
-
-<style>
-.input {
-  padding: 12px 16px;
-  border: 1px solid var(--color-gray-300);
-  border-radius: 8px;
-  font-size: var(--text-base);
-  width: 100%;
-  transition: border-color 0.2s;
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-light);
-}
-</style>
-```
-
-### 7.4 Responsive
-
-| Breakpoint | Width | Layout |
-|------------|-------|--------|
-| Mobile | < 640px | Colonne unique |
-| Tablette | 640px - 1024px | 2 colonnes |
-| Desktop | > 1024px | Layout complet |
+### 10.2 Conformité RGPD & Vie Privée
+* Absence de traceurs invasifs ou cookies tiers sans consentement préalable.
+* Option d'analytics respectueuse de la vie privée (PostHog configuré en modecookieless / anonymisé si nécessaire).
+* Case à cocher ou mention claire sous les boutons d'envoi :  
+  *« Vos données sont utilisées exclusivement pour vous transmettre vos accès à la bêta. Désinscription en 1 clic. »*
 
 ---
 
-## 8. Analytics
+## 11. Matrice de Recette & Critères d'Acceptation
 
-### 8.1 Outil
+Pour valider le déploiement en production de la landing page révisée, l'ensemble des critères suivants doit être vérifié :
 
-**PostHog** (gratuit jusqu'à 1M events/mois)
-
-### 8.2 Événements à Tracker
-
-| Événement | Propriétés | Quand |
-|-----------|------------|-------|
-| `page_viewed` | `page`, `referrer` | Chaque page |
-| `cta_clicked` | `location`, `section` | Clic sur CTA |
-| `beta_form_submitted` | `email`, `teamSize`, `currentTool`, `interest` | Soumission formulaire |
-| `beta_form_error` | `error`, `field` | Erreur validation |
-| `faq_toggled` | `question` | Ouverture FAQ |
-| `feature_roadmap_viewed` | - | Scroll jusqu'à section roadmap |
-| `link_clicked` | `url`, `text` | Clic lien externe |
-
-### 8.3 Installation
-
-```typescript
-// app/layout.tsx
-import posthog from 'posthog-js'
-
-if (typeof window !== 'undefined') {
-  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
-  })
-}
-```
+- [ ] **Ergonomie Mobile & Desktop** : Affichage fluide et impeccable sur iPhone (Safari), Android (Chrome) et résolutions desktop (1280px à 1920px).
+- [ ] **Cycle de Soumission Sans Accroc** :
+  - La saisie d'un email valide déclenche la modale de qualification.
+  - La sélection des choix enregistre le lead dans PostgreSQL (`beta_subscribers`).
+  - L'utilisateur est redirigé vers `/merci` avec son rang réel affiché.
+- [ ] **Gestion des Doublons** : Un email déjà existant affiche un message bienveillant rappelant que sa place est déjà réservée.
+- [ ] **Délivrance de l'Email** : L'email de confirmation HTML avec la position est envoyé via `EmailService` / Resend en moins de 10 secondes.
+- [ ] **Performance Web** : Score Google Lighthouse supérieur à **95/100** sur Performance, Accessibilité, Bonnes Pratiques et SEO.
+- [ ] **Navigation & Liens** : Le lien de connexion mène bien vers l'interface de login du produit, les ancres de la page défilent avec fluidité.
 
 ---
-
-## 9. Déploiement
-
-### 9.1 Railway
-
-La landing page sera déployée sur Railway avec l'app principale.
-
-**Configuration :**
-
-```yaml
-# railway.toml
-[build]
-builder = "nixpacks"
-
-[deploy]
-startCommand = "pnpm --filter @nexaboard/landing start"
-healthcheckPath = "/"
-healthcheckTimeout = 100
-restartPolicyType = "on_failure"
-restartPolicyMaxRetries = 3
-```
-
-### 9.2 Variables d'Environnement
-
-```env
-# Landing
-NEXT_PUBLIC_API_URL=https://resplendent-hope-production-7e28.up.railway.app
-NEXT_PUBLIC_POSTHOG_KEY=phc_xxxxx
-NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
-
-# Resend
-RESEND_API_KEY=re_xxxxx
-RESEND_FROM_EMAIL=hello@nexaboard.io
-
-# Database
-DATABASE_URL=postgresql://xxxxx
-```
-
-### 9.3 Domaine
-
-**Option 1 :** `nexaboard.io` (recommandé)
-**Option 2 :** `nexaboard.app`
-**Option 3 :** `landing.nexaboard.io` (sous-domaine)
-
----
-
-## 10. Planning
-
-### 10.1 Semaine 1
-
-| Jour | Tâche | Durée |
-|------|-------|-------|
-| Lun | Setup app landing dans monorepo | 2h |
-| Lun | Configuration Tailwind + fonts | 1h |
-| Mar | Header + Hero section | 3h |
-| Mar | Formulaire bêta (frontend) | 2h |
-| Mer | Features section | 2h |
-| Mer | How it works section | 1h |
-| Jeu | Pricing section | 2h |
-| Jeu | FAQ section | 1h |
-| Ven | Footer + Social proof | 2h |
-| Ven | API backend `/beta/subscribe` | 3h |
-| Sam | Email template (Resend) | 2h |
-| Sam | Tests responsive | 2h |
-| Dim | Déploiement + QA | 2h |
-
-**Total estimé : ~24 heures**
-
-### 10.2 Checklist de Livraison
-
-- [ ] Landing page responsive
-- [ ] Formulaire fonctionne
-- [ ] Validation côté client
-- [ ] API backend opérationnelle
-- [ ] Email de confirmation envoyé
-- [ ] Page `/merci` affichée
-- [ ] Analytics configurés
-- [ ] SEO basics (title, meta, OG)
-- [ ] Temps de chargement < 3s
-- [ ] Lien "Connexion" fonctionne
-- [ ] Section Features clairement distinguée (✅ vs 🚀)
-- [ ] FAQ mise à jour avec section roadmap
-- [ ] Pricing clarify "toutes les features incluses"
-- [ ] Email template mis à jour avec roadmap
-
----
-
-## Annexe
-
-### A. Références
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Tailwind CSS](https://tailwindcss.com/docs)
-- [Resend](https://resend.com/docs)
-- [PostHog](https://posthog.com/docs)
-
-### B. Contacts
-
-| Rôle | Nom | Email |
-|------|-----|-------|
-| Développeur | Ibrahim | ibrahim@nexaboard.io |
-| Support | - | support@nexaboard.io |
-
----
-
-**Document validé par :**
-
-_________________________  
-Nom : Ibrahim  
-Rôle : Founder  
-Date : 10 septembre 2026
-```
+*Ce document sert de spécification contractuelle absolue pour l'implémentation de la landing page de nexaBoard.*
