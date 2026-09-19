@@ -1,14 +1,13 @@
 # AGENTS.md — nexaBoard
 
-## Project
-
-nexaBoard is a productivity app for small teams (5-20). Phase 1 MVP scope: auth, workspaces, kanban/list tasks, basic notes, basic calendar.
+Productivity app for small teams (5-20). Phase 1 MVP scope: auth, workspaces, kanban/list tasks, basic notes, basic calendar.
 
 ## Stack
 
 - **Monorepo**: pnpm workspaces + Turborepo
 - **Backend**: NestJS 10, Prisma 5, PostgreSQL 16, Redis 7, Passport.js + JWT
 - **Frontend**: Next.js 14 (App Router), TypeScript strict, Tailwind CSS, Zustand, React Hook Form + Zod
+- **Landing**: Next.js 14 on port 3001 (separate app)
 - **Dev**: Docker Compose (db + redis + api + web), Node 20+
 
 ## Commands
@@ -19,20 +18,37 @@ pnpm dev                        # run api + web in parallel (via turbo)
 pnpm dev:api                    # backend only (port 4000)
 pnpm dev:web                    # frontend only (port 3000)
 pnpm build                      # build all packages
-pnpm build:api                  # nest build
-pnpm build:web                  # next build
 pnpm lint                       # lint all
 pnpm format                     # prettier write
 pnpm db:generate                # prisma generate (in apps/api)
 pnpm db:migrate                 # prisma migrate dev (in apps/api)
-
-# Docker
-docker compose up -d db redis   # start infra only
-docker compose up -d            # full stack (db + redis + api + web)
+pnpm db:seed                    # seed database
+pnpm db:studio                  # prisma studio UI
 
 # Single package
 pnpm --filter @nexaboard/api <cmd>
 pnpm --filter @nexaboard/web <cmd>
+```
+
+### Testing
+
+```bash
+# API unit tests (Jest, .spec.ts files in src/)
+pnpm --filter @nexaboard/api test
+pnpm --filter @nexaboard/api test:cov          # with coverage (80% threshold)
+
+# API E2E tests (Jest, needs running DB)
+pnpm --filter @nexaboard/api exec jest --config ./test/jest-e2e.json --runInBand
+
+# Web E2E tests (Playwright, needs API + web running)
+pnpm --filter @nexaboard/web exec playwright test
+```
+
+### Docker
+
+```bash
+docker compose up -d db redis   # start infra only
+docker compose up -d            # full stack (db + redis + api + web)
 ```
 
 ## Structure
@@ -41,18 +57,24 @@ pnpm --filter @nexaboard/web <cmd>
 apps/
   api/          NestJS backend (port 4000)
     src/
-      modules/      One NestJS module per domain (auth, users, tasks, notes, calendar, projects, workspaces, health)
+      modules/      One NestJS module per domain (auth, users, tasks, notes, calendar, projects, workspaces, leads, health)
       common/prisma Global PrismaModule + PrismaService
+      config/       Configuration (env-based)
       main.ts       Bootstrap (helmet, CORS, ValidationPipe, Swagger at /api/docs)
     prisma/
       schema.prisma  Full schema (User, Session, Workspace, Task, Note, CalendarEvent, etc.)
-      migrations/
+      migrations/    Never edit — create new ones with schema changes
   web/          Next.js frontend (port 3000)
     src/
       app/          App Router pages (/, /auth/*, /dashboard)
       lib/api.ts    ApiClient with auto-refresh on 401
+      lib/utils.ts  cn() Tailwind helper
       stores/       Zustand stores (auth, workspace)
-      components/   UI components (button, card, badge, input, textarea, modal) + forms (task, note, project, calendar-event)
+      hooks/        Custom React hooks
+      components/   UI components (ui/ for base, forms/ for domain-specific)
+      middleware.ts  Next.js middleware (auth, redirects)
+    e2e/            Playwright E2E tests
+  landing/      Next.js landing page (port 3001)
 libs/
   shared/       Shared types (User, Workspace, Task, etc.)
 ```
@@ -60,42 +82,34 @@ libs/
 ## Key quirks
 
 - **API prefix**: All backend routes are under `/api/v1/`. Swagger at `/api/docs`.
-- **Auth flow**: Register/login return `{ user, accessToken, refreshToken }`. Refresh token stored in localStorage, auto-refreshed by `api.ts` on 401. Profile via `GET /api/v1/auth/profile` (requires Bearer token).
+- **Auth flow**: Register/login return `{ user, accessToken, refreshToken }`. Refresh token stored in localStorage, auto-refreshed by `api.ts` on 401. Profile via `GET /api/v1/auth/profile`.
 - **Prisma**: The `apps/api/.env` has `DATABASE_URL` pointing to localhost. For Docker, override via `DATABASE_URL=postgresql://nexaboard:nexaboard_secret@db:5432/nexaboard?schema=public`.
 - **DTOs**: class-validator with `whitelist: true` and `forbidNonWhitelisted: true`. Use `!` (non-null assertion) on DTO properties since they're initialized by class-validator.
-- **Rate limiting**: ThrottlerModule configured (short: 3/s, medium: 20/10s, long: 100/60s). Auth endpoints have extra-throttling (register: 1/s, login: 3/s).
-- **Next.js config**: `next.config.mjs` (not .ts — Next.js 14.2 doesn't support .ts config). Output mode: standalone.
-- **Tailwind config**: `tailwind.config.js` (not .ts). Uses shadcn/ui CSS variables theme. `cn()` utility in `lib/utils.ts`.
-- **ESLint**: Root `.eslintrc.json` is minimal (just ignorePatterns). Web app has its own `.eslintrc.json` extending `next/core-web-vitals`. API has no eslint config yet.
+- **Rate limiting**: ThrottlerModule configured (short: 3/s, medium: 20/10s, long: 100/60s). Auth endpoints stricter (register: 1/s, login: 3/s).
+- **Config files**: `next.config.mjs` and `tailwind.config.js` — both use `.js`/`.mjs`, not `.ts`.
 - **Path aliases**: `@/*` maps to `src/*` in both api and web tsconfigs.
+- **CORS**: Default allows `http://localhost:3000`; configurable via `ALLOWED_ORIGINS` env var.
 
-## What's implemented
+## Environment
 
-| Module | Status | Details |
-|--------|--------|---------|
-| Auth (register, login, refresh, logout, profile, email verification, password reset) | ✅ Implemented | Full JWT flow with sessions |
-| Users (findByEmail, create, verifyPassword) | ✅ Implemented | |
-| Health endpoint | ✅ Implemented | |
-| Workspaces (CRUD, members, roles) | ✅ Implemented | OWNER/ADMIN/MEMBER roles |
-| Projects (CRUD, workspace-scoped) | ✅ Implemented | |
-| Tasks (CRUD, assign, labels, filters, list+kanban) | ✅ Implemented | Status, priority, assignees |
-| Notes (CRUD, project-linked) | ✅ Implemented | Rich content (JSON blocks) |
-| Calendar (CRUD, workspace events) | ✅ Implemented | Date range filtering |
-| Frontend auth pages | ✅ Implemented | Login, register, verify, forgot/reset password |
-| Frontend dashboard | ✅ Implemented | Dynamic stats from API |
-| Frontend tasks page | ✅ Implemented | List + Kanban views |
-| Frontend notes page | ✅ Implemented | Grid + form |
-| Frontend calendar page | ✅ Implemented | Month navigation + form |
-| Frontend projects page | ✅ Implemented | Grid + form |
-| Frontend team page | ✅ Implemented | Member list + invite |
-| Frontend components/ui | ✅ Implemented | Button, Card, Badge, Input, Textarea, Modal |
-| Frontend forms | ✅ Implemented | Task, Note, Project, CalendarEvent forms |
-| Tests (unit) | ✅ Implemented | All services + controllers |
-| Tests (E2E) | ✅ Implemented | Playwright (auth, dashboard, tasks, notes, calendar, projects) |
-| CI/CD | ✅ Implemented | GitHub Actions (lint, test, build) |
-| Monitoring | ✅ Implemented | Sentry (backend + frontend) |
-| Documentation | ✅ Implemented | Getting started, features, API docs, FAQ |
-| Docker | ✅ Implemented | Compose with db, redis, api, web |
+**API** (`apps/api/.env`):
+- `DATABASE_URL` — PostgreSQL connection string
+- `REDIS_URL` — Redis connection (default: `redis://localhost:6379`)
+- `JWT_SECRET`, `JWT_EXPIRATION` (15m), `JWT_REFRESH_EXPIRATION` (7d)
+- `ALLOWED_ORIGINS` — comma-separated CORS origins
+- `SENTRY_DSN` — optional error tracking
+
+**Web** (`apps/web/.env.local`):
+- `NEXT_PUBLIC_API_URL` — backend API base URL (defaults to relative `/api/v1`)
+
+## CI
+
+GitHub Actions on push to main/develop and PRs to main:
+1. **lint** — `pnpm lint`
+2. **test-api** — starts real PostgreSQL 16 + Redis 7, runs `db:generate` → `prisma migrate deploy` → `test:cov` → E2E tests
+3. **build** — `pnpm build`
+
+Test database: `nexaboard_test` (separate from dev).
 
 ## Scope rules
 
@@ -104,3 +118,8 @@ libs/
 - Backend pattern: Controller → Service → Prisma. DTOs for all inputs.
 - Frontend: Server Components by default, Client Components only when needed.
 - Conventional Commits. Branches: `feat/`, `fix/`, `chore/`, `refactor/`.
+- Never edit Prisma migrations. Create new ones with schema changes.
+
+## Deeper reference
+
+See `.github/copilot-instructions.md` for detailed patterns, debugging tips, and when-to-use-what guidance.
