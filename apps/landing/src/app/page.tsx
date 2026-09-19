@@ -134,6 +134,9 @@ export default function LandingPage() {
     }
   }
 
+  // Mobile menu state
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const faqItems = [
     {
       q: 'Qu’implique concrètement de rejoindre la cohorte Bêta fermée ?',
@@ -211,7 +214,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <a
               href="https://nexaboardapp.up.railway.app/auth/login"
-              className="text-sm font-semibold text-slate-700 hover:text-primary-600 transition px-3 py-2"
+              className="hidden sm:inline-block text-sm font-semibold text-slate-700 hover:text-primary-600 transition px-3 py-2"
             >
               Connexion
             </a>
@@ -222,14 +225,61 @@ export default function LandingPage() {
             >
               Rejoindre la Bêta
             </button>
+            {/* Mobile hamburger */}
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden inline-flex items-center justify-center rounded-lg p-2 text-slate-600 hover:bg-slate-100 transition"
+              aria-label="Menu"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {isMobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
+
+        {/* Mobile menu dropdown */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-slate-100 bg-white px-4 py-4 space-y-3">
+            <a href="#features" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1">
+              Fonctionnalités
+            </a>
+            <a href="#avant-apres" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1">
+              Pourquoi nexaBoard
+            </a>
+            <a href="#calculateur" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1">
+              Calculateur ROI
+            </a>
+            <a href="#comparatif" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1">
+              Comparatif
+            </a>
+            <a href="#tarifs" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1">
+              Tarifs
+            </a>
+            <a href="#faq" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm font-medium text-slate-600 hover:text-primary-600 transition py-1">
+              FAQ
+            </a>
+            <div className="pt-2 border-t border-slate-100">
+              <a
+                href="https://nexaboardapp.up.railway.app/auth/login"
+                className="block text-sm font-semibold text-slate-700 hover:text-primary-600 transition py-1"
+              >
+                Connexion
+              </a>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* 2. Hero Section */}
       <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28">
         <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
-          <div className="h-[480px] w-[700px] rounded-full bg-gradient-to-tr from-primary-400/20 via-indigo-300/15 to-transparent blur-3xl" />
+          <div className="h-[300px] w-[400px] sm:h-[480px] sm:w-[700px] rounded-full bg-gradient-to-tr from-primary-400/20 via-indigo-300/15 to-transparent blur-3xl" />
         </div>
 
         <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
@@ -352,12 +402,12 @@ export default function LandingPage() {
             <div className="relative mx-auto max-w-5xl rounded-2xl border border-slate-200/80 bg-slate-900/5 p-2 shadow-2xl shadow-indigo-500/10 backdrop-blur-sm sm:p-3">
               <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                 {/* Window Topbar */}
-                <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/90 px-4 py-2.5">
+                <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/90 px-3 sm:px-4 py-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded-full bg-rose-400" />
-                    <span className="h-3 w-3 rounded-full bg-amber-400" />
-                    <span className="h-3 w-3 rounded-full bg-emerald-400" />
-                    <span className="ml-3 text-xs font-medium text-slate-400">
+                    <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-rose-400" />
+                    <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-amber-400" />
+                    <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-emerald-400" />
+                    <span className="ml-3 text-xs font-medium text-slate-400 hidden sm:inline">
                       nexaboard.io/app/workspace-sprint
                     </span>
                   </div>
@@ -366,31 +416,34 @@ export default function LandingPage() {
                     <button
                       type="button"
                       onClick={() => setActiveTab('kanban')}
-                      className={`rounded-md px-3 py-1 transition ${activeTab === 'kanban' ? 'bg-white text-primary-600 shadow-sm' : 'hover:text-slate-900'}`}
+                      className={`rounded-md px-2 sm:px-3 py-1 transition ${activeTab === 'kanban' ? 'bg-white text-primary-600 shadow-sm' : 'hover:text-slate-900'}`}
                     >
-                      📋 Tâches (Kanban)
+                      <span className="sm:hidden">Tâches</span>
+                      <span className="hidden sm:inline">📋 Tâches (Kanban)</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setActiveTab('notes')}
-                      className={`rounded-md px-3 py-1 transition ${activeTab === 'notes' ? 'bg-white text-primary-600 shadow-sm' : 'hover:text-slate-900'}`}
+                      className={`rounded-md px-2 sm:px-3 py-1 transition ${activeTab === 'notes' ? 'bg-white text-primary-600 shadow-sm' : 'hover:text-slate-900'}`}
                     >
-                      📝 Notes Markdown
+                      <span className="sm:hidden">Notes</span>
+                      <span className="hidden sm:inline">📝 Notes Markdown</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setActiveTab('calendar')}
-                      className={`rounded-md px-3 py-1 transition ${activeTab === 'calendar' ? 'bg-white text-primary-600 shadow-sm' : 'hover:text-slate-900'}`}
+                      className={`rounded-md px-2 sm:px-3 py-1 transition ${activeTab === 'calendar' ? 'bg-white text-primary-600 shadow-sm' : 'hover:text-slate-900'}`}
                     >
-                      📅 Calendrier
+                      <span className="sm:hidden">Calendrier</span>
+                      <span className="hidden sm:inline">📅 Calendrier</span>
                     </button>
                   </div>
                 </div>
 
                 {/* Window Content */}
-                <div className="p-4 sm:p-6 bg-slate-50/50 min-h-[360px] text-left">
+                <div className="p-3 sm:p-6 bg-slate-50/50 min-h-[280px] sm:min-h-[360px] text-left">
                   {activeTab === 'kanban' && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                       {/* Column 1: A faire */}
                       <div className="rounded-xl border border-slate-200 bg-slate-100/70 p-3">
                         <div className="flex items-center justify-between mb-3 px-1">
@@ -508,9 +561,9 @@ export default function LandingPage() {
 
                   {activeTab === 'notes' && (
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs space-y-2">
+                      <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs space-y-2 order-2 md:order-1">
                         <p className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">
-                          Pages d’équipe
+                          Pages d'équipe
                         </p>
                         <div className="rounded bg-primary-50 px-2 py-1 font-semibold text-primary-700">
                           📌 Cadrage Sprint 2026
@@ -522,8 +575,8 @@ export default function LandingPage() {
                           Guide des conventions
                         </div>
                       </div>
-                      <div className="md:col-span-3 rounded-lg border border-slate-200 bg-white p-5">
-                        <h3 className="text-lg font-bold text-slate-900">
+                      <div className="md:col-span-3 rounded-lg border border-slate-200 bg-white p-4 sm:p-5 order-1 md:order-2">
+                        <h3 className="text-base sm:text-lg font-bold text-slate-900">
                           # Cadrage Sprint Q4 — Objectifs & Livrables
                         </h3>
                         <p className="text-xs text-slate-400 mt-1">
@@ -550,33 +603,35 @@ export default function LandingPage() {
 
                   {activeTab === 'calendar' && (
                     <div className="rounded-lg border border-slate-200 bg-white p-5">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="font-bold text-slate-900">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+                        <h3 className="font-bold text-slate-900 text-sm sm:text-base">
                           Semaine en cours — Septembre 2026
                         </h3>
                         <span className="text-xs font-semibold text-primary-600">
                           3 jalons clés cette semaine
                         </span>
                       </div>
-                      <div className="grid grid-cols-5 gap-2 text-center text-xs">
-                        {['Lun 18', 'Mar 19', 'Mer 20', 'Jeu 21', 'Ven 22'].map((day, idx) => (
-                          <div
-                            key={idx}
-                            className="rounded-lg border border-slate-100 bg-slate-50/60 p-3 min-h-[140px] text-left"
-                          >
-                            <span className="font-bold text-slate-600 block mb-2">{day}</span>
-                            {idx === 1 && (
-                              <div className="rounded bg-primary-100 border border-primary-200 p-1.5 text-[11px] font-semibold text-primary-800">
-                                🚀 Déploiement Bêta v0.1
-                              </div>
-                            )}
-                            {idx === 3 && (
-                              <div className="rounded bg-emerald-100 border border-emerald-200 p-1.5 text-[11px] font-semibold text-emerald-800">
-                                🎯 Revue de sprint
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                      <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0">
+                        <div className="grid grid-cols-5 gap-2 text-center text-xs min-w-[400px] sm:min-w-0">
+                          {['Lun 18', 'Mar 19', 'Mer 20', 'Jeu 21', 'Ven 22'].map((day, idx) => (
+                            <div
+                              key={idx}
+                              className="rounded-lg border border-slate-100 bg-slate-50/60 p-2 sm:p-3 min-h-[100px] sm:min-h-[140px] text-left"
+                            >
+                              <span className="font-bold text-slate-600 block mb-2 text-[11px] sm:text-xs">{day}</span>
+                              {idx === 1 && (
+                                <div className="rounded bg-primary-100 border border-primary-200 p-1 sm:p-1.5 text-[10px] sm:text-[11px] font-semibold text-primary-800">
+                                  🚀 Déploiement Bêta
+                                </div>
+                              )}
+                              {idx === 3 && (
+                                <div className="rounded bg-emerald-100 border border-emerald-200 p-1 sm:p-1.5 text-[10px] sm:text-[11px] font-semibold text-emerald-800">
+                                  🎯 Revue de sprint
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -956,77 +1011,77 @@ export default function LandingPage() {
           </div>
 
           <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <table className="w-full border-collapse text-left text-sm">
+            <table className="w-full border-collapse text-left text-xs sm:text-sm">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50/80">
-                  <th className="p-4 sm:p-5 font-bold text-slate-900">Critères d’évaluation</th>
-                  <th className="p-4 sm:p-5 font-extrabold text-primary-700 bg-primary-50/80 text-center">
+                  <th className="p-3 sm:p-5 font-bold text-slate-900">Critères</th>
+                  <th className="p-3 sm:p-5 font-extrabold text-primary-700 bg-primary-50/80 text-center">
                     nexaBoard
                   </th>
-                  <th className="p-4 sm:p-5 font-semibold text-slate-600 text-center">Notion</th>
-                  <th className="p-4 sm:p-5 font-semibold text-slate-600 text-center">Trello</th>
-                  <th className="p-4 sm:p-5 font-semibold text-slate-600 text-center">Asana</th>
+                  <th className="p-3 sm:p-5 font-semibold text-slate-600 text-center">Notion</th>
+                  <th className="p-3 sm:p-5 font-semibold text-slate-600 text-center">Trello</th>
+                  <th className="p-3 sm:p-5 font-semibold text-slate-600 text-center">Asana</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-slate-800">
-                    Prise en main immédiate (&lt; 3 min)
+                  <td className="p-3 sm:p-5 font-semibold text-slate-800">
+                    Prise en main (&lt; 3 min)
                   </td>
-                  <td className="p-4 sm:p-5 font-bold text-emerald-600 bg-primary-50/30 text-center">
+                  <td className="p-3 sm:p-5 font-bold text-emerald-600 bg-primary-50/30 text-center">
                     ✓ Oui
                   </td>
-                  <td className="p-4 sm:p-5 text-rose-500 text-center">✗ Lourd</td>
-                  <td className="p-4 sm:p-5 text-emerald-600 text-center">✓ Oui</td>
-                  <td className="p-4 sm:p-5 text-rose-500 text-center">✗ Complexe</td>
+                  <td className="p-3 sm:p-5 text-rose-500 text-center">✗ Lourd</td>
+                  <td className="p-3 sm:p-5 text-emerald-600 text-center">✓ Oui</td>
+                  <td className="p-3 sm:p-5 text-rose-500 text-center">✗ Complexe</td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-slate-800">
-                    Tâches + Notes + Calendrier unifiés
+                  <td className="p-3 sm:p-5 font-semibold text-slate-800">
+                    Tâches + Notes + Calendrier
                   </td>
-                  <td className="p-4 sm:p-5 font-bold text-emerald-600 bg-primary-50/30 text-center">
+                  <td className="p-3 sm:p-5 font-bold text-emerald-600 bg-primary-50/30 text-center">
                     ✓ Natif
                   </td>
-                  <td className="p-4 sm:p-5 text-amber-600 text-center">⚠️ Bricolé</td>
-                  <td className="p-4 sm:p-5 text-rose-500 text-center">✗ Tâches seules</td>
-                  <td className="p-4 sm:p-5 text-amber-600 text-center">⚠️ Limité</td>
+                  <td className="p-3 sm:p-5 text-amber-600 text-center">⚠️ Bricolé</td>
+                  <td className="p-3 sm:p-5 text-rose-500 text-center">✗ Tâches</td>
+                  <td className="p-3 sm:p-5 text-amber-600 text-center">⚠️ Limité</td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-slate-800">
-                    Vitesse d’affichage &amp; réactivité
+                  <td className="p-3 sm:p-5 font-semibold text-slate-800">
+                    Vitesse (&lt; 100ms)
                   </td>
-                  <td className="p-4 sm:p-5 font-bold text-emerald-600 bg-primary-50/30 text-center">
-                    ⚡ &lt; 100ms
+                  <td className="p-3 sm:p-5 font-bold text-emerald-600 bg-primary-50/30 text-center">
+                    ⚡ Oui
                   </td>
-                  <td className="p-4 sm:p-5 text-rose-500 text-center">✗ Lenteurs</td>
-                  <td className="p-4 sm:p-5 text-slate-600 text-center">Moyen</td>
-                  <td className="p-4 sm:p-5 text-slate-600 text-center">Moyen</td>
+                  <td className="p-3 sm:p-5 text-rose-500 text-center">✗ Lent</td>
+                  <td className="p-3 sm:p-5 text-slate-600 text-center">Moyen</td>
+                  <td className="p-3 sm:p-5 text-slate-600 text-center">Moyen</td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-slate-800">Hébergement Souverain</td>
-                  <td className="p-4 sm:p-5 font-bold text-emerald-600 bg-primary-50/30 text-center">
-                    🇫🇷 France (Paris)
+                  <td className="p-3 sm:p-5 font-semibold text-slate-800">Hébergement</td>
+                  <td className="p-3 sm:p-5 font-bold text-emerald-600 bg-primary-50/30 text-center">
+                    🇫🇷 France
                   </td>
-                  <td className="p-4 sm:p-5 text-slate-500 text-center">🇺🇸 USA</td>
-                  <td className="p-4 sm:p-5 text-slate-500 text-center">🇺🇸 USA</td>
-                  <td className="p-4 sm:p-5 text-slate-500 text-center">🇺🇸 USA</td>
+                  <td className="p-3 sm:p-5 text-slate-500 text-center">🇺🇸 USA</td>
+                  <td className="p-3 sm:p-5 text-slate-500 text-center">🇺🇸 USA</td>
+                  <td className="p-3 sm:p-5 text-slate-500 text-center">🇺🇸 USA</td>
                 </tr>
                 <tr className="bg-slate-50/40">
-                  <td className="p-4 sm:p-5 font-bold text-slate-900">
-                    Coût indicatif (Équipe de 10)
+                  <td className="p-3 sm:p-5 font-bold text-slate-900">
+                    Coût (10 pers.)
                   </td>
-                  <td className="p-4 sm:p-5 font-extrabold text-primary-700 bg-primary-50/80 text-center">
-                    0 € (Bêta) <br />
-                    <span className="text-xs font-normal text-slate-600">puis 12 € / équipe</span>
+                  <td className="p-3 sm:p-5 font-extrabold text-primary-700 bg-primary-50/80 text-center">
+                    0 € <br />
+                    <span className="text-[10px] sm:text-xs font-normal text-slate-600">Bêta puis 12 €/équipe</span>
                   </td>
-                  <td className="p-4 sm:p-5 text-slate-700 text-center font-medium">
-                    ~100 € / mois
+                  <td className="p-3 sm:p-5 text-slate-700 text-center font-medium">
+                    ~100 €/mois
                   </td>
-                  <td className="p-4 sm:p-5 text-slate-700 text-center font-medium">
-                    ~60 € / mois
+                  <td className="p-3 sm:p-5 text-slate-700 text-center font-medium">
+                    ~60 €/mois
                   </td>
-                  <td className="p-4 sm:p-5 text-slate-700 text-center font-medium">
-                    ~110 € / mois
+                  <td className="p-3 sm:p-5 text-slate-700 text-center font-medium">
+                    ~110 €/mois
                   </td>
                 </tr>
               </tbody>
@@ -1051,7 +1106,7 @@ export default function LandingPage() {
           </div>
 
           {/* Pioneer Banner */}
-          <div className="mb-10 rounded-2xl border-2 border-primary-500 bg-gradient-to-r from-primary-600 to-indigo-700 p-6 text-white shadow-lg text-center sm:text-left sm:flex items-center justify-between gap-6">
+          <div className="mb-10 rounded-2xl border-2 border-primary-500 bg-gradient-to-r from-primary-600 to-indigo-700 p-5 sm:p-6 text-white shadow-lg text-center sm:text-left sm:flex items-center justify-between gap-6">
             <div>
               <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white inline-block mb-2">
                 🎁 Avantage Membre Pionnier
@@ -1245,12 +1300,12 @@ export default function LandingPage() {
       </section>
 
       {/* 12. Final Call-to-Action */}
-      <section className="bg-slate-900 py-20 text-white relative overflow-hidden">
+      <section className="bg-slate-900 py-16 sm:py-20 text-white relative overflow-hidden">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary-900/60 px-3 py-1 text-xs font-semibold text-primary-300 border border-primary-500/30 mb-6">
             🚀 100 places de testeurs pionniers
           </div>
-          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
             Prêt à désencombrer le quotidien de votre équipe ?
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-base text-slate-300">
@@ -1271,22 +1326,22 @@ export default function LandingPage() {
       </section>
 
       {/* 13. Footer */}
-      <footer className="border-t border-slate-200 bg-white py-12 text-sm text-slate-500">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
+      <footer className="border-t border-slate-200 bg-white py-8 sm:py-12 text-sm text-slate-500">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-between gap-4 sm:gap-6 text-center sm:text-left">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
             <span className="text-base font-extrabold tracking-tight text-slate-900">
               nexaBoard
             </span>
-            <span>•</span>
+            <span className="hidden sm:inline">•</span>
             <span>Conçu avec rigueur en France 🇫🇷</span>
           </div>
 
-          <div className="flex items-center gap-6 text-xs">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs">
             <Link href="/privacy" className="hover:text-primary-600 transition">
               Confidentialité
             </Link>
             <Link href="/terms" className="hover:text-primary-600 transition">
-              Conditions d’utilisation
+              Conditions d'utilisation
             </Link>
             <a href="mailto:contact@nexaboard.io" className="hover:text-primary-600 transition">
               Contact fondateur
@@ -1351,7 +1406,7 @@ export default function LandingPage() {
                 <label className="text-xs font-bold text-slate-700 block mb-1.5">
                   Taille de votre équipe :
                 </label>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {(['1-5', '6-10', '11-20', '20+'] as const).map((size) => (
                     <button
                       type="button"
@@ -1374,7 +1429,7 @@ export default function LandingPage() {
                 <label className="text-xs font-bold text-slate-700 block mb-1.5">
                   Votre outil principal actuel :
                 </label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {[
                     { id: 'notion', label: 'Notion' },
                     { id: 'trello', label: 'Trello' },
@@ -1404,7 +1459,7 @@ export default function LandingPage() {
                 <label className="text-xs font-bold text-slate-700 block mb-1.5">
                   Votre priorité immédiate :
                 </label>
-                <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   {[
                     { id: 'all_in_one', label: '🎯 Tout-en-un simple' },
                     { id: 'tasks', label: '📋 Gagner du temps tâches' },
