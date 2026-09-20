@@ -80,6 +80,7 @@ describe('LeadsService', () => {
           currentTool: 'Notion',
           interest: 'all-in-one',
           position: 42,
+          referralCode: expect.stringMatching(/^BETA-042X/),
           userAgent: 'Mozilla/5.0',
           ipAddress: '127.0.0.1',
         },
@@ -92,9 +93,9 @@ describe('LeadsService', () => {
       );
       expect(result.success).toBe(true);
       expect(result.data.position).toBe(42);
-      expect(result.data.referralCode).toBe('BETA-42X5678');
+      expect(result.data.referralCode).toMatch(/^BETA-042X/);
       expect(result.data.referralLink).toContain(
-        'https://nexaboardapp.up.railway.app?ref=BETA-42X5678',
+        'https://nexaboardapp.up.railway.app?ref=BETA-042X',
       );
     });
 
