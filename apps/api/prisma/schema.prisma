@@ -116,6 +116,7 @@ model BetaSubscriber {
   interest      String?
   status        String    @default("pending")
   position      Int       @default(0)
+  referralCode  String?   @unique @map("referral_code")
   referralSource String?   @map("referral_source")
   utmCampaign    String?   @map("utm_campaign")
   userAgent     String?   @map("user_agent")

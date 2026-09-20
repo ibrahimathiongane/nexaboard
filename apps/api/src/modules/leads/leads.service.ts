@@ -28,6 +28,8 @@ export class LeadsService {
     }
 
     const position = (await this.prisma.betaSubscriber.count()) + 1;
+    const referralCode = `BETA-${String(position).padStart(3, '0')}X${Math.random().toString(36).slice(-4).toUpperCase()}`;
+
     const subscriber = await this.prisma.betaSubscriber.create({
       data: {
         email: dto.email.toLowerCase(),
@@ -35,12 +37,12 @@ export class LeadsService {
         currentTool: dto.currentTool,
         interest: dto.interest,
         position,
+        referralCode,
         userAgent,
         ipAddress,
       },
     });
 
-    const referralCode = `BETA-${subscriber.position}X${subscriber.id.slice(-4).toUpperCase()}`;
     const referralLink = `https://nexaboardapp.up.railway.app?ref=${referralCode}`;
 
     this.emailService

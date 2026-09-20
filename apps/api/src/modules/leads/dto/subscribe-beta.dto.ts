@@ -13,8 +13,8 @@ export class SubscribeBetaDto {
   currentTool!: string;
 
   @IsOptional()
-  @IsIn(['tasks', 'notes', 'calendar', 'collaboration'], {
-    message: 'Centre d’intérêt invalide',
+  @IsIn(['tasks', 'notes', 'calendar', 'all_in_one', 'cost_savings'], {
+    message: 'Centre d\'intérêt invalide',
   })
   interest?: string;
 }
