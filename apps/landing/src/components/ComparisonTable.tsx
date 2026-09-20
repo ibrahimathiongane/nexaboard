@@ -2,7 +2,8 @@ export default function ComparisonTable() {
   const rows = [
     { criteria: 'Prise en main (< 3 min)', nexa: '✓ Oui', notion: '✗ Lourd', trello: '✓ Oui', asana: '✗ Complexe' },
     { criteria: 'Tâches + Notes + Calendrier', nexa: '✓ Natif', notion: '⚠️ Bricolé', trello: '✗ Tâches', asana: '⚠️ Limité' },
-    { criteria: 'Vitesse (< 100ms)', nexa: '⚡ Oui', notion: '✗ Lent', trello: 'Moyen', asana: 'Moyen' },
+    { criteria: 'Simplicité sans formation', nexa: '✓ Oui', notion: '✗ Formation requise', trello: '✓ Oui', asana: '✗ Formation requise' },
+    { criteria: 'Vitesse (< 150 ms)', nexa: '⚡ Ultra-rapide', notion: '✗ Lenteurs', trello: '⚠️ Moyen', asana: '⚠️ Moyen' },
     { criteria: 'Hébergement', nexa: '🇫🇷 France', notion: '🇺🇸 USA', trello: '🇺🇸 USA', asana: '🇺🇸 USA' },
   ];
 

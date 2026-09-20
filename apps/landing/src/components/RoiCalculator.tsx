@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { useAnalytics } from '@/lib/analytics';
 
 interface RoiCalculatorProps {
   onOpenModal: () => void;
@@ -14,6 +15,7 @@ export default function RoiCalculator({ onOpenModal }: RoiCalculatorProps) {
     asana: false,
     todoist: false,
   });
+  const analytics = useAnalytics();
 
   const toolPrices: { [key: string]: { name: string; price: number } } = {
     notion: { name: 'Notion (10 €/pers)', price: 10 },
@@ -28,7 +30,14 @@ export default function RoiCalculator({ onOpenModal }: RoiCalculatorProps) {
 
   const monthlySavings = Math.max(0, monthlyCompetitorCost - 12);
   const yearlySavings = monthlySavings * 12;
-  const hoursSavedYearly = calcTeamSize * 110;
+  const hoursSavedYearly = calcTeamSize * 120;
+
+  const trackCalculator = useCallback(() => {
+    analytics.track('pricing_calculator_used', {
+      team_size_input: calcTeamSize,
+      calculated_savings: yearlySavings,
+    });
+  }, [calcTeamSize, yearlySavings]);
 
   return (
     <section id="calculateur" className="py-20 lg:py-24">
@@ -59,7 +68,10 @@ export default function RoiCalculator({ onOpenModal }: RoiCalculatorProps) {
                   max={25}
                   step={1}
                   value={calcTeamSize}
-                  onChange={(e) => setCalcTeamSize(Number(e.target.value))}
+                  onChange={(e) => {
+                    setCalcTeamSize(Number(e.target.value));
+                    trackCalculator();
+                  }}
                   className="w-full accent-primary-600 h-2 bg-slate-200 rounded-lg cursor-pointer"
                 />
                 <div className="flex justify-between text-[11px] text-slate-400 mt-1 font-medium">

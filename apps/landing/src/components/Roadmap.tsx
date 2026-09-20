@@ -1,6 +1,6 @@
 export default function Roadmap() {
   return (
-    <section className="bg-slate-50/80 py-18 lg:py-20 border-t border-slate-200">
+    <section id="roadmap" className="bg-slate-50/80 py-18 lg:py-20 border-t border-slate-200">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-xs font-bold uppercase tracking-wider text-primary-600">Transparence Totale</h2>
@@ -33,6 +33,7 @@ export default function Roadmap() {
               <li className="flex items-center gap-2">• Synchronisation bidirectionnelle Google Calendar &amp; Outlook</li>
               <li className="flex items-center gap-2">• Mode hors-ligne avec réconciliation automatique</li>
               <li className="flex items-center gap-2">• Importateur automatique 1-clic depuis Trello et Notion</li>
+              <li className="flex items-center gap-2">• Application mobile progressive (PWA)</li>
               <li className="flex items-center gap-2">• Intégrations Slack et GitHub pour développeurs</li>
             </ul>
           </div>

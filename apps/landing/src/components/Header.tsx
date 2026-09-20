@@ -51,6 +51,9 @@ export default function Header({ onOpenModal }: HeaderProps) {
           <a href="#tarifs" className="transition hover:text-primary-600">
             Tarifs
           </a>
+          <a href="#roadmap" className="transition hover:text-primary-600">
+            Roadmap
+          </a>
           <a href="#faq" className="transition hover:text-primary-600">
             FAQ
           </a>
@@ -95,6 +98,7 @@ export default function Header({ onOpenModal }: HeaderProps) {
             { href: '#calculateur', label: 'Calculateur ROI' },
             { href: '#comparatif', label: 'Comparatif' },
             { href: '#tarifs', label: 'Tarifs' },
+            { href: '#roadmap', label: 'Roadmap' },
             { href: '#faq', label: 'FAQ' },
           ].map((item) => (
             <a

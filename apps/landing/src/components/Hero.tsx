@@ -1,15 +1,15 @@
 'use client';
 
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import type { LandingState } from '@/lib/types';
 
 interface HeroProps {
   onOpenModal: (email?: string) => void;
 }
 
 export default function Hero({ onOpenModal }: HeroProps) {
-  const [email, setEmail] = React.useState('');
-  const [activeTab, setActiveTab] = React.useState<'kanban' | 'notes' | 'calendar'>('kanban');
+  const [email, setEmail] = useState('');
+  const [activeTab, setActiveTab] = useState<'kanban' | 'notes' | 'calendar'>('kanban');
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -48,6 +48,15 @@ export default function Hero({ onOpenModal }: HeroProps) {
             pour les petites équipes.
           </span>
         </motion.h1>
+
+        <motion.p
+          className="mx-auto mt-4 max-w-2xl text-lg font-medium text-primary-600 sm:text-xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+        >
+          Moins de bruit, plus d&apos;impact.
+        </motion.p>
 
         <motion.p
           className="mx-auto mt-6 max-w-2xl text-lg text-slate-600 sm:text-xl leading-relaxed"
@@ -166,8 +175,6 @@ export default function Hero({ onOpenModal }: HeroProps) {
     </section>
   );
 }
-
-import React from 'react';
 
 function KanbanPreview() {
   return (

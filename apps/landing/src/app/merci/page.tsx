@@ -3,6 +3,7 @@
 import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import posthog from 'posthog-js';
 
 function ThankYouContent() {
   const searchParams = useSearchParams();
@@ -18,6 +19,7 @@ function ThankYouContent() {
   function handleCopy() {
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
+    posthog.capture('referral_link_copied', { position: Number(position) });
     setTimeout(() => setCopied(false), 3000);
   }
 

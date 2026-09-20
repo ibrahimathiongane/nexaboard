@@ -17,16 +17,25 @@ export default function Footer() {
           <Link href="/terms" className="hover:text-primary-600 transition">
             Conditions d&apos;utilisation
           </Link>
+          <Link href="/mentions-legales" className="hover:text-primary-600 transition">
+            Mentions légales
+          </Link>
           <a href="mailto:contact@nexaboard.io" className="hover:text-primary-600 transition">
             Contact fondateur
           </a>
+          <a href="https://github.com/nexaboard" target="_blank" rel="noopener noreferrer" className="hover:text-primary-600 transition">
+            GitHub
+          </a>
+          <a href="https://twitter.com/nexaboard" target="_blank" rel="noopener noreferrer" className="hover:text-primary-600 transition">
+            Twitter / X
+          </a>
           <span className="flex items-center gap-1.5 text-emerald-600 font-medium">
             <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
-            Systèmes opérationnels
+            Tous les systèmes opérationnels
           </span>
         </div>
 
-        <p className="text-xs text-slate-400">© 2026 nexaBoard. Tous droits réservés.</p>
+        <p className="text-xs text-slate-400">© 2026 nexaBoard. Conçu avec rigueur en France.</p>
       </div>
     </footer>
   );

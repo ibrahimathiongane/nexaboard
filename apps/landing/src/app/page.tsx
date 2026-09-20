@@ -41,6 +41,7 @@ export default function LandingPage() {
     analytics.track('hero_email_submitted', {
       email_domain: initialEmail?.split('@')[1] || 'unknown',
     });
+    analytics.track('modal_profiling_opened', { source_step: 'hero' });
   }
 
   const state: LandingState = {

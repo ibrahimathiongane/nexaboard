@@ -75,6 +75,7 @@ export default function Pricing({ onOpenModal }: PricingProps) {
               <li className="flex items-center gap-2">✓ Collaborateurs illimités (jusqu&apos;à 20)</li>
               <li className="flex items-center gap-2">✓ 25 Go de stockage</li>
               <li className="flex items-center gap-2">✓ Calendrier synchronisé &amp; dashboard complet</li>
+              <li className="flex items-center gap-2">✓ Accès anticipé aux nouvelles fonctionnalités</li>
               <li className="flex items-center gap-2">✓ Support prioritaire sous 24h</li>
             </ul>
             <button
