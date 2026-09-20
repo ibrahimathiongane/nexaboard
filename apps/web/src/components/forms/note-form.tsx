@@ -86,7 +86,6 @@ export function NoteForm({ workspaceId, note, open, onClose, onSuccess }: NoteFo
       const payload = {
         title: title.trim(),
         contentMd: contentMd.trim() || undefined,
-        projectId: projectId || undefined,
       };
 
       if (isEditing) {
