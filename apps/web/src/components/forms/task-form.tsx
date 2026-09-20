@@ -160,8 +160,6 @@ export function TaskForm({
         status,
         priority,
         dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
-        assigneeIds,
-        labelIds,
       };
 
       if (isEditing) {
