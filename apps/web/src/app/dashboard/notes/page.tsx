@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { api } from '@/lib/api';
 import { useWorkspaceStore } from '@/stores/workspace.store';
 import { Button } from '@/components/ui/button';
@@ -119,7 +121,9 @@ export default function NotesPage() {
               </CardHeader>
               <CardContent>
                 {note.contentMd && (
-                  <p className="line-clamp-3 text-sm text-muted-foreground">{note.contentMd}</p>
+                  <div className="line-clamp-4 text-sm text-muted-foreground prose prose-sm dark:prose-invert max-w-none">
+                    <Markdown remarkPlugins={[remarkGfm]}>{note.contentMd}</Markdown>
+                  </div>
                 )}
                 <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
                   <span>{note.project?.name || 'Sans projet'}</span>

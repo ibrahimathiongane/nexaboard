@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
 import { Modal } from '@/components/ui/modal';
 import { Button } from '@/components/ui/button';
@@ -41,6 +43,7 @@ export function NoteForm({ workspaceId, note, open, onClose, onSuccess }: NoteFo
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -55,6 +58,7 @@ export function NoteForm({ workspaceId, note, open, onClose, onSuccess }: NoteFo
       }
       setErrors({});
       setApiError('');
+      setShowPreview(false);
     }
   }, [open, note]);
 
@@ -107,7 +111,7 @@ export function NoteForm({ workspaceId, note, open, onClose, onSuccess }: NoteFo
   };
 
   return (
-    <Modal open={open} onClose={onClose} title={isEditing ? 'Modifier la note' : 'Créer une note'}>
+    <Modal open={open} onClose={onClose} title={isEditing ? 'Modifier la note' : 'Cr\u00e9er une note'}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {apiError && (
           <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
@@ -137,7 +141,7 @@ export function NoteForm({ workspaceId, note, open, onClose, onSuccess }: NoteFo
             id="note-project"
             value={projectId}
             onChange={(e) => setProjectId(e.target.value)}
-            className="mt-1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="mt-1 flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
             <option value="">Aucun projet</option>
             {projects.map((p) => (
@@ -149,17 +153,36 @@ export function NoteForm({ workspaceId, note, open, onClose, onSuccess }: NoteFo
         </div>
 
         <div>
-          <label htmlFor="note-content" className="block text-sm font-medium">
-            Contenu (Markdown)
-          </label>
-          <Textarea
-            id="note-content"
-            value={contentMd}
-            onChange={(e) => setContentMd(e.target.value)}
-            placeholder="Écrivez votre note en Markdown..."
-            className="mt-1 font-mono text-sm"
-            rows={10}
-          />
+          <div className="flex items-center justify-between">
+            <label htmlFor="note-content" className="block text-sm font-medium">
+              Contenu (Markdown)
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowPreview(!showPreview)}
+              className="text-xs font-medium text-primary-600 hover:text-primary-700 transition"
+            >
+              {showPreview ? '\u2702 \u00c9diter' : '\u25c9 Aper\u00e7u'}
+            </button>
+          </div>
+          {showPreview ? (
+            <div className="mt-1 min-h-[250px] rounded-md border border-input bg-white p-3 prose prose-sm dark:prose-invert max-w-none overflow-auto">
+              {contentMd ? (
+                <Markdown remarkPlugins={[remarkGfm]}>{contentMd}</Markdown>
+              ) : (
+                <p className="text-muted-foreground italic">Rien \u00e0 pr\u00e9visualiser...</p>
+              )}
+            </div>
+          ) : (
+            <Textarea
+              id="note-content"
+              value={contentMd}
+              onChange={(e) => setContentMd(e.target.value)}
+              placeholder={"# Titre de la note\n\n\u00c9crivez votre contenu en Markdown...\n\n- **Gras**\n- *Italique*\n- `Code inline`\n- [Lien](url)"}
+              className="mt-1 font-mono text-sm"
+              rows={10}
+            />
+          )}
         </div>
 
         <div className="flex justify-end gap-2 pt-2">
