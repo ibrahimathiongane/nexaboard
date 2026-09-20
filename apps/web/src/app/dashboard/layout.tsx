@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { Toaster, toast } from 'sonner';
 import { useAuthStore } from '@/stores/auth.store';
 import { useWorkspaceStore } from '@/stores/workspace.store';
 import { api } from '@/lib/api';
@@ -74,6 +75,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       setWorkspaceName('');
       setWorkspaceDescription('');
       setWorkspaceModalOpen(false);
+      toast.success('Workspace créé');
     } catch (error) {
       setWorkspaceError(
         error instanceof Error ? error.message : 'Erreur lors de la création du workspace',
@@ -258,6 +260,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </form>
       </Modal>
+
+      <Toaster position="top-center" richColors closeButton />
     </div>
   );
 }

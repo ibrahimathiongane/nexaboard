@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Modal } from '@/components/ui/modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -119,8 +120,9 @@ export function CalendarEventForm({
 
       onSuccess();
       onClose();
+      toast.success(isEditing ? '\u00c9v\u00e9nement modifi\u00e9' : '\u00c9v\u00e9nement cr\u00e9\u00e9');
     } catch (err) {
-      setApiError(err instanceof Error ? err.message : 'Une erreur est survenue');
+      setApiError(err instanceof Error ? err.message : 'Impossible de sauvegarder l\u2019\u00e9v\u00e9nement. R\u00e9essayez.');
     } finally {
       setLoading(false);
     }
@@ -215,7 +217,7 @@ export function CalendarEventForm({
             Annuler
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading ? 'Envoi...' : isEditing ? 'Enregistrer' : 'Créer'}
+            {loading ? 'Enregistrement...' : isEditing ? 'Enregistrer les modifications' : 'Cr\u00e9er l\u2019\u00e9v\u00e9nement'}
           </Button>
         </div>
       </form>

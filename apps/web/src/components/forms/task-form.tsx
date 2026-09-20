@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Modal } from '@/components/ui/modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -164,8 +165,9 @@ export function TaskForm({
 
       onSuccess();
       onClose();
+      toast.success(isEditing ? 'T\u00e2che modifi\u00e9e' : 'T\u00e2che cr\u00e9\u00e9e');
     } catch (err) {
-      setApiError(err instanceof Error ? err.message : 'Une erreur est survenue');
+      setApiError(err instanceof Error ? err.message : 'Impossible de sauvegarder la t\u00e2che. R\u00e9essayez.');
     } finally {
       setLoading(false);
     }
@@ -305,7 +307,7 @@ export function TaskForm({
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={onClose}>Annuler</Button>
           <Button type="submit" disabled={loading}>
-            {loading ? 'Envoi...' : isEditing ? 'Enregistrer' : 'Cr\u00e9er'}
+            {loading ? 'Enregistrement...' : isEditing ? 'Enregistrer les modifications' : 'Cr\u00e9er la t\u00e2che'}
           </Button>
         </div>
       </form>

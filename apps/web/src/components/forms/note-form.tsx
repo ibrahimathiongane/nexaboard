@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Modal } from '@/components/ui/modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -97,8 +98,9 @@ export function NoteForm({ workspaceId, note, open, onClose, onSuccess }: NoteFo
 
       onSuccess();
       onClose();
+      toast.success(isEditing ? 'Note modifi\u00e9e' : 'Note cr\u00e9\u00e9e');
     } catch (err) {
-      setApiError(err instanceof Error ? err.message : 'Une erreur est survenue');
+      setApiError(err instanceof Error ? err.message : 'Impossible de sauvegarder la note. R\u00e9essayez.');
     } finally {
       setLoading(false);
     }
@@ -165,7 +167,7 @@ export function NoteForm({ workspaceId, note, open, onClose, onSuccess }: NoteFo
             Annuler
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading ? 'Envoi...' : isEditing ? 'Enregistrer' : 'Créer'}
+            {loading ? 'Enregistrement...' : isEditing ? 'Enregistrer les modifications' : 'Cr\u00e9er la note'}
           </Button>
         </div>
       </form>

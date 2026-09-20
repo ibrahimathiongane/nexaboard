@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { useWorkspaceStore } from '@/stores/workspace.store';
 import { useAuthStore } from '@/stores/auth.store';
@@ -72,7 +73,7 @@ export default function TeamPage() {
       const data = await api.get<Member[]>(`/api/v1/workspaces/${currentWorkspaceId}/members`);
       setMembers(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
+      setError(err instanceof Error ? err.message : 'Impossible de charger les membres. V\u00e9rifiez votre connexion.');
     } finally {
       setLoading(false);
     }
@@ -87,7 +88,7 @@ export default function TeamPage() {
     try {
       setLabels(await api.get<Label[]>(`/api/v1/workspaces/${currentWorkspaceId}/labels`));
     } catch (err) {
-      setLabelError(err instanceof Error ? err.message : 'Erreur lors du chargement des labels');
+      setLabelError(err instanceof Error ? err.message : 'Impossible de charger les labels.');
     }
   }, [currentWorkspaceId]);
 
@@ -108,9 +109,10 @@ export default function TeamPage() {
       setInviteEmail('');
       setInviteRole('MEMBER');
       setModalOpen(false);
+      toast.success('Invitation envoy\u00e9e');
       await Promise.all([fetchMembers(), fetchWorkspaces()]);
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Erreur lors de l'invitation");
+      setSubmitError(err instanceof Error ? err.message : "Impossible d\u2019envoyer l\u2019invitation. V\u00e9rifiez l\u2019adresse e-mail.");
     } finally {
       setSubmitting(false);
     }
@@ -118,12 +120,14 @@ export default function TeamPage() {
 
   async function handleRemove(memberId: string, userId: string) {
     if (!currentWorkspaceId) return;
+    if (!window.confirm('Retirer ce membre du workspace ? Cette action est irr\u00e9versible.')) return;
     setRemovingId(memberId);
     try {
       await api.delete(`/api/v1/workspaces/${currentWorkspaceId}/members/${userId}`);
+      toast.success('Membre retir\u00e9 du workspace');
       await Promise.all([fetchMembers(), fetchWorkspaces()]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+      setError(err instanceof Error ? err.message : 'Impossible de retirer le membre. R\u00e9essayez.');
     } finally {
       setRemovingId(null);
     }
@@ -177,9 +181,10 @@ export default function TeamPage() {
         description: workspaceDescription.trim() || undefined,
       });
       setWorkspaceModalOpen(false);
+      toast.success('Workspace modifi\u00e9');
       await fetchWorkspaces();
     } catch (err) {
-      setWorkspaceError(err instanceof Error ? err.message : 'Erreur lors de la modification');
+      setWorkspaceError(err instanceof Error ? err.message : 'Impossible de modifier le workspace. R\u00e9essayez.');
     } finally {
       setWorkspaceSubmitting(false);
     }
@@ -195,20 +200,23 @@ export default function TeamPage() {
         color: labelColor,
       });
       setLabelName('');
+      toast.success('Label cr\u00e9\u00e9');
       await fetchLabels();
     } catch (err) {
-      setLabelError(err instanceof Error ? err.message : 'Erreur lors de la création du label');
+      setLabelError(err instanceof Error ? err.message : 'Impossible de cr\u00e9er le label. R\u00e9essayez.');
     }
   }
 
   async function handleDeleteLabel(labelId: string) {
     if (!currentWorkspaceId) return;
+    if (!window.confirm('Supprimer ce label ? Il sera retir\u00e9 de toutes les t\u00e2ches associ\u00e9es.')) return;
     setLabelError(null);
     try {
       await api.delete(`/api/v1/workspaces/${currentWorkspaceId}/labels/${labelId}`);
+      toast.success('Label supprim\u00e9');
       await fetchLabels();
     } catch (err) {
-      setLabelError(err instanceof Error ? err.message : 'Erreur lors de la suppression du label');
+      setLabelError(err instanceof Error ? err.message : 'Impossible de supprimer le label. R\u00e9essayez.');
     }
   }
 
@@ -368,7 +376,7 @@ export default function TeamPage() {
               Annuler
             </Button>
             <Button type="submit" disabled={submitting}>
-              {submitting ? 'Envoi...' : "Envoyer l'invitation"}
+              {submitting ? 'Envoi en cours...' : "Envoyer l'invitation"}
             </Button>
           </div>
         </form>
@@ -411,7 +419,7 @@ export default function TeamPage() {
               Annuler
             </Button>
             <Button type="submit" disabled={workspaceSubmitting}>
-              {workspaceSubmitting ? 'Enregistrement...' : 'Enregistrer'}
+              {workspaceSubmitting ? 'Enregistrement...' : 'Enregistrer les modifications'}
             </Button>
           </div>
         </form>

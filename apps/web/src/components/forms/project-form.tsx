@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Modal } from '@/components/ui/modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -93,8 +94,9 @@ export function ProjectForm({ workspaceId, project, open, onClose, onSuccess }: 
 
       onSuccess();
       onClose();
+      toast.success(isEditing ? 'Projet modifi\u00e9' : 'Projet cr\u00e9\u00e9');
     } catch (err) {
-      setApiError(err instanceof Error ? err.message : 'Une erreur est survenue');
+      setApiError(err instanceof Error ? err.message : 'Impossible de sauvegarder le projet. R\u00e9essayez.');
     } finally {
       setLoading(false);
     }
@@ -164,7 +166,7 @@ export function ProjectForm({ workspaceId, project, open, onClose, onSuccess }: 
             Annuler
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading ? 'Envoi...' : isEditing ? 'Enregistrer' : 'Créer'}
+            {loading ? 'Enregistrement...' : isEditing ? 'Enregistrer les modifications' : 'Cr\u00e9er le projet'}
           </Button>
         </div>
       </form>
