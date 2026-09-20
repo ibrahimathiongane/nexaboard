@@ -1,19 +1,25 @@
-'use client';
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Politique de Confidentialité — nexaBoard',
+  description:
+    'Découvrez comment nexaBoard protège vos données. Hébergement en France, chiffrement AES-256, conformité RGPD.',
+};
 
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-white py-20 px-4">
       <div className="max-w-4xl mx-auto">
-        <Link href="/" className="text-blue-600 hover:text-blue-700 mb-8 inline-block">
-          ← Retour à l'accueil
+        <Link href="/" className="text-primary-600 hover:text-primary-700 mb-8 inline-block">
+          ← Retour à l&apos;accueil
         </Link>
         <h1 className="text-5xl font-bold mb-8">Politique de Confidentialité</h1>
         <div className="prose max-w-none space-y-6 text-gray-700">
           <h2 className="text-2xl font-bold mt-8 text-gray-900">1. Introduction</h2>
           <p>
             nexaBoard (« nous », « notre ») est engagé à protéger votre confidentialité. Cette
-            politique de confidentialité explique nos pratiques de collecte, d'utilisation et de
+            politique de confidentialité explique nos pratiques de collecte, d&apos;utilisation et de
             divulgation de données.
           </p>
 
@@ -21,10 +27,10 @@ export default function PrivacyPage() {
           <p>Nous collectons les informations suivantes :</p>
           <ul className="list-disc pl-6 space-y-2">
             <li>
-              <strong>Données d'inscription :</strong> Email, nom, workspace
+              <strong>Données d&apos;inscription :</strong> Email, nom, workspace
             </li>
             <li>
-              <strong>Données d'utilisation :</strong> Actions, interactions, timestamps
+              <strong>Données d&apos;utilisation :</strong> Actions, interactions, timestamps
             </li>
             <li>
               <strong>Données techniques :</strong> Adresse IP, navigateur, appareil
@@ -40,7 +46,7 @@ export default function PrivacyPage() {
             <li>Fournir et améliorer nos services</li>
             <li>Vous contacter concernant votre compte ou la bêta</li>
             <li>Respecter les obligations légales</li>
-            <li>Analyser les tendances et améliorer l'expérience utilisateur</li>
+            <li>Analyser les tendances et améliorer l&apos;expérience utilisateur</li>
           </ul>
 
           <h2 className="text-2xl font-bold mt-8 text-gray-900">4. Sécurité des Données</h2>

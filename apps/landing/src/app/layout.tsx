@@ -1,5 +1,13 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
+import Providers from '@/components/Providers';
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: "nexaBoard — L'espace de travail unifié pour les équipes de 5 à 20 personnes",
@@ -73,8 +81,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-screen bg-white text-slate-900 antialiased font-sans selection:bg-primary-100 selection:text-primary-700">
-        {children}
+      <body className={`min-h-screen bg-white text-slate-900 antialiased selection:bg-primary-100 selection:text-primary-700 ${inter.variable} font-sans`}>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );
