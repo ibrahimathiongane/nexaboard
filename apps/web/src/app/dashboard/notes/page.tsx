@@ -87,8 +87,8 @@ export default function NotesPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Notes</h1>
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-bold md:text-2xl">Notes</h1>
         <Button size="sm" onClick={handleCreate}>
           Nouvelle note
         </Button>

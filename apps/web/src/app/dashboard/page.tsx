@@ -89,7 +89,7 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold">Tableau de bord</h1>
+      <h1 className="mb-6 text-xl font-bold md:text-2xl">Tableau de bord</h1>
 
       {error && (
         <div className="mb-6 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">

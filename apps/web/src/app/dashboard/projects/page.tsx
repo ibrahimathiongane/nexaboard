@@ -79,8 +79,8 @@ export default function ProjectsPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Projets</h1>
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-bold md:text-2xl">Projets</h1>
         <Button size="sm" onClick={handleCreate}>
           Nouveau projet
         </Button>

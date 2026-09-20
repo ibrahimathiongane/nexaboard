@@ -113,8 +113,8 @@ export default function TasksPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Tâches</h1>
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-bold md:text-2xl">Tâches</h1>
         <div className="flex gap-2">
           <Button
             variant={view === 'list' ? 'default' : 'outline'}
@@ -153,34 +153,36 @@ export default function TasksPage() {
               className="cursor-pointer hover:border-primary/50"
               onClick={() => handleEdit(task)}
             >
-              <CardContent className="flex items-center gap-4 p-4">
-                <div className="flex-1">
-                  <p className="font-medium">{task.title}</p>
-                  <p className="text-sm text-muted-foreground">{task.project.name}</p>
+              <CardContent className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:gap-4">
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium truncate">{task.title}</p>
+                  <p className="text-sm text-muted-foreground truncate">{task.project.name}</p>
                 </div>
-                <Badge variant={STATUS_COLORS[task.status]}>{STATUS_LABELS[task.status]}</Badge>
-                <Badge variant="outline">{PRIORITY_LABELS[task.priority]}</Badge>
-                {task.assignees.map(({ user }) => (
-                  <span key={user.id} className="text-xs text-muted-foreground">
-                    {user.firstName} {user.lastName}
-                  </span>
-                ))}
-                {task.labels.map(({ label }) => (
-                  <Badge key={label.id} variant="secondary" style={{ borderColor: label.color }}>
-                    {label.name}
-                  </Badge>
-                ))}
-                {task.dueDate && (
-                  <span className="text-sm text-muted-foreground">
-                    {new Date(task.dueDate).toLocaleDateString('fr-FR')}
-                  </span>
-                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant={STATUS_COLORS[task.status]}>{STATUS_LABELS[task.status]}</Badge>
+                  <Badge variant="outline">{PRIORITY_LABELS[task.priority]}</Badge>
+                  {task.assignees.map(({ user }) => (
+                    <span key={user.id} className="hidden text-xs text-muted-foreground sm:inline">
+                      {user.firstName} {user.lastName}
+                    </span>
+                  ))}
+                  {task.labels.map(({ label }) => (
+                    <Badge key={label.id} variant="secondary" style={{ borderColor: label.color }} className="hidden sm:inline-flex">
+                      {label.name}
+                    </Badge>
+                  ))}
+                  {task.dueDate && (
+                    <span className="text-sm text-muted-foreground">
+                      {new Date(task.dueDate).toLocaleDateString('fr-FR')}
+                    </span>
+                  )}
+                </div>
               </CardContent>
             </Card>
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
           {['TODO', 'IN_PROGRESS', 'IN_REVIEW', 'DONE', 'CANCELLED'].map((status) => (
             <div key={status}>
               <h3 className="mb-3 text-sm font-medium text-muted-foreground">

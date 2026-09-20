@@ -110,8 +110,8 @@ export default function CalendarPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Calendrier</h1>
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-bold md:text-2xl">Calendrier</h1>
         <Button size="sm" onClick={handleCreate}>
           Nouvel événement
         </Button>
@@ -144,15 +144,17 @@ export default function CalendarPage() {
               className="cursor-pointer hover:border-primary/50"
               onClick={() => handleEdit(event)}
             >
-              <CardContent className="flex items-center gap-4 p-4">
-                <div className="h-3 w-3 rounded-full" style={{ backgroundColor: event.color }} />
-                <div className="flex-1">
-                  <p className="font-medium">{event.title}</p>
-                  {event.description && (
-                    <p className="text-sm text-muted-foreground">{event.description}</p>
-                  )}
+              <CardContent className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: event.color }} />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium truncate">{event.title}</p>
+                    {event.description && (
+                      <p className="text-sm text-muted-foreground truncate">{event.description}</p>
+                    )}
+                  </div>
                 </div>
-                <div className="text-right">
+                <div className="text-right pl-[24px] sm:pl-0">
                   <p className="text-sm">
                     {new Date(event.start).toLocaleDateString('fr-FR', {
                       day: 'numeric',

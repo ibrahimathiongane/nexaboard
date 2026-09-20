@@ -37,13 +37,13 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
       <div className="fixed inset-0 bg-black/50 animate-in fade-in-0" onClick={onClose} />
       <div
         className={cn(
-          'relative z-50 w-full max-w-lg rounded-lg border bg-card shadow-lg',
+          'relative z-50 w-full max-w-lg mx-4 sm:mx-0 rounded-lg border bg-card shadow-lg',
           'animate-in fade-in-0 zoom-in-95 duration-200',
         )}
       >
         <div className="flex items-center justify-between border-b px-6 py-4">
           <h2 className="text-lg font-semibold">{title}</h2>
-          <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
+          <Button variant="ghost" size="icon" onClick={onClose} className="h-11 w-11 shrink-0">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"

@@ -39,12 +39,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [workspaceDescription, setWorkspaceDescription] = useState('');
   const [workspaceError, setWorkspaceError] = useState<string | null>(null);
   const [workspaceSubmitting, setWorkspaceSubmitting] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (workspaces.length === 0) {
       fetchWorkspaces();
     }
   }, [workspaces.length, fetchWorkspaces]);
+
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
 
   const currentWorkspace = getCurrentWorkspace();
 
@@ -79,13 +84,58 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="flex h-screen">
-      <aside className="flex w-64 flex-col border-r bg-muted/40">
-        <div className="p-4">
+    <div className="flex h-screen overflow-hidden">
+      {/* Mobile header */}
+      <div className="fixed inset-x-0 top-0 z-30 flex h-14 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
+        <button
+          type="button"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          aria-label="Menu"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="4" x2="20" y1="12" y2="12" />
+            <line x1="4" x2="20" y1="6" y2="6" />
+            <line x1="4" x2="20" y1="18" y2="18" />
+          </svg>
+        </button>
+        <span className="text-sm font-semibold">nexaBoard</span>
+        {currentWorkspace && (
+          <span className="ml-1 truncate text-xs text-muted-foreground">{currentWorkspace.name}</span>
+        )}
+      </div>
+
+      {/* Mobile backdrop */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={cn(
+          'fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r bg-muted/40 transition-transform duration-200 md:relative md:translate-x-0',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+        )}
+      >
+        <div className="flex h-14 items-center justify-between border-b px-4 md:h-auto md:border-0 md:pt-4">
           <h2 className="text-lg font-semibold">nexaBoard</h2>
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(false)}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-accent md:hidden"
+            aria-label="Fermer le menu"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </button>
         </div>
 
-        <div className="px-4 pb-4">
+        <div className="px-4 pb-4 pt-2">
           {workspaces.length > 0 && (
             <>
               <label className="mb-1 block text-xs font-medium text-muted-foreground">
@@ -129,7 +179,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 key={href}
                 href={href}
                 className={cn(
-                  'block rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent',
+                  'block rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-accent',
                   isActive && 'bg-accent font-medium text-accent-foreground',
                 )}
               >
@@ -157,7 +207,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      <main className="flex-1 overflow-auto p-6">{children}</main>
+      {/* Main content */}
+      <main className="flex-1 overflow-auto pt-14 md:pt-0 p-4 md:p-6">{children}</main>
 
       <Modal
         open={workspaceModalOpen}

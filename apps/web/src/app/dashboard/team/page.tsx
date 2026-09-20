@@ -214,14 +214,14 @@ export default function TeamPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Équipe</h1>
+          <h1 className="text-xl font-bold md:text-2xl">Équipe</h1>
           <p className="text-sm text-muted-foreground">
             {displayMembers.length} membre{displayMembers.length > 1 ? 's' : ''}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {canEditWorkspace && (
             <Button variant="outline" size="sm" onClick={openWorkspaceEditor}>
               Modifier le workspace
@@ -251,32 +251,36 @@ export default function TeamPage() {
             const isOwner = member.role === 'OWNER';
             return (
               <Card key={member.id}>
-                <CardContent className="flex items-center gap-4 p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
-                    {initials}
+                <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
+                      {initials}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium truncate">
+                        {member.user.firstName} {member.user.lastName}
+                        {isCurrentUser && (
+                          <span className="ml-2 text-xs text-muted-foreground">(vous)</span>
+                        )}
+                      </p>
+                      <p className="text-sm text-muted-foreground truncate">{member.user.email}</p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">
-                      {member.user.firstName} {member.user.lastName}
-                      {isCurrentUser && (
-                        <span className="ml-2 text-xs text-muted-foreground">(vous)</span>
-                      )}
-                    </p>
-                    <p className="text-sm text-muted-foreground truncate">{member.user.email}</p>
+                  <div className="flex items-center gap-2 pl-[52px] sm:pl-0">
+                    <Badge variant={ROLE_VARIANTS[member.role] ?? 'outline'}>
+                      {ROLE_LABELS[member.role] ?? member.role}
+                    </Badge>
+                    {!isOwner && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        disabled={removingId === member.id}
+                        onClick={() => handleRemove(member.id, member.userId)}
+                      >
+                        {removingId === member.id ? '...' : 'Retirer'}
+                      </Button>
+                    )}
                   </div>
-                  <Badge variant={ROLE_VARIANTS[member.role] ?? 'outline'}>
-                    {ROLE_LABELS[member.role] ?? member.role}
-                  </Badge>
-                  {!isOwner && (
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      disabled={removingId === member.id}
-                      onClick={() => handleRemove(member.id, member.userId)}
-                    >
-                      {removingId === member.id ? '...' : 'Retirer'}
-                    </Button>
-                  )}
                 </CardContent>
               </Card>
             );
