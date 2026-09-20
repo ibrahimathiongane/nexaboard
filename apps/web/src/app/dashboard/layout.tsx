@@ -86,7 +86,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Mobile header */}
-      <div className="fixed inset-x-0 top-0 z-30 flex h-14 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
+      <div className="fixed inset-x-0 top-0 z-40 flex h-14 items-center gap-3 border-b bg-background px-4 shadow-sm md:hidden">
         <button
           type="button"
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -108,7 +108,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Mobile backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          className="fixed inset-0 z-30 bg-black/60 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -116,11 +116,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r bg-muted/40 transition-transform duration-200 md:relative md:translate-x-0',
+          'fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r bg-background transition-transform duration-200 md:relative md:translate-x-0',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full',
         )}
       >
-        <div className="flex h-14 items-center justify-between border-b px-4 md:h-auto md:border-0 md:pt-4">
+        <div className="flex h-14 items-center justify-between border-b px-4 md:h-16 md:border-b md:px-4 md:py-4">
           <h2 className="text-lg font-semibold">nexaBoard</h2>
           <button
             type="button"
@@ -208,7 +208,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto pt-14 md:pt-0 p-4 md:p-6">{children}</main>
+      <main className="flex-1 overflow-auto pt-14 md:pt-0 p-5 md:p-8 lg:p-8">{children}</main>
 
       <Modal
         open={workspaceModalOpen}
