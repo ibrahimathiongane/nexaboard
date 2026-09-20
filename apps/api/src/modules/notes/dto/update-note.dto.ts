@@ -30,6 +30,11 @@ export class UpdateNoteDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  projectId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsBoolean()
   published?: boolean;
 

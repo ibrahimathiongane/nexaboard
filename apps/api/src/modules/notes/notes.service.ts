@@ -107,6 +107,7 @@ export class NotesService {
         ...(dto.contentMd !== undefined && { contentMd: dto.contentMd }),
         ...(dto.icon !== undefined && { icon: dto.icon }),
         ...(dto.cover !== undefined && { cover: dto.cover }),
+        ...(dto.projectId !== undefined && { projectId: dto.projectId || null }),
         ...(dto.published !== undefined && { published: dto.published }),
         ...(dto.archived !== undefined && { archived: dto.archived }),
       },
