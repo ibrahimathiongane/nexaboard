@@ -18,6 +18,8 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskFilterDto } from './dto/task-filter.dto';
 
+import { ReorderTasksDto } from './dto/reorder-tasks.dto';
+
 @ApiTags('Tasks')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -55,6 +57,15 @@ export class TasksController {
   @ApiOperation({ summary: 'Obtenir une tâche' })
   async findOne(@Param('id') id: string, @CurrentUser() user: CurrentUserType) {
     return this.tasksService.findById(id, user.id);
+  }
+
+  @Patch('tasks/reorder')
+  @ApiOperation({ summary: 'Réordonner les tâches (drag & drop)' })
+  async reorder(
+    @CurrentUser() user: CurrentUserType,
+    @Body() dto: ReorderTasksDto,
+  ) {
+    return this.tasksService.reorder(user.id, dto.items);
   }
 
   @Patch('tasks/:id')

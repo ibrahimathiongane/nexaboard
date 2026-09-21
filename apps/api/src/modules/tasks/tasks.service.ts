@@ -190,6 +190,22 @@ export class TasksService {
     });
   }
 
+  async reorder(_userId: string, items: { taskId: string; status: string; order: number }[]) {
+    const updates = items.map((item) =>
+      this.prisma.task.update({
+        where: { id: item.taskId },
+        data: {
+          status: item.status as any,
+          order: item.order,
+          ...(item.status === 'DONE' ? { completedAt: new Date() } : {}),
+        },
+      }),
+    );
+
+    await this.prisma.$transaction(updates);
+    return { message: 'Tâches réordonnées' };
+  }
+
   async remove(id: string, userId: string) {
     await this.findById(id, userId);
     await this.prisma.task.delete({ where: { id } });
