@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '@/stores/auth.store';
 import { api } from '@/lib/api';
 
@@ -163,9 +164,9 @@ export default function RegisterPage() {
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Déjà un compte ?{' '}
-        <a href="/auth/login" className="font-medium text-primary hover:underline">
+        <Link href="/auth/login" className="font-medium text-primary hover:underline">
           Se connecter
-        </a>
+        </Link>
       </p>
     </div>
   );

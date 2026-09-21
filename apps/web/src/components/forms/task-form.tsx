@@ -255,7 +255,7 @@ export function TaskForm({
                     className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-medium transition min-h-[40px] ${
                       isSelected
                         ? 'border-primary bg-primary/10 text-primary'
-                        : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                        : 'border-border bg-background text-foreground hover:border-accent-foreground/20'
                     }`}
                   >
                     {isSelected && (
@@ -287,7 +287,7 @@ export function TaskForm({
                     className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-medium transition min-h-[40px] ${
                       isSelected
                         ? 'border-primary bg-primary/10 text-primary'
-                        : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                        : 'border-border bg-background text-foreground hover:border-accent-foreground/20'
                     }`}
                   >
                     <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: label.color }} />

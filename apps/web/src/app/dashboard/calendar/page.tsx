@@ -118,12 +118,12 @@ export default function CalendarPage() {
       </div>
 
       <div className="mb-4 flex items-center justify-between">
-        <Button variant="outline" size="sm" onClick={() => navigateMonth(-1)}>
-          ←
+        <Button variant="outline" size="sm" onClick={() => navigateMonth(-1)} aria-label="Mois pr\u00e9c\u00e9dent">
+          \u2190
         </Button>
         <h2 className="text-lg font-medium capitalize">{monthName}</h2>
-        <Button variant="outline" size="sm" onClick={() => navigateMonth(1)}>
-          →
+        <Button variant="outline" size="sm" onClick={() => navigateMonth(1)} aria-label="Mois suivant">
+          \u2192
         </Button>
       </div>
 
@@ -142,7 +142,10 @@ export default function CalendarPage() {
             <Card
               key={event.id}
               className="cursor-pointer hover:border-primary/50"
+              role="button"
+              tabIndex={0}
               onClick={() => handleEdit(event)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEdit(event); } }}
             >
               <CardContent className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:gap-4">
                 <div className="flex items-center gap-3">

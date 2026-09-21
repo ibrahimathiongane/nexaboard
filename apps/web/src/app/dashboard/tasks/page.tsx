@@ -151,7 +151,10 @@ export default function TasksPage() {
             <Card
               key={task.id}
               className="cursor-pointer hover:border-primary/50"
+              role="button"
+              tabIndex={0}
               onClick={() => handleEdit(task)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEdit(task); } }}
             >
               <CardContent className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:gap-4">
                 <div className="min-w-0 flex-1">

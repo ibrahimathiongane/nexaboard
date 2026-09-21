@@ -166,7 +166,7 @@ export function NoteForm({ workspaceId, note, open, onClose, onSuccess }: NoteFo
             </button>
           </div>
           {showPreview ? (
-            <div className="mt-1 min-h-[250px] rounded-md border border-input bg-white p-3 prose prose-sm dark:prose-invert max-w-none overflow-auto">
+            <div className="mt-1 min-h-[250px] rounded-md border border-input bg-background p-3 prose prose-sm dark:prose-invert max-w-none overflow-auto">
               {contentMd ? (
                 <Markdown remarkPlugins={[remarkGfm]}>{contentMd}</Markdown>
               ) : (

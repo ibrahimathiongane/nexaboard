@@ -12,6 +12,7 @@ interface RequestOptions extends RequestInit {
 
 class ApiClient {
   private baseUrl: string;
+  private refreshPromise: Promise<boolean> | null = null;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
@@ -25,7 +26,7 @@ class ApiClient {
     return {};
   }
 
-  private async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestOptions = {}, retryCount = 0): Promise<T> {
     const { token, ...fetchOptions } = options;
 
     const headers: Record<string, string> = {
@@ -45,10 +46,10 @@ class ApiClient {
     });
 
     if (response.status === 401) {
-      if (!endpoint.includes('/auth/refresh')) {
+      if (!endpoint.includes('/auth/refresh') && retryCount === 0) {
         const refreshed = await this.tryRefreshToken();
         if (refreshed) {
-          return this.request<T>(endpoint, options);
+          return this.request<T>(endpoint, options, 1);
         }
       }
       useAuthStore.getState().logout();
@@ -64,23 +65,33 @@ class ApiClient {
   }
 
   private async tryRefreshToken(): Promise<boolean> {
-    try {
-      const response = await fetch(`${this.baseUrl}/api/v1/auth/refresh`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        return false;
-      }
-
-      const data = await response.json();
-      useAuthStore.getState().setToken(data.accessToken);
-      return true;
-    } catch {
-      return false;
+    if (this.refreshPromise) {
+      return this.refreshPromise;
     }
+
+    this.refreshPromise = (async () => {
+      try {
+        const response = await fetch(`${this.baseUrl}/api/v1/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          return false;
+        }
+
+        const data = await response.json();
+        useAuthStore.getState().setToken(data.accessToken);
+        return true;
+      } catch {
+        return false;
+      } finally {
+        this.refreshPromise = null;
+      }
+    })();
+
+    return this.refreshPromise;
   }
 
   async get<T>(endpoint: string, token?: string): Promise<T> {

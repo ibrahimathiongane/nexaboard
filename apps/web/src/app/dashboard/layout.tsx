@@ -55,6 +55,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const currentWorkspace = getCurrentWorkspace();
 
   const handleLogout = () => {
+    if (!window.confirm('D\u00e9connecter de nexaBoard ?')) return;
     void api.post('/api/v1/auth/logout', {}).finally(() => {
       logout();
       router.push('/auth/login');

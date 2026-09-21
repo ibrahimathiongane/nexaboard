@@ -278,7 +278,7 @@ export default function TeamPage() {
                     <Badge variant={ROLE_VARIANTS[member.role] ?? 'outline'}>
                       {ROLE_LABELS[member.role] ?? member.role}
                     </Badge>
-                    {!isOwner && (
+                    {canEditWorkspace && !isOwner && (
                       <Button
                         variant="destructive"
                         size="sm"

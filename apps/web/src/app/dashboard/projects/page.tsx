@@ -101,7 +101,10 @@ export default function ProjectsPage() {
             <Card
               key={project.id}
               className="cursor-pointer hover:border-primary/50"
+              role="button"
+              tabIndex={0}
               onClick={() => handleEdit(project)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEdit(project); } }}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">

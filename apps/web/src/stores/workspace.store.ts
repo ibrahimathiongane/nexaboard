@@ -66,7 +66,8 @@ export const useWorkspaceStore = create<WorkspaceState>()(
               isLoading: false,
             };
           });
-        } catch {
+        } catch (err) {
+          console.error('Failed to fetch workspaces:', err);
           set({ isLoading: false });
         }
       },

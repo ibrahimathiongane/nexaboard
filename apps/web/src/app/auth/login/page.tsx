@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '@/stores/auth.store';
 import { api } from '@/lib/api';
 
@@ -79,9 +80,9 @@ export default function LoginPage() {
             <label htmlFor="password" className="block text-sm font-medium">
               Mot de passe
             </label>
-            <a href="/auth/forgot-password" className="text-xs text-primary hover:underline">
+            <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline">
               Mot de passe oublié ?
-            </a>
+            </Link>
           </div>
           <input
             id="password"
@@ -105,9 +106,9 @@ export default function LoginPage() {
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Pas encore de compte ?{' '}
-        <a href="/auth/register" className="font-medium text-primary hover:underline">
+        <Link href="/auth/register" className="font-medium text-primary hover:underline">
           Créer un compte
-        </a>
+        </Link>
       </p>
     </div>
   );
