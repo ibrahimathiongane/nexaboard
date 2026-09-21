@@ -15,6 +15,7 @@ import {
   useSensor,
   useSensors,
   closestCorners,
+  useDroppable,
   type DragStartEvent,
   type DragEndEvent,
   type DragOverEvent,
@@ -150,12 +151,18 @@ function KanbanColumn({
   status,
   tasks,
   onEdit,
+  isDragging,
 }: {
   status: string;
   tasks: Task[];
   onEdit: (t: Task) => void;
+  isDragging: boolean;
 }) {
   const taskIds = useMemo(() => tasks.map((t) => t.id), [tasks]);
+  const { setNodeRef, isOver } = useDroppable({ id: status });
+
+  const isEmpty = tasks.length === 0;
+  const showDropZone = isDragging && (isOver || isEmpty);
 
   return (
     <div className="flex flex-col min-w-[280px] max-w-[320px] flex-1">
@@ -168,10 +175,24 @@ function KanbanColumn({
         </span>
       </div>
       <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
-        <div className="flex-1 space-y-2 min-h-[120px] rounded-lg bg-muted/30 p-2">
+        <div
+          ref={setNodeRef}
+          className={`flex-1 space-y-2 min-h-[120px] rounded-lg p-2 transition-colors ${
+            isOver
+              ? 'bg-primary/5 ring-2 ring-primary/30'
+              : showDropZone
+                ? 'bg-muted/30 border-2 border-dashed border-muted-foreground/20'
+                : ''
+          }`}
+        >
           {tasks.map((task) => (
             <SortableTaskCard key={task.id} task={task} onEdit={onEdit} />
           ))}
+          {isEmpty && !isDragging && (
+            <div className="flex items-center justify-center h-full min-h-[80px] text-xs text-muted-foreground/50">
+              Glissez une tâche ici
+            </div>
+          )}
         </div>
       </SortableContext>
     </div>
@@ -452,6 +473,7 @@ export default function TasksPage() {
                 status={status}
                 tasks={tasksByColumn[status]}
                 onEdit={handleEdit}
+                isDragging={!!activeTask}
               />
             ))}
           </div>
