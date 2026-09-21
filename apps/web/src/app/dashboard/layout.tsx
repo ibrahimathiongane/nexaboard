@@ -6,12 +6,14 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Toaster, toast } from 'sonner';
 import { useAuthStore } from '@/stores/auth.store';
 import { useWorkspaceStore } from '@/stores/workspace.store';
+import { useOnboardingStore } from '@/stores/onboarding.store';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Modal } from '@/components/ui/modal';
 import { Textarea } from '@/components/ui/textarea';
+import OnboardingWizard from '@/components/onboarding/OnboardingWizard';
 
 const NAV_LINKS = [
   { href: '/dashboard', label: 'Tableau de bord' },
@@ -35,6 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     getCurrentWorkspace,
     createWorkspace,
   } = useWorkspaceStore();
+  const { isComplete: onboardingComplete, openOnboarding } = useOnboardingStore();
   const [workspaceModalOpen, setWorkspaceModalOpen] = useState(false);
   const [workspaceName, setWorkspaceName] = useState('');
   const [workspaceDescription, setWorkspaceDescription] = useState('');
@@ -47,6 +50,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       fetchWorkspaces();
     }
   }, [workspaces.length, fetchWorkspaces]);
+
+  useEffect(() => {
+    if (!isLoading && workspaces.length === 0 && !onboardingComplete) {
+      openOnboarding();
+    }
+  }, [isLoading, workspaces.length, onboardingComplete, openOnboarding]);
 
   useEffect(() => {
     setSidebarOpen(false);
@@ -263,6 +272,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </Modal>
 
       <Toaster position="top-center" richColors closeButton />
+      <OnboardingWizard />
     </div>
   );
 }
