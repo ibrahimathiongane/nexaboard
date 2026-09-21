@@ -25,6 +25,10 @@ export default function Pricing({ onOpenModal }: PricingProps) {
             <p className="text-sm text-primary-100 mt-1">
               Testez nexaBoard sans payer un centime, et conservez un statut fondateur privilégié à vie.
             </p>
+            <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white">
+              <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+              Plus que 34 places disponibles
+            </div>
           </div>
           <button
             type="button"

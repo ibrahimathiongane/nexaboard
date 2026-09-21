@@ -14,7 +14,8 @@ function ThankYouContent() {
 
   const [copied, setCopied] = useState(false);
 
-  const referralLink = `https://nexaboardapp.up.railway.app?ref=${refCode}`;
+  const appBase = process.env.NEXT_PUBLIC_APP_URL || 'https://resplendent-hope-production-7e28.up.railway.app';
+  const referralLink = `${appBase}?ref=${refCode}`;
 
   function handleCopy() {
     navigator.clipboard.writeText(referralLink);
@@ -165,7 +166,7 @@ function ThankYouContent() {
           ← Retour à l’accueil
         </Link>
         <a
-          href="https://nexaboardapp.up.railway.app"
+          href={appBase}
           target="_blank"
           rel="noopener noreferrer"
           className="rounded-xl bg-slate-900 px-6 py-3 font-semibold text-white hover:bg-slate-800 transition shadow"

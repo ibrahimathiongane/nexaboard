@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   title: "nexaBoard — L'espace de travail unifié pour les équipes de 5 à 20 personnes",
   description:
     'Fini la dispersion entre Trello, Notion et Google Calendar. Centralisez vos tâches, vos notes et votre planning en 3 minutes sans formation.',
-  metadataBase: new URL('https://nexaboardapp.up.railway.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://resplendent-hope-production-7e28.up.railway.app'),
   keywords: [
     'gestion de projet',
     'productivité équipe',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     title: 'nexaBoard — Productivité sans friction pour petites équipes',
     description:
       'Tâches, notes et calendrier réunis dans un seul outil intuitif. 100% gratuit pendant la bêta fermée.',
-    url: 'https://nexaboardapp.up.railway.app',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://resplendent-hope-production-7e28.up.railway.app',
     siteName: 'nexaBoard',
     locale: 'fr_FR',
     type: 'website',

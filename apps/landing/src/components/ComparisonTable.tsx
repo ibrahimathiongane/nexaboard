@@ -37,7 +37,7 @@ export default function ComparisonTable() {
                 </tr>
               ))}
               <tr className="bg-slate-50/40">
-                <td className="p-3 sm:p-5 font-bold text-slate-900">Coût (10 pers.)</td>
+                <td className="p-3 sm:p-5 font-bold text-slate-900">Coût mensuel (10 pers.)</td>
                 <td className="p-3 sm:p-5 font-extrabold text-primary-700 bg-primary-50/80 text-center">
                   0 € <br />
                   <span className="text-[10px] sm:text-xs font-normal text-slate-600">Bêta puis 12 €/équipe</span>
@@ -45,6 +45,15 @@ export default function ComparisonTable() {
                 <td className="p-3 sm:p-5 text-slate-700 text-center font-medium">~100 €/mois</td>
                 <td className="p-3 sm:p-5 text-slate-700 text-center font-medium">~60 €/mois</td>
                 <td className="p-3 sm:p-5 text-slate-700 text-center font-medium">~110 €/mois</td>
+              </tr>
+              <tr>
+                <td className="p-3 sm:p-5 font-bold text-slate-900">Économie annuelle</td>
+                <td className="p-3 sm:p-5 font-extrabold text-emerald-600 bg-primary-50/30 text-center">
+                  Jusqu&apos;à 11 880 €
+                </td>
+                <td className="p-3 sm:p-5 text-center text-slate-400">—</td>
+                <td className="p-3 sm:p-5 text-center text-slate-400">—</td>
+                <td className="p-3 sm:p-5 text-center text-slate-400">—</td>
               </tr>
             </tbody>
           </table>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import type { LandingState } from '@/lib/types';
 
@@ -10,6 +10,15 @@ interface HeaderProps {
 
 export default function Header({ onOpenModal }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isMobileMenuOpen]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-100 bg-white/80 backdrop-blur-md transition-all">
@@ -61,7 +70,7 @@ export default function Header({ onOpenModal }: HeaderProps) {
 
         <div className="flex items-center gap-3">
           <a
-            href="https://nexaboardapp.up.railway.app/auth/login"
+            href={`${process.env.NEXT_PUBLIC_APP_URL || 'https://resplendent-hope-production-7e28.up.railway.app'}/auth/login`}
             className="hidden sm:inline-block text-sm font-semibold text-slate-700 hover:text-primary-600 transition px-3 py-2"
           >
             Connexion
@@ -112,7 +121,7 @@ export default function Header({ onOpenModal }: HeaderProps) {
           ))}
           <div className="pt-2 border-t border-slate-100">
             <a
-              href="https://nexaboardapp.up.railway.app/auth/login"
+              href={`${process.env.NEXT_PUBLIC_APP_URL || 'https://resplendent-hope-production-7e28.up.railway.app'}/auth/login`}
               className="block text-sm font-semibold text-slate-700 hover:text-primary-600 transition py-1"
             >
               Connexion

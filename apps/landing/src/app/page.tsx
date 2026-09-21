@@ -16,6 +16,7 @@ import Faq from '@/components/Faq';
 import FinalCta from '@/components/FinalCta';
 import Footer from '@/components/Footer';
 import BetaModal from '@/components/BetaModal';
+import StickyCta from '@/components/StickyCta';
 
 export default function LandingPage() {
   const [email, setEmail] = useState('');
@@ -69,6 +70,7 @@ export default function LandingPage() {
       <Faq />
       <FinalCta onOpenModal={() => openModalWithEmail()} />
       <Footer />
+      <StickyCta onOpenModal={() => openModalWithEmail()} />
       <BetaModal state={state} />
     </div>
   );

@@ -17,7 +17,7 @@ export default function Footer() {
           <Link href="/terms" className="hover:text-primary-600 transition">
             Conditions d&apos;utilisation
           </Link>
-          <Link href="/mentions-legales" className="hover:text-primary-600 transition">
+          <Link href="/terms" className="hover:text-primary-600 transition">
             Mentions légales
           </Link>
           <a href="mailto:contact@nexaboard.io" className="hover:text-primary-600 transition">

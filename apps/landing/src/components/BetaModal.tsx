@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -34,6 +35,24 @@ export default function BetaModal({ state }: BetaModalProps) {
   const teamSize = watch('teamSize');
   const currentTool = watch('currentTool');
   const interest = watch('interest');
+
+  const handleEscape = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsModalOpen(false);
+    },
+    [setIsModalOpen],
+  );
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = '';
+    };
+  }, [isModalOpen, handleEscape]);
 
   async function onSubmit(data: BetaLeadInput) {
     setStatus('loading');

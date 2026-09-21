@@ -21,11 +21,15 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (pathname) {
-      let url = window.origin + pathname;
-      if (searchParams.toString()) {
-        url = url + `?${searchParams.toString()}`;
+      try {
+        let url = window.origin + pathname;
+        if (searchParams.toString()) {
+          url = url + `?${searchParams.toString()}`;
+        }
+        posthog.capture('$pageview', { '$current_url': url });
+      } catch {
+        // Silently ignore analytics errors
       }
-      posthog.capture('$pageview', { '$current_url': url });
     }
   }, [pathname, searchParams]);
 
@@ -35,10 +39,18 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 export function useAnalytics() {
   return {
     track: (event: string, properties?: Record<string, unknown>) => {
-      posthog.capture(event, properties);
+      try {
+        posthog.capture(event, properties);
+      } catch {
+        // Silently ignore analytics errors
+      }
     },
     identify: (distinctId: string, properties?: Record<string, unknown>) => {
-      posthog.identify(distinctId, properties);
+      try {
+        posthog.identify(distinctId, properties);
+      } catch {
+        // Silently ignore analytics errors
+      }
     },
   };
 }

@@ -7,7 +7,7 @@ export default function BentoGrid() {
     {
       span: 'md:col-span-2',
       icon: '📋',
-      iconBg: 'primary',
+      iconBgClass: 'bg-primary-100 text-primary-700',
       title: 'Gestion des Tâches Agile (Kanban & Listes)',
       desc: 'Visualisez vos projets en colonnes Kanban fluides ou en listes compactes. Assignez des collaborateurs, définissez des sous-tâches, des priorités et suivez l\'avancement en temps réel.',
       tags: ['Glisser-déposer réactif', 'Sous-tâches hiérarchiques', 'Filtres multicritères', 'Assignations multiples'],
@@ -15,7 +15,7 @@ export default function BentoGrid() {
     {
       span: '',
       icon: '📝',
-      iconBg: 'indigo',
+      iconBgClass: 'bg-indigo-100 text-indigo-700',
       title: 'Notes & Wiki Markdown',
       desc: 'Rédigez vos cadrages, comptes-rendus et documentations dans un éditeur rapide supportant le Markdown complet.',
       tags: ['Arborescence par projet', 'Blocs de code formatés'],
@@ -23,7 +23,7 @@ export default function BentoGrid() {
     {
       span: '',
       icon: '📅',
-      iconBg: 'amber',
+      iconBgClass: 'bg-amber-100 text-amber-700',
       title: 'Calendrier d\'Équipe',
       desc: 'Planifiez vos jalons clés, échéances de sprint et livrables sur une vue chronologique connectée directement à vos projets.',
       tags: ['Vues jour / semaine', 'Liaison automatique tâches'],
@@ -31,7 +31,7 @@ export default function BentoGrid() {
     {
       span: 'md:col-span-2',
       icon: '🏢',
-      iconBg: 'rose',
+      iconBgClass: 'bg-rose-100 text-rose-700',
       title: 'Espaces de Travail & Rôles Collaboratifs',
       desc: 'Créez des espaces dédiés pour chaque département ou projet. Gérez précisément les rôles et visualisez le tableau de bord avec les statistiques consolidées.',
       tags: ['Dashboard analytique', 'Multi-workspaces isolés', 'Contrôle d\'accès sécurisé'],
@@ -59,7 +59,7 @@ export default function BentoGrid() {
               transition={{ duration: 0.5, delay: i * 0.1 }}
               whileHover={{ y: -4, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.08)' }}
             >
-              <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-${f.iconBg}-100 text-${f.iconBg}-700 text-2xl mb-5`}>
+              <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${f.iconBgClass} text-2xl mb-5`}>
                 {f.icon}
               </div>
               <div className="inline-block rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200 mb-3">
